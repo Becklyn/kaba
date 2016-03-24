@@ -32,8 +32,8 @@ module.exports = function (options)
             reduceTransforms: true,
             sourcemap: true,
             uniqueSelectors: true
-        }),
-        reporter({clearMessages: true})
+        })//,
+        // reporter({clearMessages: true})
     ], {
         syntax: scssSyntax
     });
