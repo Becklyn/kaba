@@ -73,8 +73,7 @@ class Logger
             line += "\n" + "-".repeat(error.column - 1) + "^";
         }
 
-        this.logLine(chalk.red("Build Error") + " in " + chalk.yellow(relativeFile) + " (" + chalk.yellow(`${error.line}:${error.column}`) + ")");
-        this.logLineWithoutPrefix(error.message);
+        this.logLine(chalk.red("Build Error") + " in " + chalk.yellow(relativeFile) + " (" + chalk.yellow(`${error.line}:${error.column}`) + "): " + error.message);
 
         line.split("\n").forEach(
             (l) => this.logLineWithoutPrefix("    " + chalk.gray(l))
