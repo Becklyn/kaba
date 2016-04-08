@@ -4,13 +4,13 @@
  * @typedef {{
  *      inputDir: String,
  *      inputGlob: String,
+ *      topLevelInputGlob: String,
  *      outputDir: String,
  *      browsers: String[],
  * }} ScssTaskOptions
  */
 
-let gulp = require("gulp");
-let fs = require("fs");
+let fs = require("fs-extra");
 let ScssTask = require("./scss/scss-task");
 
 
@@ -27,9 +27,12 @@ let ScssTask = require("./scss/scss-task");
  */
 module.exports = function (inputDir, outputDir, options)
 {
+    fs.mkdirsSync(outputDir);
+
     // normalize paths
     options.inputDir  = fs.realpathSync(inputDir);
     options.inputGlob = options.inputDir + "/**/*.scss";
+    options.topLevelInputGlob = options.inputDir + "/**/!(_)*.scss";
     options.outputDir = fs.realpathSync(outputDir);
 
 
@@ -38,10 +41,10 @@ module.exports = function (inputDir, outputDir, options)
 
     return function (debug)
     {
-        return function (done)
+        return function ()
         {
-            let task = new ScssTask(gulp, options);
-            task.run(debug, done);
+            let task = new ScssTask(options);
+            task.run(debug);
         }
     }
 };

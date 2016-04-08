@@ -51,7 +51,10 @@ module.exports = class ScssDependencyResolver
      */
     findDependents (file)
     {
-        return this.recursivelyFindEntries(file, "importedBy");
+        let foundFiles = {};
+        this.recursivelyFindEntries(this.getIndex(), file, "importedBy", foundFiles);
+
+        return Object.keys(foundFiles);
     }
 
 
@@ -63,34 +66,35 @@ module.exports = class ScssDependencyResolver
      */
     findDependencies (file)
     {
-        return this.recursivelyFindEntries(file, "imports");
+        let foundFiles = {};
+        this.recursivelyFindEntries(this.getIndex(), file, "imports", foundFiles);
+        return Object.keys(foundFiles);
     }
 
     /**
      * Recursively finds entries in the index
      *
-     * @param {String} file
-     * @param {String} property the property to search in the index
-     * @returns {String[]}
+     * @param {*} index
+     * @param {string} file the file to find entries for
+     * @param {string} property the property to search in the index
+     * @param {Object<string, Boolean>} foundFiles the already found files
      */
-    recursivelyFindEntries (file, property)
+    recursivelyFindEntries (index, file, property, foundFiles)
     {
-        let index = this.getIndex();
-        let foundFiles = [];
-
         if (!index[file])
         {
-            return [];
+            return;
         }
 
         index[file][property].forEach(
             (relatedFile) =>
             {
-                foundFiles.push(relatedFile);
-                foundFiles = foundFiles.concat(this.recursivelyFindEntries(relatedFile, property));
+                if (!foundFiles[relatedFile])
+                {
+                    foundFiles[relatedFile] = true;
+                    this.recursivelyFindEntries(relatedFile, property, foundFiles);
+                }
             }
         );
-
-        return foundFiles;
     }
 };

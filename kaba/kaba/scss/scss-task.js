@@ -2,36 +2,30 @@
 
 // libraries
 let chokidar = require("chokidar");
-let gulp = require("gulp");
 let glob = require("glob");
 let path = require("path");
-let sourcemaps = require('gulp-sourcemaps');
+let fs = require("fs");
 let Promise = require("bluebird");
+let writeOutputFile = require("../../lib/file-writer");
 
 let ScssDependencyResolver = require("./scss-dependency-resolver");
 let ScssLinter = require("./scss-linter");
+let Logger = require("../../lib/logger");
 
 // single steps
 let compile = require("./compile");
 let postProcess = require("./post-process");
+let minify = require("./minify");
 
 
 module.exports = class ScssTask
 {
     /**
      *
-     * @param {Gulp} gulp
      * @param {ScssTaskOptions} options
      */
-    constructor (gulp, options)
+    constructor (options)
     {
-        /**
-         * @private
-         * @type {Gulp}
-         */
-        this.gulp = gulp;
-
-
         /**
          * @private
          * @type {ScssTaskOptions}
@@ -49,6 +43,12 @@ module.exports = class ScssTask
          * @type {ScssLinter}
          */
         this.linter = new ScssLinter(options, this.dependencyResolver);
+
+        /**
+         * @private
+         * @type {Logger}
+         */
+        this.logger = new Logger("CSS", "blue", this.options.inputDir);
     }
 
 
@@ -57,11 +57,9 @@ module.exports = class ScssTask
      * Runs the task
      *
      * @param {Boolean} debug Flag, whether the task should run in debug mode
-     * @param {function()} done
      */
-    run (debug, done)
+    run (debug)
     {
-
         if (debug)
         {
             this.lintProject();
@@ -72,13 +70,10 @@ module.exports = class ScssTask
             })
                 .on("add", path => this.onFileChanged(path))
                 .on("change", path => this.onFileChanged(path));
-
-            // call done callback as we will never end
-            done();
         }
         else
         {
-            this.compileProject(false, done);
+            this.compileProject(false);
         }
     }
 
@@ -91,7 +86,7 @@ module.exports = class ScssTask
      */
     lintProject ()
     {
-        glob(this.options.inputGlob,
+        glob(this.options.topLevelInputGlob,
             (error, files) =>
             {
                 files.forEach(
@@ -130,19 +125,13 @@ module.exports = class ScssTask
      * Compiles the complete project
      *
      * @param {Boolean} debug
-     * @param {Function=} done
      */
-    compileProject (debug, done)
+    compileProject (debug)
     {
-        glob(this.options.inputGlob,
+        glob(this.options.topLevelInputGlob,
             (error, files) =>
             {
                 let tasks = this.compileFiles(files, debug);
-
-                if (done)
-                {
-                    Promise.all(tasks).then(() => done());
-                }
             }
         );
     }
@@ -193,32 +182,63 @@ module.exports = class ScssTask
      */
     compileSingleFile (file, debug)
     {
-        return new Promise(
-            (resolve, reject) => {
-
-                let task = this.gulp.src(file)
-                    .on('end', resolve)
-                    .on('error', reject);
-
-                if (debug)
+        return compile(file, debug)
+            .then(
+                (result) =>
                 {
-                    task = task
-                        .pipe(sourcemaps.init());
-                }
-
-                task = task
-                    .pipe(compile())
-                    .pipe(postProcess(this.options));
-
-                if (debug)
+                    return result.css;
+                },
+                (error) =>
                 {
-                    task = task
-                        .pipe(sourcemaps.write());
+                    this.logger.logBuildError(error);
                 }
+            )
+            .then(
+                (css) =>
+                {
+                    return postProcess(css, this.options);
+                }
+            )
+            .then(
+                (postProcessResult) =>
+                {
+                    if (!debug)
+                    {
+                        return minify(postProcessResult.css);
+                    }
 
-                return task
-                    .pipe(gulp.dest(this.options.outputDir));
-            }
-        );
+                    return postProcessResult.css;
+                }
+            )
+            .then(
+                (css) =>
+                {
+                    writeOutputFile(this.generateOutputFileName(file), css)
+                }
+            )
+            .then(
+                () =>
+                {
+                    this.logger.logAction("Compiled", path.relative(this.options.inputDir, file));
+                }
+            )
+            .catch(
+                (err) => this.logger.logError(err)
+            );
+    }
+
+
+    /**
+     * Generates the output file name
+     * @param {string} file
+     * @returns {string}
+     */
+    generateOutputFileName (file)
+    {
+        let relativePath = path.relative(this.options.inputDir, file);
+        let relativeDirName = path.dirname(relativePath);
+        relativeDirName = "." === relativeDirName ? "" : relativeDirName;
+
+        return this.options.outputDir + "/" + relativeDirName + path.basename(relativePath, ".scss") + ".css";
     }
 };

@@ -68,18 +68,24 @@ module.exports = class ScssLinter
      */
     lint (file)
     {
-        let fileContent = fs.readFileSync(file, "utf-8");
-
-        postcss()
-            .use(stylelint({
-                configFile: __dirname + "/../../../.stylelintrc"
-            }))
-            .use(doiuse({
-                browsers: this.options.browsers//,
-                //onFeatureUsage: console.log.bind(console)
-            }))
-            .use(reporter({clearMessages: true}))
-            .process(fileContent, {from: file})
-            .then();
+        fs.readFile(file, "utf-8",
+            (err, fileContent) =>
+            {
+                postcss([
+                    stylelint({
+                        configFile: __dirname + "/../../../.stylelintrc"
+                    }),
+                    doiuse({
+                        browsers: this.options.browsers//,
+                        //onFeatureUsage: console.log.bind(console)
+                    }),
+                    reporter({clearMessages: true})
+                ])
+                    .process(fileContent, {
+                        from: file // required to have file names in the report
+                    })
+                    .then();
+            }
+        );
     }
 };

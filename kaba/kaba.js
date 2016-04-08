@@ -2,6 +2,6 @@
 
 
 module.exports = {
-    scss: require("./kaba/scss"),
-    js: require("./kaba/js")
+    scss: require("./kaba/scss")//,
+    // js: require("./kaba/js")
 };

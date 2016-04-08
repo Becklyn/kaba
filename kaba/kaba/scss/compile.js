@@ -1,9 +1,33 @@
 "use strict";
 
-let sass = require("gulp-sass");
+let sass = require("node-sass");
+let Promise = require("bluebird");
 
-
-module.exports = function ()
+/**
+ *
+ * @param {String} filePath
+ * @param {Boolean} debug
+ */
+module.exports = function (filePath, debug)
 {
-    return sass().on('error', sass.logError);
+    return new Promise (
+        function (resolve, reject)
+        {
+            sass.render({
+                    file: filePath,
+                    outputStyle: "compact",
+                    sourceMapEmbed: debug
+                },
+                function (err, result)
+                {
+                    if (err)
+                    {
+                        reject (err);
+                    }
+
+                    resolve(result);
+                }
+            );
+        }
+    );
 };
