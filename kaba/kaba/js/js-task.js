@@ -2,12 +2,19 @@
 
 let browserify = require("browserify");
 let watchify = require("watchify");
-let babelify = require("babelify");
 let glob = require("glob");
 let path = require("path");
-let source = require("vinyl-source-stream");
-let buffer = require("vinyl-buffer");
-let uglify = require("gulp-uglify");
+let Promise = require("bluebird");
+let fs = require("fs-extra");
+let fileWriter = require("../../lib/file-writer");
+let Logger = require("../../lib/logger");
+let chalk = require("chalk");
+let globalsTransform = require("../../browserify/globals-transform");
+let bundleCollapser = require("bundle-collapser");
+let StreamHelper = require("../../lib/stream-helper");
+
+let minify = require("./minify");
+let lint = require("./lint");
 
 
 /**
@@ -15,26 +22,23 @@ let uglify = require("gulp-uglify");
  */
 module.exports = class JsTask
 {
-
     /**
      *
-     * @param {Gulp} gulp
      * @param {JsTaskOptions} options
      */
-    constructor (gulp, options)
+    constructor (options)
     {
-        /**
-         * @private
-         * @type {Gulp}
-         */
-        this.gulp = gulp;
-
-
         /**
          * @private
          * @type {JsTaskOptions}
          */
         this.options = options;
+
+        /**
+         * @private
+         * @type {Logger}
+         */
+        this.logger = new Logger("JS", "blue", this.options.inputDir);
     }
 
 
@@ -43,31 +47,65 @@ module.exports = class JsTask
      * Runs the task
      *
      * @param {Boolean} debug Flag, whether the task should run in debug mode
-     * @param {function()} done
      */
-    run (debug, done)
+    run (debug)
+    {
+        this.compileProject(debug);
+    }
+
+
+    /**
+     *
+     * @param debug
+     */
+    compileProject (debug)
     {
         glob(this.options.inputGlob,
             (err, files) => {
                 files.forEach(
                     (file) => {
                         console.time("build");
-                        var browserifyInstance = browserify({
-                            entries: file,
-                            debug: debug
-                        })
-                            .plugin(babelify, {
-                                presets: ["es2015"]
-                            });
 
+                        // create browserify instance
+                        var browserifyInstance = browserify({
+                            cache: {},
+                            packageCache: {},
+                            entries: file,
+                            debug: debug,
+                            fullPaths: true // debug
+                        });
+
+                        // load plugins
+                        browserifyInstance.transform("babelify", {
+                            presets: ["es2015"]
+                        });
+                        browserifyInstance.transform(globalsTransform, {
+                            global: true,
+                            globals: {
+                                jquery: "window.jQuery",
+                                dropzone: "window.Dropzone",
+                                routing: "window.Routing"
+                            }
+                        });
+
+                        // register event listeners
+                        browserifyInstance
+                            .on("file", (file) => this.logger.logBuildUpdate(file));
+
+                        // register debug modes
                         if (debug)
                         {
-                            browserifyInstance = watchify(browserifyInstance);
+                            // add watchify as plugin
+                            browserifyInstance.plugin(watchify);
+
+                            // register event listener for linter and update
                             browserifyInstance
-                                .on("update", () => this.buildFromBrowserify(browserifyInstance));
-                            // done();
-                            // browserifyInstance.bundle();
+                                .on("update", () => this.buildFromBrowserify(browserifyInstance, file, debug))
+                                .on("file", (file) => lint(file, this.options));
                         }
+
+                        // if not debug, build from the browserify instance
+                        this.buildFromBrowserify(browserifyInstance, file, debug);
                     }
                 )
 
@@ -75,25 +113,46 @@ module.exports = class JsTask
         );
     }
 
-
-    buildFromBrowserify (browserifyInstance, debug)
+    /**
+     *
+     * @param browserifyInstance
+     * @param file
+     * @param debug
+     */
+    buildFromBrowserify (browserifyInstance, file, debug)
     {
-        console.log(browserifyInstance);
-        var taskPipeline = browserifyInstance
-            .bundle()
-            .on("error", function (error) { console.error(error.toString()); })
-            .on("end", function () { console.timeEnd("build"); })
-            .pipe(source(path.basename(file)))
-            .pipe(buffer());
+        let buffers = [];
 
-        if (!debug)
-        {
-            taskPipeline = taskPipeline.pipe(uglify({
-                preserveComments: debug ? "all" : "license"
-            }));
-        }
+        StreamHelper.readStream(browserifyInstance.bundle())
+            .then(
+                (code) =>
+                {
+                    return StreamHelper.readStream(bundleCollapser(code));
+                }
+            )
+            .then(
+                (code) => {
+                    code = minify(code, debug);
 
-        return taskPipeline
-            .pipe(this.gulp.dest(this.options.outputDir));
+                    if (null !== code)
+                    {
+                        fileWriter(this.generateOutputFileName(file), code);
+                    }
+                }
+            )
+            .catch(
+                (error) => this.logger.logLine("ERROR: " + error.message)
+            )
+    }
+
+
+    /**
+     * Generates the output file name
+     * @param {string} file
+     * @returns {string}
+     */
+    generateOutputFileName (file)
+    {
+        return this.options.outputDir + "/" + path.relative(this.options.inputDir, file);
     }
 };

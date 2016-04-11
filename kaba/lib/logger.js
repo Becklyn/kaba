@@ -59,6 +59,12 @@ class Logger
         this.logLine(chalk.red("Error") + ` ${error}`);
     }
 
+    logBuildUpdate (file)
+    {
+        let relativeFile = path.relative(this.baseDir, file);
+        this.logLine(chalk.yellow("Build") + ` ${relativeFile}`);
+    }
+
     logBuildError (error)
     {
         let line = fileReader.getLine(error.file, error.line);

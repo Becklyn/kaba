@@ -9,7 +9,6 @@
  * }} JsTaskOptions
  */
 
-let gulp = require("gulp");
 let fs = require("fs");
 let JsTask = require("./js/js-task");
 
@@ -34,10 +33,10 @@ module.exports = function (inputDir, outputDir, options)
 
     return function (debug)
     {
-        return function (done)
+        return function ()
         {
-            let task = new JsTask(gulp, options);
-            task.run(debug, done);
+            let task = new JsTask(options);
+            task.run(debug);
         }
     }
 };
