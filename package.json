@@ -1,6 +1,5 @@
 {
   "name": "kaba",
-  "private": true,
   "browserify-shim": {
     "jquery": "$",
     "dropzone": "Dropzone",
