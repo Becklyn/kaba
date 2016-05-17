@@ -31,12 +31,9 @@ module.exports = function (inputDir, outputDir, options)
     options.inputGlob = options.inputDir + "/*.js";
     options.outputDir = fs.realpathSync(outputDir);
 
-    return function (debug)
+    return function (done, debug)
     {
-        return function ()
-        {
-            let task = new JsTask(options);
-            task.run(debug);
-        }
+        let task = new JsTask(options);
+        task.run();
     }
 };
