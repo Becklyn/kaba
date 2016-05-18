@@ -154,7 +154,7 @@ Kaba.prototype.prepareTaskFunctionsForAsync = function (taskFunctions, callArgum
 
 /**
  * Defines a wrapper functions that calls the given tasks ins series
- * 
+ *
  * @returns {Function}
  */
 Kaba.prototype.series = function (...taskFunctions)
@@ -171,7 +171,7 @@ Kaba.prototype.series = function (...taskFunctions)
 
 /**
  * Defines a wrapper functions that calls the given tasks in parallel
- * 
+ *
  * @returns {Function}
  */
 Kaba.prototype.parallel = function (...taskFunctions)
@@ -185,8 +185,8 @@ Kaba.prototype.parallel = function (...taskFunctions)
     };
 };
 
-// define becklyn default tasks
-Kaba.prototype.becklyn = {
+// define default tasks
+Kaba.prototype.shelf = {
     scss: require("./kaba/scss"),
     js: require("./kaba/js")
 };
