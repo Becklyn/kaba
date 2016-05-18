@@ -90,7 +90,7 @@ module.exports = class JsTask
 
                         // register event listeners
                         browserifyInstance
-                            .on("file", (file) => this.logger.logBuildUpdate(file));
+                            .on("file", (file) => this.logger.log("Build: " + file));
 
                         // register debug modes
                         if (debug)
@@ -141,7 +141,7 @@ module.exports = class JsTask
                 }
             )
             .catch(
-                (error) => this.logger.logLine("ERROR: " + error.message)
+                (error) => this.logger.log("ERROR: " + error.message)
             )
     }
 

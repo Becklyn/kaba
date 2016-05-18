@@ -7,6 +7,12 @@ let path = require("path");
 
 class Logger
 {
+    /**
+     *
+     * @param {string} prefix
+     * @param {string} color
+     * @param {string} baseDir
+     */
     constructor (prefix, color, baseDir)
     {
         if (!chalk[color])
@@ -14,24 +20,55 @@ class Logger
             throw new Error("Unknown color: " + color);
         }
 
+        /**
+         * @private
+         * @type {string}
+         */
         this.prefix = "[" + chalk[color](prefix) + "] ";
+
+
+        /**
+         * @private
+         * @type {string}
+         */
         this.emptyPrefix = " ".repeat(prefix.length + 3);
+
+
+        /**
+         * @private
+         * @type {string}
+         */
         this.baseDir = baseDir;
     }
 
 
-    logAction (action, message)
-    {
-        this.logLine(action, "yellow", message);
-    }
-
-
+    /**
+     * Logs the given message
+     *
+     * @param {string} message
+     */
     log (message)
     {
-        console.log(this.prefix + message);
+        var now = new Date();
+        var time = [
+            now.getHours(),
+            now.getMinutes(),
+            now.getSeconds()
+        ]
+            .map((number) => 1 === number.toString().length ? `0${number}` : number)
+            .join(":");
+
+        var date = chalk.gray(`[${time}]`);
+
+        console.log(`${date} ${this.prefix}${message}`);
     }
 
 
+    /**
+     * Logs the given message without prefix
+     *
+     * @param {string} message
+     */
     logWithoutPrefix (message)
     {
         console.log(this.emptyPrefix + message);
@@ -39,24 +76,9 @@ class Logger
 
 
     /**
-     * @deprecated
-     * @param message
+     * Logs the given error
+     * @param {string|{toString: function}|Error} error
      */
-    logLine (message)
-    {
-        this.log(message);
-    }
-
-    /**
-     * @deprecated
-     * @param message
-     */
-    logLineWithoutPrefix (message)
-    {
-        this.logWithoutPrefix(message);
-    }
-
-
     logError (error)
     {
         if (typeof error === "object")
@@ -75,16 +97,12 @@ class Logger
             }
         }
 
-        this.logLine(chalk.red("Error") + ` ${error}`);
+        this.log(chalk.red("Error") + ` ${error}`);
     }
 
-    logBuildUpdate (file)
-    {
-        let relativeFile = path.relative(this.baseDir, file);
-        this.logLine(chalk.yellow("Build") + ` ${relativeFile}`);
-    }
 
     /**
+     * Logs the given build error
      *
      * @param {BuildError} buildError
      */
