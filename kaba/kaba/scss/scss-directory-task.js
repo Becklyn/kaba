@@ -64,7 +64,7 @@ module.exports = class ScssDirectoryTask
          * @private
          * @type {ScssLinter}
          */
-        this.linter = new ScssLinter(config);
+        this.linter = new ScssLinter(config, this.dependencyResolver);
     }
 
 
@@ -72,8 +72,9 @@ module.exports = class ScssDirectoryTask
      * Compiles the complete directory
      *
      * @param {boolean} debug
+     * @param {boolean} lint
      */
-    compile (debug)
+    compile (debug, lint = false)
     {
         return new Promise(
             (resolve, reject) => {
@@ -81,6 +82,13 @@ module.exports = class ScssDirectoryTask
                     this.dir + "/!(_)*.scss",
                     (error, files) => {
                         var tasks = this.compileFileList(files, debug);
+
+                        if (lint)
+                        {
+                            files.forEach(
+                                (file) => this.linter.lintWithDependencies(file)
+                            );
+                        }
 
                         Promise.all(tasks)
                             .then(resolve);

@@ -1,11 +1,10 @@
 "use strict";
 
+const fs = require("fs");
 const postcss = require("postcss");
-const stylelint = require("stylelint");
 const reporter = require("postcss-reporter");
 const scssSyntax = require("postcss-scss");
-const fs = require("fs");
-const ScssDependencyResolver = require("./scss-dependency-resolver");
+const stylelint = require("stylelint");
 
 
 module.exports = class ScssLinter
@@ -13,14 +12,21 @@ module.exports = class ScssLinter
     /**
      *
      * @param {InternalScssTaskConfig} config
+     * @param {ScssDependencyResolver} dependencyResolver
      */
-    constructor (config)
+    constructor (config, dependencyResolver)
     {
         /**
          * @private
          * @type {InternalScssTaskConfig}
          */
         this.config = config;
+
+        /**
+         * @private
+         * @type {ScssDependencyResolver}
+         */
+        this.dependencyResolver = dependencyResolver;
     }
 
 
@@ -31,13 +37,11 @@ module.exports = class ScssLinter
      */
     lintWithDependencies (file)
     {
-        let resolver = new ScssDependencyResolver(file);
-
         // remember which files were linted to only lint each file once
         let lintedFiles = {};
 
         // find the imported files
-        let filesToLint = resolver.findDependencies(file);
+        let filesToLint = this.dependencyResolver.findDependencies(file);
 
         // add the current file
         filesToLint.push(file);
