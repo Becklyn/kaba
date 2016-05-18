@@ -52,6 +52,6 @@ module.exports = function (config)
     return function (done, debug)
     {
         let task = new ScssTask(internalConfig);
-        task.run(debug);
+        task.run(done, debug);
     }
 };

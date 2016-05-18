@@ -49,9 +49,10 @@ module.exports = class ScssTask
     /**
      * Runs the task
      *
+     * @param {function} done
      * @param {Boolean} debug Flag, whether the task should run in debug mode
      */
-    run (debug)
+    run (done, debug)
     {
         if (debug)
         {
@@ -59,7 +60,8 @@ module.exports = class ScssTask
         }
         else
         {
-            this.compileProject();
+            this.compileProject()
+                .then(done);
         }
     }
 
@@ -76,13 +78,17 @@ module.exports = class ScssTask
             (resolve, reject) => {
                 glob(this.config.srcDir,
                     (error, directories) => {
+                        var tasks = [];
+
                         directories.forEach(
                             (dir) => {
                                 var task = new ScssDirectoryTask(dir, this.config);
-                                task.lint();
-                                task.compile(false);
+                                tasks.push(task.compile(false));
                             }
-                        )
+                        );
+
+                        Promise.all(tasks)
+                            .then(resolve);
                     }
                 )
             }
