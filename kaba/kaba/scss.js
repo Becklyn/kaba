@@ -2,16 +2,16 @@
 
 /**
  * @typedef {{
- *      inputDir: String,
- *      inputGlob: String,
+ *      input: String,
  *      topLevelInputGlob: String,
- *      outputDir: String,
+ *      output: String,
  *      browsers: String[],
  * }} ScssTaskOptions
  */
 
 let fs = require("fs-extra");
 let ScssTask = require("./scss/scss-task");
+let _ = require("lodash");
 
 
 
@@ -19,32 +19,21 @@ let ScssTask = require("./scss/scss-task");
 /**
  * Main task for Sass
  *
- * @param {String} inputDir
- * @param {String} outputDir
  * @param {ScssTaskOptions} options
  *
  * @returns {Function}
  */
-module.exports = function (inputDir, outputDir, options)
+module.exports = function (options)
 {
-    fs.mkdirsSync(outputDir);
+    options = _.assign({
+        input: "src/**/Resources/assets/scss/!(_)*.scss",
+        output: "../../public/css",
+        browsers: ["last 2 versions", "IE 10"]
+    }, options);
 
-    // normalize paths
-    options.inputDir  = fs.realpathSync(inputDir);
-    options.inputGlob = options.inputDir + "/**/*.scss";
-    options.topLevelInputGlob = options.inputDir + "/**/!(_)*.scss";
-    options.outputDir = fs.realpathSync(outputDir);
-
-
-    // parse options
-    options = options || {browsers: ["last 2 versions", "IE 10"]};
-
-    return function (debug)
+    return function (done, debug)
     {
-        return function ()
-        {
-            let task = new ScssTask(options);
-            task.run(debug);
-        }
+        let task = new ScssTask(options);
+        task.run(debug);
     }
 };

@@ -4,9 +4,10 @@
 let chokidar = require("chokidar");
 let glob = require("glob");
 let path = require("path");
-let fs = require("fs");
+let fs = require("fs-extra");
 let Promise = require("bluebird");
 let writeOutputFile = require("../../lib/file-writer");
+const chalk = require("chalk");
 
 let ScssDependencyResolver = require("./scss-dependency-resolver");
 let ScssLinter = require("./scss-linter");
@@ -36,7 +37,7 @@ module.exports = class ScssTask
          * @private
          * @type {ScssDependencyResolver}
          */
-        this.dependencyResolver = new ScssDependencyResolver(options.inputDir);
+        this.dependencyResolver = new ScssDependencyResolver(options.input);
 
         /**
          * @private
@@ -48,7 +49,7 @@ module.exports = class ScssTask
          * @private
          * @type {Logger}
          */
-        this.logger = new Logger("CSS", "blue", this.options.inputDir);
+        this.logger = new Logger("CSS", "blue", this.options.input);
     }
 
 
@@ -65,7 +66,7 @@ module.exports = class ScssTask
             this.lintProject();
             this.compileProject(true);
 
-            chokidar.watch(this.options.inputGlob, {
+            chokidar.watch(this.options.input, {
                 ignoreInitial: true
             })
                 .on("add", path => this.onFileChanged(path))
@@ -86,7 +87,7 @@ module.exports = class ScssTask
      */
     lintProject ()
     {
-        glob(this.options.topLevelInputGlob,
+        glob(this.options.input,
             (error, files) =>
             {
                 files.forEach(
@@ -128,7 +129,7 @@ module.exports = class ScssTask
      */
     compileProject (debug)
     {
-        glob(this.options.topLevelInputGlob,
+        glob(this.options.input,
             (error, files) =>
             {
                 let tasks = this.compileFiles(files, debug);
@@ -219,7 +220,7 @@ module.exports = class ScssTask
             .then(
                 () =>
                 {
-                    this.logger.logAction("Compiled", path.relative(this.options.inputDir, file));
+                    this.logger.log("Compiled " + chalk.yellow(path.basename(file)));
                 }
             )
             .catch(
@@ -235,10 +236,24 @@ module.exports = class ScssTask
      */
     generateOutputFileName (file)
     {
-        let relativePath = path.relative(this.options.inputDir, file);
-        let relativeDirName = path.dirname(relativePath);
-        relativeDirName = "." === relativeDirName ? "" : relativeDirName;
+        let outputDir = path.resolve(path.dirname(file), this.options.output);
 
-        return this.options.outputDir + "/" + relativeDirName + path.basename(relativePath, ".scss") + ".css";
+        try
+        {
+            // path does exist, but isn't a directory
+            var stat = fs.statSync(outputDir);
+            if (!stat.isDirectory())
+            {
+                fs.mkdirs(outputDir);
+            }
+        }
+        catch (e)
+        {
+            // directory doesn't exist
+            fs.mkdirs(outputDir);
+        }
+
+        let outputFilename = path.basename(file, ".scss") + ".css";
+        return path.join(outputDir, outputFilename);
     }
 };

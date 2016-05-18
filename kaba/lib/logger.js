@@ -26,15 +26,34 @@ class Logger
     }
 
 
-    logLine (message)
+    log (message)
     {
         console.log(this.prefix + message);
     }
 
 
-    logLineWithoutPrefix (message)
+    logWithoutPrefix (message)
     {
         console.log(this.emptyPrefix + message);
+    }
+
+
+    /**
+     * @deprecated
+     * @param message
+     */
+    logLine (message)
+    {
+        this.log(message);
+    }
+
+    /**
+     * @deprecated
+     * @param message
+     */
+    logLineWithoutPrefix (message)
+    {
+        this.logWithoutPrefix(message);
     }
 
 
