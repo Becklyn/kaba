@@ -17,15 +17,26 @@ module.exports = class ScssDependencyResolver
 {
     /**
      *
-     * @param {string} file
+     * @param {string} dir
      */
-    constructor (file)
+    constructor (dir)
     {
         /**
          * @private
          * @type {string}
          */
-        this.file = file;
+        this.dir = dir;
+
+
+        /**
+         * @private
+         * @type {Object.<string, SassGraphIndexValue>}
+         */
+        this.index = null;
+
+
+        // initialize index
+        this.refreshIndex();
     }
 
     /**
@@ -36,12 +47,21 @@ module.exports = class ScssDependencyResolver
      */
     getIndex ()
     {
-        return sassGraph.parseFile(
-            this.file,
+        return sassGraph.parseDir(
+            this.dir,
             {
                 extension: ["scss"]
             }
         ).index;
+    }
+
+
+    /**
+     * Refreshes the internal index
+     */
+    refreshIndex ()
+    {
+        this.index = this.getIndex();
     }
 
 
@@ -53,8 +73,9 @@ module.exports = class ScssDependencyResolver
      */
     findDependents (file)
     {
+        let fullFilePath = path.join(process.cwd(), file);
         let foundFiles = {};
-        this.recursivelyFindEntries(this.getIndex(), file, "importedBy", foundFiles);
+        this.recursivelyFindEntries(fullFilePath, "importedBy", foundFiles);
 
         return Object.keys(foundFiles);
     }
@@ -70,26 +91,25 @@ module.exports = class ScssDependencyResolver
     {
         file = path.join(process.cwd(), file);
         let foundFiles = {};
-        this.recursivelyFindEntries(this.getIndex(), file, "imports", foundFiles);
+        this.recursivelyFindEntries(file, "imports", foundFiles);
         return Object.keys(foundFiles);
     }
 
     /**
      * Recursively finds entries in the index
      *
-     * @param {*} index
      * @param {string} file the file to find entries for
      * @param {string} property the property to search in the index
      * @param {Object<string, Boolean>} foundFiles the already found files
      */
-    recursivelyFindEntries (index, file, property, foundFiles)
+    recursivelyFindEntries (file, property, foundFiles)
     {
-        if (!index[file])
+        if (!this.index[file])
         {
             return;
         }
 
-        index[file][property].forEach(
+        this.index[file][property].forEach(
             (relatedFile) =>
             {
                 if (!foundFiles[relatedFile])

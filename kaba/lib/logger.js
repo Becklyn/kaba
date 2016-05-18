@@ -84,8 +84,13 @@ class Logger
         this.logLine(chalk.yellow("Build") + ` ${relativeFile}`);
     }
 
-    logBuildError (error)
+    /**
+     *
+     * @param {BuildError} buildError
+     */
+    logBuildError (buildError)
     {
+        let error = buildError.reason;
         let line = fileReader.getLine(error.file, error.line);
         let relativeFile = path.relative(this.baseDir, error.file);
 
@@ -98,10 +103,10 @@ class Logger
             line += "\n" + "-".repeat(error.column - 1) + "^";
         }
 
-        this.logLine(chalk.red("Build Error") + " in " + chalk.yellow(relativeFile) + " (" + chalk.yellow(`${error.line}:${error.column}`) + "): " + error.message);
+        this.log(chalk.red("Build Error") + " in " + chalk.yellow(relativeFile) + " (" + chalk.yellow(`${error.line}:${error.column}`) + "): " + error.message);
 
         line.split("\n").forEach(
-            (l) => this.logLineWithoutPrefix("    " + chalk.gray(l))
+            (l) => this.logWithoutPrefix("    " + chalk.gray(l))
         );
 
         console.log("");

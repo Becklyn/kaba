@@ -12,11 +12,9 @@ const chalk = require("chalk");
 const ScssDependencyResolver = require("./scss-dependency-resolver");
 let ScssLinter = require("./scss-linter");
 let Logger = require("../../lib/logger");
+const ScssDirectoryTask = require("./scss-directory-task");
 
-// single steps
-let compile = require("./compile");
-let postProcess = require("./post-process");
-let minify = require("./minify");
+
 
 
 module.exports = class ScssTask
@@ -44,12 +42,6 @@ module.exports = class ScssTask
          * @type {ScssLinter}
          */
         this.linter = new ScssLinter(config);
-
-        /**
-         * @private
-         * @type {Logger}
-         */
-        this.logger = new Logger("CSS", "blue", this.config.input);
     }
 
 
@@ -63,65 +55,12 @@ module.exports = class ScssTask
     {
         if (debug)
         {
-            this.lintProject();
-            this.compileProject(true);
-
-            chokidar.watch(this.config.srcAllFiles, {
-                ignoreInitial: true
-            })
-                .on("add", path => this.onFileChanged(path))
-                .on("change", path => this.onFileChanged(path));
+            this.watchProject();
         }
         else
         {
-            console.log("lint!");
-            this.lintProject();
-            // this.compileProject(false);
+            this.compileProject();
         }
-    }
-
-
-
-    /**
-     * Lints the complete project
-     *
-     * @private
-     */
-    lintProject ()
-    {
-        glob(this.config.srcTopLevelFiles,
-            (error, files) =>
-            {
-                files.forEach(
-                    (file) => this.linter.lintWithDependencies(file)
-                );
-            }
-        );
-    }
-
-
-
-    /**
-     * Callback on when a file has changed or added/deleted
-     *
-     * @private
-     * @param {String} file
-     */
-    onFileChanged (file)
-    {
-        let resolver = new ScssDependencyResolver(file);
-
-        // we can always lint the file, as the changed callback is only called in debug mode
-        this.linter.lint(file);
-
-        // find dependents to generate compile list
-        let changedFiles = resolver.findDependents(file);
-
-        // add the current file to the compile list
-        changedFiles.push(file);
-
-        // compile the list of files
-        this.compileFiles(changedFiles, true);
     }
 
 
@@ -129,135 +68,47 @@ module.exports = class ScssTask
     /**
      * Compiles the complete project
      *
-     * @param {Boolean} debug
-     */
-    compileProject (debug)
-    {
-        glob(this.config.srcTopLevelFiles,
-            (error, files) =>
-            {
-                let tasks = this.compileFiles(files, debug);
-            }
-        );
-    }
-
-
-    /**
-     * Compiles the list of files
-     *
      * @private
-     * @param {String[]} files
-     * @param {Boolean} debug
-     *
-     * @return {Promise[]}
      */
-    compileFiles (files, debug)
+    compileProject ()
     {
-        let compiledFiles = {};
-        let tasks = [];
-
-        files.filter(
-            // filter hidden SCSS files
-            (file) => 0 !== path.basename(file).indexOf("_")
-        )
-        .forEach(
-            (file) =>
-            {
-                // filter out duplicates
-                if (!compiledFiles[file])
-                {
-                    let task = this.compileSingleFile(file, debug);
-                    tasks.push(task);
-                    compiledFiles[file] = true;
-                }
-            }
-        );
-
-        return tasks;
-    }
-
-    /**
-     * Compiles a single file
-     *
-     * @private
-     * @param {String} file
-     * @param {Boolean} debug
-     *
-     * @return {Promise}
-     */
-    compileSingleFile (file, debug)
-    {
-        return compile(file, debug)
-            .then(
-                (result) =>
-                {
-                    return result.css;
-                },
-                (error) =>
-                {
-                    this.logger.logBuildError(error);
-                }
-            )
-            .then(
-                (css) =>
-                {
-                    return postProcess(css, this.config);
-                }
-            )
-            .then(
-                (postProcessResult) =>
-                {
-                    if (!debug)
-                    {
-                        return minify(postProcessResult.css);
+        return new Promise(
+            (resolve, reject) => {
+                glob(this.config.srcDir,
+                    (error, directories) => {
+                        directories.forEach(
+                            (dir) => {
+                                var task = new ScssDirectoryTask(dir, this.config);
+                                task.lint();
+                                task.compile(false);
+                            }
+                        )
                     }
-
-                    return postProcessResult.css;
-                }
-            )
-            .then(
-                (css) =>
-                {
-                    writeOutputFile(this.generateOutputFileName(file), css)
-                }
-            )
-            .then(
-                () =>
-                {
-                    this.logger.log("Compiled " + chalk.yellow(path.basename(file)));
-                }
-            )
-            .catch(
-                (err) => console.log(err) //this.logger.logError(err)
-            );
+                )
+            }
+        );
     }
 
-
     /**
-     * Generates the output file name
-     * @param {string} file
-     * @returns {string}
+     * Watches the complete project
+     *
+     * @private
      */
-    generateOutputFileName (file)
+    watchProject ()
     {
-        let outputDir = path.resolve(path.dirname(file), this.config.userConfig.output);
-
-        try
-        {
-            // path does exist, but isn't a directory
-            var stat = fs.statSync(outputDir);
-            if (!stat.isDirectory())
-            {
-                fs.mkdirs(outputDir);
+        return new Promise(
+            (resolve, reject) => {
+                glob(this.config.srcDir,
+                    (error, directories) => {
+                        directories.forEach(
+                            (dir) => {
+                                var task = new ScssDirectoryTask(dir, this.config);
+                                task.watch();
+                            }
+                        )
+                    }
+                )
             }
-        }
-        catch (e)
-        {
-            // directory doesn't exist
-            fs.mkdirs(outputDir);
-        }
-
-        let outputFilename = path.basename(file, ".scss") + ".css";
-        return path.join(outputDir, outputFilename);
+        );
     }
 };

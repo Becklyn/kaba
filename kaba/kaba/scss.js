@@ -3,18 +3,14 @@
 /**
  * @typedef {{
  *      input: string,
- *      topLevelInputGlob: string,
  *      output: string,
  *      browsers: string[],
- *      inputTopLevel: string,
- *      inputAllFiles: string,
  * }} ScssTaskConfig
  *
  * @typedef {{
  *      srcDir: string,
- *      srcTopLevelFiles: string,
- *      srcAllFiles: string,
- *      userConfig: ScssTaskConfig,
+ *      browsers: string[],
+ *      output: string,
  * }} InternalScssTaskConfig
  */
 
@@ -49,9 +45,8 @@ module.exports = function (config)
     let internalConfig = {
         // ensure exactly one slash at the end
         srcDir: srcDir,
-        srcTopLevelFiles: srcDir + "!(_)*.scss",
-        srcAllFiles: srcDir + "**/*.scss",
-        userConfig: config
+        browsers: config.browsers,
+        output: config.output
     };
 
     return function (done, debug)
