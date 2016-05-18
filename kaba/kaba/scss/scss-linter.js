@@ -1,33 +1,26 @@
 "use strict";
 
-let postcss = require("postcss");
-let stylelint = require("stylelint");
-let reporter = require("postcss-reporter");
-let doiuse = require("doiuse");
-let scssSyntax = require("postcss-scss");
-let fs = require("fs");
+const postcss = require("postcss");
+const stylelint = require("stylelint");
+const reporter = require("postcss-reporter");
+const scssSyntax = require("postcss-scss");
+const fs = require("fs");
+const ScssDependencyResolver = require("./scss-dependency-resolver");
 
 
 module.exports = class ScssLinter
 {
     /**
      *
-     * @param {ScssTaskOptions} options
-     * @param {ScssDependencyResolver} dependencyResolver
+     * @param {InternalScssTaskConfig} config
      */
-    constructor (options, dependencyResolver)
+    constructor (config)
     {
         /**
          * @private
-         * @type {ScssTaskOptions}
+         * @type {InternalScssTaskConfig}
          */
-        this.options = options;
-
-        /**
-         * @private
-         * @type {ScssDependencyResolver}
-         */
-        this.dependencyResolver = dependencyResolver;
+        this.config = config;
     }
 
 
@@ -38,11 +31,13 @@ module.exports = class ScssLinter
      */
     lintWithDependencies (file)
     {
+        let resolver = new ScssDependencyResolver(file);
+
         // remember which files were linted to only lint each file once
         let lintedFiles = {};
 
         // find the imported files
-        let filesToLint = this.dependencyResolver.findDependencies(file);
+        let filesToLint = resolver.findDependencies(file);
 
         // add the current file
         filesToLint.push(file);
@@ -74,10 +69,6 @@ module.exports = class ScssLinter
                 postcss([
                     stylelint({
                         configFile: __dirname + "/../../../.stylelintrc"
-                    }),
-                    doiuse({
-                        browsers: this.options.browsers//,
-                        //onFeatureUsage: console.log.bind(console)
                     }),
                     reporter({clearMessages: true})
                 ])

@@ -9,7 +9,7 @@ let Promise = require("bluebird");
 let writeOutputFile = require("../../lib/file-writer");
 const chalk = require("chalk");
 
-let ScssDependencyResolver = require("./scss-dependency-resolver");
+const ScssDependencyResolver = require("./scss-dependency-resolver");
 let ScssLinter = require("./scss-linter");
 let Logger = require("../../lib/logger");
 
@@ -23,33 +23,33 @@ module.exports = class ScssTask
 {
     /**
      *
-     * @param {ScssTaskOptions} options
+     * @param {InternalScssTaskConfig} config
      */
-    constructor (options)
+    constructor (config)
     {
         /**
          * @private
-         * @type {ScssTaskOptions}
+         * @type {InternalScssTaskConfig}
          */
-        this.options = options;
+        this.config = config;
 
         /**
          * @private
          * @type {ScssDependencyResolver}
          */
-        this.dependencyResolver = new ScssDependencyResolver(options.input);
+        // this.dependencyResolver = new ScssDependencyResolver(path.dirname(config.input));
 
         /**
          * @private
          * @type {ScssLinter}
          */
-        this.linter = new ScssLinter(options, this.dependencyResolver);
+        this.linter = new ScssLinter(config);
 
         /**
          * @private
          * @type {Logger}
          */
-        this.logger = new Logger("CSS", "blue", this.options.input);
+        this.logger = new Logger("CSS", "blue", this.config.input);
     }
 
 
@@ -66,7 +66,7 @@ module.exports = class ScssTask
             this.lintProject();
             this.compileProject(true);
 
-            chokidar.watch(this.options.input, {
+            chokidar.watch(this.config.srcAllFiles, {
                 ignoreInitial: true
             })
                 .on("add", path => this.onFileChanged(path))
@@ -74,7 +74,9 @@ module.exports = class ScssTask
         }
         else
         {
-            this.compileProject(false);
+            console.log("lint!");
+            this.lintProject();
+            // this.compileProject(false);
         }
     }
 
@@ -87,7 +89,7 @@ module.exports = class ScssTask
      */
     lintProject ()
     {
-        glob(this.options.input,
+        glob(this.config.srcTopLevelFiles,
             (error, files) =>
             {
                 files.forEach(
@@ -107,11 +109,13 @@ module.exports = class ScssTask
      */
     onFileChanged (file)
     {
+        let resolver = new ScssDependencyResolver(file);
+
         // we can always lint the file, as the changed callback is only called in debug mode
         this.linter.lint(file);
 
         // find dependents to generate compile list
-        let changedFiles = this.dependencyResolver.findDependents(file);
+        let changedFiles = resolver.findDependents(file);
 
         // add the current file to the compile list
         changedFiles.push(file);
@@ -129,7 +133,7 @@ module.exports = class ScssTask
      */
     compileProject (debug)
     {
-        glob(this.options.input,
+        glob(this.config.srcTopLevelFiles,
             (error, files) =>
             {
                 let tasks = this.compileFiles(files, debug);
@@ -154,7 +158,7 @@ module.exports = class ScssTask
 
         files.filter(
             // filter hidden SCSS files
-            (file) =>  0 !== path.basename(file).indexOf("_")
+            (file) => 0 !== path.basename(file).indexOf("_")
         )
         .forEach(
             (file) =>
@@ -197,7 +201,7 @@ module.exports = class ScssTask
             .then(
                 (css) =>
                 {
-                    return postProcess(css, this.options);
+                    return postProcess(css, this.config);
                 }
             )
             .then(
@@ -224,7 +228,7 @@ module.exports = class ScssTask
                 }
             )
             .catch(
-                (err) => this.logger.logError(err)
+                (err) => console.log(err) //this.logger.logError(err)
             );
     }
 
@@ -236,7 +240,7 @@ module.exports = class ScssTask
      */
     generateOutputFileName (file)
     {
-        let outputDir = path.resolve(path.dirname(file), this.options.output);
+        let outputDir = path.resolve(path.dirname(file), this.config.userConfig.output);
 
         try
         {

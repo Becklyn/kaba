@@ -2,16 +2,26 @@
 
 /**
  * @typedef {{
- *      input: String,
- *      topLevelInputGlob: String,
- *      output: String,
- *      browsers: String[],
- * }} ScssTaskOptions
+ *      input: string,
+ *      topLevelInputGlob: string,
+ *      output: string,
+ *      browsers: string[],
+ *      inputTopLevel: string,
+ *      inputAllFiles: string,
+ * }} ScssTaskConfig
+ *
+ * @typedef {{
+ *      srcDir: string,
+ *      srcTopLevelFiles: string,
+ *      srcAllFiles: string,
+ *      userConfig: ScssTaskConfig,
+ * }} InternalScssTaskConfig
  */
 
-let fs = require("fs-extra");
-let ScssTask = require("./scss/scss-task");
-let _ = require("lodash");
+const fs = require("fs-extra");
+const ScssTask = require("./scss/scss-task");
+const _ = require("lodash");
+const path = require("path");
 
 
 
@@ -19,21 +29,34 @@ let _ = require("lodash");
 /**
  * Main task for Sass
  *
- * @param {ScssTaskOptions} options
+ * @param {ScssTaskConfig} config
  *
  * @returns {Function}
  */
-module.exports = function (options)
+module.exports = function (config)
 {
-    options = _.assign({
-        input: "src/**/Resources/assets/scss/!(_)*.scss",
+    // parse user config
+    config = _.assign({
+        input: "src/**/Resources/assets/scss/",
         output: "../../public/css",
         browsers: ["last 2 versions", "IE 10"]
-    }, options);
+    }, config);
+
+    // build internal config
+    var srcDir = config.input.replace(/\/+$/, "") + "/";
+
+    /** @var internalConfig {InternalScssTaskConfig}  */
+    let internalConfig = {
+        // ensure exactly one slash at the end
+        srcDir: srcDir,
+        srcTopLevelFiles: srcDir + "!(_)*.scss",
+        srcAllFiles: srcDir + "**/*.scss",
+        userConfig: config
+    };
 
     return function (done, debug)
     {
-        let task = new ScssTask(options);
+        let task = new ScssTask(internalConfig);
         task.run(debug);
     }
 };

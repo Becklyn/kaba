@@ -8,22 +8,24 @@
  * }} SassGraphIndexValue
  */
 
-let sassGraph = require("sass-graph");
+const sassGraph = require("sass-graph");
+const fs = require("fs-extra");
+const path = require("path");
 
 
 module.exports = class ScssDependencyResolver
 {
     /**
      *
-     * @param {string} baseDir
+     * @param {string} file
      */
-    constructor (baseDir)
+    constructor (file)
     {
         /**
          * @private
          * @type {string}
          */
-        this.baseDir = baseDir;
+        this.file = file;
     }
 
     /**
@@ -34,8 +36,8 @@ module.exports = class ScssDependencyResolver
      */
     getIndex ()
     {
-        return sassGraph.parseDir(
-            this.baseDir,
+        return sassGraph.parseFile(
+            this.file,
             {
                 extension: ["scss"]
             }
@@ -66,6 +68,7 @@ module.exports = class ScssDependencyResolver
      */
     findDependencies (file)
     {
+        file = path.join(process.cwd(), file);
         let foundFiles = {};
         this.recursivelyFindEntries(this.getIndex(), file, "imports", foundFiles);
         return Object.keys(foundFiles);
