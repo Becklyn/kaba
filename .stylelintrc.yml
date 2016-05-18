@@ -11,7 +11,7 @@ rules:
 
     # Function
     function-calc-no-unspaced-operator: true
-    function-comma-space-after: true
+    function-comma-space-after: always
     function-max-empty-lines: 0
     function-name-case: lower
     function-url-quotes: double
@@ -31,16 +31,17 @@ rules:
     unit-no-unknown: true
 
     # Value list
-    value-list-comma-space-after: true
+    value-list-comma-space-after: always-single-line
+    value-list-comma-space-before: never
 
     # Shorthand property
     shorthand-property-no-redundant-values: true
 
     # Property
-    property-case: true
+    property-case: lower
 
     # Declaration
-    declaration-bang-space-before: true
+    declaration-bang-space-before: always
     declaration-colon-space-after: always-single-line
     declaration-colon-space-before: never
     declaration-no-important: true
@@ -56,11 +57,9 @@ rules:
     # Block
     block-closing-brace-newline-after: always
     block-closing-brace-newline-before: always-multi-line
-    block-closing-brace-space-after: never
     block-closing-brace-space-before: always-single-line
     block-no-empty: true
     block-opening-brace-newline-after: always-multi-line
-    block-opening-brace-newline-before: never
     block-opening-brace-space-after: always-single-line
     block-opening-brace-space-before: always
 
@@ -77,7 +76,6 @@ rules:
 
     # Selector list
     selector-list-comma-newline-after: always
-    selector-list-comma-newline-before: never
 
     # Root rule
     root-no-standard-properties: true
@@ -97,7 +95,6 @@ rules:
     media-query-list-comma-space-before: never
 
     # At rule
-    at-rule-empty-line-before: always
     at-rule-name-case: lower
     at-rule-name-space-after: always-single-line
     at-rule-semicolon-newline-after: always
@@ -106,7 +103,6 @@ rules:
     indentation: 4
     max-empty-lines: 2
     max-nesting-depth: 4
-    no-browser-hacks: true
     no-duplicate-selectors: true
     no-eol-whitespace: true
     no-extra-semicolons: true
