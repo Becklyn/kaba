@@ -4,6 +4,7 @@ let CLIEngine = require("eslint").CLIEngine;
 let Promise = require("bluebird");
 let fs = require("fs");
 let path = require("path");
+const filePathMatcher = require("../../lib/file-path-matcher");
 
 
 /**
@@ -14,6 +15,11 @@ let path = require("path");
  */
 module.exports = function (file, srcDir, config)
 {
+    if (filePathMatcher(file, config.ignoreLintFor))
+    {
+        return;
+    }
+
     let engine = new CLIEngine({
         configFile: __dirname + "/../../../.eslintrc.yml",
         ignore: false
