@@ -5,6 +5,7 @@ const postcss = require("postcss");
 const reporter = require("postcss-reporter");
 const scssSyntax = require("postcss-scss");
 const stylelint = require("stylelint");
+const filePathMatcher = require("../../lib/file-path-matcher");
 
 
 module.exports = class ScssLinter
@@ -67,6 +68,12 @@ module.exports = class ScssLinter
      */
     lint (file)
     {
+        if (filePathMatcher(file, this.config.ignoreLintFor))
+        {
+            return;
+        }
+
+
         fs.readFile(file, "utf-8",
             (err, fileContent) =>
             {
