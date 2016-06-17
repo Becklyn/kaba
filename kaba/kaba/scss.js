@@ -29,7 +29,7 @@ const path = require("path");
  *
  * @returns {Function}
  */
-module.exports = function (config)
+module.exports = function (config = {})
 {
     // parse user config
     config = _.assign({
@@ -41,7 +41,7 @@ module.exports = function (config)
     // build internal config
     var srcDir = config.input.replace(/\/+$/, "") + "/";
 
-    /** @var internalConfig {InternalScssTaskConfig}  */
+    /** @var {InternalScssTaskConfig} internalConfig */
     let internalConfig = {
         // ensure exactly one slash at the end
         srcDir: srcDir,
