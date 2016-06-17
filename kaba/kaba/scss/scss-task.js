@@ -106,6 +106,12 @@ module.exports = class ScssTask
             (resolve, reject) => {
                 glob(this.config.srcDir,
                     (error, directories) => {
+
+                        if (error)
+                        {
+                            reject(error);
+                        }
+
                         directories.forEach(
                             (dir) => {
                                 var task = new ScssDirectoryTask(dir, this.config);
