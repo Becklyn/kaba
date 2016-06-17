@@ -174,6 +174,9 @@ module.exports = class JsDirectoryTask
      */
     generateOutputFileName (file)
     {
-        return this.outputDir + "/" + path.relative(this.srcDir, file);
+        return path.join(
+            this.outputDir,
+            path.relative(this.srcDir, file)
+        );
     }
 };
