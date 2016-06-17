@@ -19,11 +19,25 @@ module.exports = class ScssCompiler
 {
     /**
      *
+     * @param {string} srcDir
+     * @param {string} outputDir
      * @param {InternalScssTaskConfig} config
      * @param {Logger} logger
      */
-    constructor (config, logger)
+    constructor (srcDir, outputDir, config, logger)
     {
+        /**
+         * @private
+         * @type {string}
+         */
+        this.srcDir = srcDir;
+
+        /**
+         * @private
+         * @type {string}
+         */
+        this.outputDir = outputDir;
+
         /**
          * @private
          * @type {InternalScssTaskConfig}
@@ -144,24 +158,13 @@ module.exports = class ScssCompiler
      */
     generateOutputFileName (file)
     {
-        let outputDir = path.resolve(path.dirname(file), this.config.output);
+        let relativeSrcPath = path.relative(this.srcDir, file);
 
-        try
-        {
-            // path does exist, but isn't a directory
-            var stat = fs.statSync(outputDir);
-            if (!stat.isDirectory())
-            {
-                fs.mkdirs(outputDir);
-            }
-        }
-        catch (e)
-        {
-            // directory doesn't exist
-            fs.mkdirs(outputDir);
-        }
-
-        let outputFilename = path.basename(file, ".scss") + ".css";
-        return path.join(outputDir, outputFilename);
+        // join output dir + relative src dir + file name (with extension switched to css)
+        return path.join(
+            this.outputDir,
+            path.dirname(relativeSrcPath),
+            path.basename(file, ".scss") + ".css"
+        );
     }
 };

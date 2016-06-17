@@ -19,16 +19,22 @@ module.exports = class ScssDirectoryTask
 {
     /**
      *
-     * @param {string} dir
+     * @param {string} srcDir
      * @param {InternalScssTaskConfig} config
      */
-    constructor (dir, config)
+    constructor (srcDir, config)
     {
         /**
          * @private
          * @type {string}
          */
-        this.dir = dir.replace(/\/+$/, "");
+        this.srcDir = srcDir.replace(/\/+$/, "");
+
+        /**
+         * @private
+         * @type {string}
+         */
+        this.outputDir = path.resolve(this.srcDir, config.output);
 
         /**
          * @private
@@ -40,7 +46,7 @@ module.exports = class ScssDirectoryTask
          * @private
          * @type {Logger}
          */
-        this.logger = new Logger("CSS", "blue", this.dir);
+        this.logger = new Logger("CSS", "blue", this.srcDir);
 
         /**
          * @private
@@ -52,13 +58,13 @@ module.exports = class ScssDirectoryTask
          * @private
          * @type {ScssCompiler}
          */
-        this.compiler = new ScssCompiler(config, this.logger);
+        this.compiler = new ScssCompiler(this.srcDir, this.outputDir, config, this.logger);
 
         /**
          * @private
          * @type {ScssDependencyResolver}
          */
-        this.dependencyResolver = new ScssDependencyResolver(this.dir);
+        this.dependencyResolver = new ScssDependencyResolver(this.srcDir);
 
         /**
          * @private
@@ -79,7 +85,7 @@ module.exports = class ScssDirectoryTask
         return new Promise(
             (resolve, reject) => {
                 glob(
-                    this.dir + "/!(_)*.scss",
+                    this.srcDir + "/!(_)*.scss",
                     (error, files) => {
                         var tasks = this.compileFileList(files, debug);
 
@@ -145,7 +151,7 @@ module.exports = class ScssDirectoryTask
      */
     compileFile (file, debug)
     {
-        return this.compiler.compileFile(file, debug)
+        return this.compiler.compileFile(file, this.outputDir, debug)
             .then(
                 () => this.logger.log("Compiled " + chalk.yellow(path.basename(file)))
             )
@@ -172,7 +178,7 @@ module.exports = class ScssDirectoryTask
         return new Promise(
             (resolve, reject) => {
                 glob(
-                    this.dir + "/!(_)*.scss",
+                    this.srcDir + "/!(_)*.scss",
                     (error, files) => {
                         files.forEach(file => this.linter.lint(file))
                     }
@@ -188,9 +194,9 @@ module.exports = class ScssDirectoryTask
      */
     watch ()
     {
-        this.logger.log("Started watching " + chalk.yellow(this.dir));
+        this.logger.log("Started watching " + chalk.yellow(this.srcDir));
 
-        this.watcher = chokidar.watch(this.dir + "/**/*.scss", {
+        this.watcher = chokidar.watch(this.srcDir + "/**/*.scss", {
             ignoreInitial: true
         })
             .on("add", path => this.onFileChanged(path))
