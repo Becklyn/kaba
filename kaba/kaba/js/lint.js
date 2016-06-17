@@ -6,8 +6,13 @@ let fs = require("fs");
 let path = require("path");
 
 
-
-module.exports = function (file, options)
+/**
+ *
+ * @param {string} file
+ * @param {string} srcDir
+ * @param {InternalJsTaskConfig} config
+ */
+module.exports = function (file, srcDir, config)
 {
     let engine = new CLIEngine({
         configFile: __dirname + "/../../../.eslintrc.yml",
@@ -26,11 +31,11 @@ module.exports = function (file, options)
                 report.results = report.results.map(
                     (entry) =>
                     {
-                        entry.filePath = path.relative(options.inputDir, entry.filePath);
+                        entry.filePath = path.relative(srcDir, entry.filePath);
                         return entry;
                     }
                 );
-                
+
                 console.log(formatter(report.results));
             }
         );

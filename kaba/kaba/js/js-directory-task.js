@@ -122,7 +122,7 @@ module.exports = class JsDirectoryTask
                             // register event listener for linter and update
                             browserifyInstance
                                 .on("update", () => this.buildFromBrowserify(browserifyInstance, file, debug))
-                                .on("file", (file) => lint(file, this.options));
+                                .on("file", (file) => lint(file, this.srcDir, this.options));
                         }
 
                         // if not debug, build from the browserify instance
