@@ -2,15 +2,22 @@
 
 /**
  * @typedef {{
- *      inputDir: String,
- *      inputGlob: String,
- *      outputDir: String,
- *      browsers: String[],
- * }} JsTaskOptions
+ *      input: string,
+ *      output: string,
+ *      browsers: string[],
+ * }} JsTaskConfig
+ *
+ * @typedef {{
+ *      srcDir: string,
+ *      browsers: string[],
+ *      output: string,
+ * }} InternalJsTaskConfig
  */
+
 
 let fs = require("fs");
 let JsTask = require("./js/js-task");
+const _ = require("lodash");
 
 
 
@@ -18,22 +25,32 @@ let JsTask = require("./js/js-task");
 /**
  * Main task for Sass
  *
- * @param {String} inputDir
- * @param {String} outputDir
- * @param {ScssTaskOptions} options
+ * @param {JsTaskConfig} config
  *
  * @returns {Function}
  */
-module.exports = function (inputDir, outputDir, options)
+module.exports = function (config = {})
 {
-    // normalize paths
-    options.inputDir  = fs.realpathSync(inputDir);
-    options.inputGlob = options.inputDir + "/*.js";
-    options.outputDir = fs.realpathSync(outputDir);
+    config = _.assign({
+        input: "src/**/Resources/assets/js/",
+        output: "../../public/js",
+        browsers: ["last 2 versions", "IE 10"]
+    }, config);
+
+    // build internal config
+    var srcDir = config.input.replace(/\/+$/, "") + "/";
+
+    /** @var {InternalJsTaskConfig} internalConfig */
+    let internalConfig = {
+        // ensure exactly one slash at the end
+        srcDir: srcDir,
+        browsers: config.browsers,
+        output: config.output
+    };
 
     return function (done, debug)
     {
-        let task = new JsTask(options);
-        task.run();
+        let task = new JsTask(internalConfig);
+        task.run(debug);
     }
 };
