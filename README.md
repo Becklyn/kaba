@@ -105,7 +105,9 @@ You probably won't need this however, as you can use the task names in the `.ser
 Shelf
 -----
 
-kaba comes with to predefined tasks for compiling and minimizing SCSS and JavaScript. If run in default mode, the files are minified and optimized. If run in debug mode, the files contain sourcemaps and are not minified.
+kaba comes with to predefined tasks for compiling and minimizing SCSS and JavaScript. 
+
+If run in default mode, the files are minified and optimized. If run in debug mode, the files contain sourcemaps and are not minified, also file watchers are started, that automatically rebuild changed files.
 
 You can access the shelf using `kaba.shelf`.
 
@@ -165,7 +167,7 @@ Known issues
 
 
 [Becklyn Studios]: https://www.becklyn.com
-[kaba-cli]: https://github.com/Becklyn/kaba-cli
+[kaba-cli]: https://www.npmjs.com/package/kaba-cli
 [glob]: https://www.npmjs.com/package/glob
 [autoprefixer]: https://www.npmjs.com/package/autoprefixer
 [node-sass]: https://www.npmjs.com/package/node-sass
