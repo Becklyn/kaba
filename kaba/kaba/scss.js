@@ -10,8 +10,8 @@
  *
  * @typedef {{
  *      srcDir: string,
- *      browsers: string[],
  *      output: string,
+ *      browsers: string[],
  *      ignoreLintFor: Array.<(string|RegExp)>,
  * }} InternalScssTaskConfig
  */
