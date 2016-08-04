@@ -38,7 +38,7 @@ module.exports = function (config = {})
         output: "../../public/js",
         browsers: ["last 2 versions", "IE 10"],
         // list of file path paths (string or regex). If the file path matches one of these entries, the file won't be linted
-        ignoreLintFor: ["/node_modules/"]
+        ignoreLintFor: ["/node_modules/", "/vendor/"]
     }, config);
 
     // build internal config
