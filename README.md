@@ -27,8 +27,9 @@ First you need to create a `kabafile.js` in your project. After configuration yo
 ```js
 const kaba = require("kaba");
 
-kaba.task("example", () => {
-    console.log("running some task");    
+kaba.task("example", (done, debug) => {
+    console.log("running some task");
+    done();
 });
 ```
 
