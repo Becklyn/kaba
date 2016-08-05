@@ -44,6 +44,29 @@ The `callback` receives two parameters:
 * `debug` a bool flag, that indicates whether the task should be run in debug mode (i.e. omitting minification, etc.)
 
 
+### Default task
+
+You can define a default task, that is run if no specific task name is provided:
+
+```bash
+kaba
+# or
+kaba --dev
+```
+
+This task should have the special name `""` or `null`:
+
+```js
+kaba.task("", (done, debug) => {
+    console.log("default task here");
+    done();
+});
+```
+
+As with other task names, you can only define a single default task.
+
+
+
 ### Combining tasks
 You can combine tasks by either running them sequentially or in parallel.
 
