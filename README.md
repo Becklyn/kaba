@@ -19,7 +19,7 @@ $ npm install -S kaba
 Usage
 -----
 
-First you need to create a `kabafile.js` in your project. After configuration you can run your task using the `kaba-cli`.
+First you need to create a `kabafile.js` in your project, which is the config file for your tasks. These tasks can then be executed via `kaba-cli`.
 
 
 ### Registering a task
@@ -45,7 +45,7 @@ The `callback` receives two parameters:
 
 
 ### Combining tasks
-You can combine task by either running them sequentially or in parallel.
+You can combine tasks by either running them sequentially or in parallel.
 
 In all of these helpers you can either pass a task name (as `string`) or a function.
 
@@ -100,13 +100,13 @@ kaba.task("all",
 If you ever need to access an already defined task, you can call `.task(name)` with just one parameter.
 This will give you the callback or `undefined`, if no task with this name is defined.
 
-You probably won't need this however, as you can use the task names in the `.series` and `.parallel` helper directly (as string).
+You probably won't need this however, as you can use the task names in the `.series(name)` and `.parallel(name)` helper directly (as `string`).
 
 
 Shelf
 -----
 
-kaba comes with to predefined tasks for compiling and minimizing SCSS and JavaScript. 
+kaba comes with two predefined tasks for compiling and minimizing SCSS and JavaScript. 
 
 If run in default mode, the files are minified and optimized. If run in debug mode, the files contain sourcemaps and are not minified, also file watchers are started, that automatically rebuild changed files.
 
@@ -137,9 +137,7 @@ All configuration options:
 
 ### `kaba.shelf.scss(configuration)` SCSS
 
-This function compiles SCSS files.
-
-The used compiler is [node-sass].
+This function compiles SCSS files using [node-sass].
 
 
 ```js
