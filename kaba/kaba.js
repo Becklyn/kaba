@@ -10,6 +10,12 @@ function Kaba ()
     EventEmitter.call(this);
     this.tasks = {};
     this.taskCounter = 0;
+
+    /**
+     * @const
+     * @type {string}
+     */
+    this.DEFAULT_TASK_NAME = "";
 }
 
 inherits(Kaba, EventEmitter);
@@ -23,14 +29,22 @@ inherits(Kaba, EventEmitter);
  */
 Kaba.prototype.set = function (taskName, taskFunction)
 {
-    if ("" === taskName)
+    // normalize null to default task name
+    if (null === taskName)
     {
-        throw new Error("Task name may not be empty.");
+        taskName = this.DEFAULT_TASK_NAME;
     }
 
     if (this.tasks[taskName])
     {
-        throw new Error("Task with name " + taskName + " already defined.");
+        if (this.DEFAULT_TASK_NAME === taskName)
+        {
+            throw new Error("Default task is already defined.");
+        }
+        else
+        {
+            throw new Error("Task with name " + taskName + " already defined.");
+        }
     }
 
     if (typeof taskFunction !== "function")
@@ -71,9 +85,10 @@ Kaba.prototype.set = function (taskName, taskFunction)
  */
 Kaba.prototype.get = function (taskName)
 {
-    if ("" === taskName)
+    // normalize null to default task name
+    if (null === taskName)
     {
-        throw new Error("Task name may not be empty");
+        taskName = this.DEFAULT_TASK_NAME;
     }
 
     return this.tasks[taskName];
@@ -86,7 +101,7 @@ Kaba.prototype.get = function (taskName)
  * If no callback is given, the task with the given name is returned.
  * If a callback is give, the task is registered with the given name.
  *
- * @param {string} taskName
+ * @param {?string} taskName
  * @param {?function} callback
  * @returns {function|undefined}
  */
