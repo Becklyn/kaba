@@ -7,19 +7,19 @@ rules:
     color-no-invalid-hex: true
 
     # Font family
-    font-family-name-quotes: double-unless-keyword
+    font-family-name-quotes: always-unless-keyword
 
     # Function
     function-calc-no-unspaced-operator: true
     function-comma-space-after: always
     function-max-empty-lines: 0
     function-name-case: lower
-    function-url-quotes: double
+    function-url-quotes: always
 
     # Number
     number-leading-zero: never
     number-no-trailing-zeros: true
-    number-zero-length-no-unit: true
+    length-zero-no-unit: true
 
     # String
     string-no-newline: true
