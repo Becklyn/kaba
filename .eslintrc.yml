@@ -7,6 +7,196 @@ parserOptions:
 env:
     browser: true
 
+extends: 'eslint:recommended'
+
 rules:
-    comma-dangle: [error, never]
-    default-case: warn
+    # Possible Errors
+    'valid-jsdoc': warning
+
+    # Best Practices
+    'block-scoped-var': error
+    curly:
+        - error
+        - all
+    'default-case': warning
+    'dot-location':
+        - error
+        - property
+    'dot-notation':
+        - error
+        - { allowKeywords: false }
+    eqeqeq:
+        - error
+        - smart
+    'guard-for-in': error
+    'no-caller': error
+    'no-empty-function': error
+    'no-eval': error
+    'no-extend-native': error
+    'no-extra-label': error
+    'no-floating-decimal': error
+    'no-implicit-globals': warning
+    'no-implied-eval': error
+    'no-invalid-this': error
+    'no-iterator': error
+    'no-labels': error
+    'no-lone-blocks': error
+    'no-loop-func': error
+    'no-magic-numbers': warning
+    'no-multi-spaces': warning
+    'no-multi-str': error
+    'no-new-func': error
+    'no-new-wrappers': error
+    'no-octal-escape': error
+    'no-proto': error
+    'no-return-assign': warning
+    'no-script-url': error
+    'no-self-compare': warning
+    'no-sequences': error
+    'no-throw-literal': error
+    'no-unmodified-loop-condition': error
+    'no-unused-expressions': warning
+    'no-useless-call': error
+    'no-useless-concat': error
+    'no-useless-escape': warning
+    'no-void': error
+    'no-warning-comments': warning
+    'no-with': error
+    'radix':
+        - error
+        - always
+    'vars-on-top': warning
+    'wrap-iife': error
+
+    # Strict mode
+    strict:
+        - error
+        - global
+
+    # Variables
+    'no-catch-shadow': error
+    'no-label-var': error
+    'no-restricted-globals': error
+    'no-shadow-restricted-names': error
+    'no-shadow': error
+    'no-undef-init': error
+    'no-use-before-define':
+        - error
+        - { classes: false, functions: false }
+
+    # Node.js and CommonJS
+    'global-require': error
+    'no-new-require': warning
+
+    # Stylistic Issues
+    'block-spacing':
+        - warning
+        - always
+    'camelcase':
+        - error
+        - { properties: always }
+    'comma-dangle':
+        - warning
+        - "always-multiline"
+    'comma-spacing':
+        - warning
+        - { before: false, after: true }
+    'comma-style':
+        - warning
+        - last
+    'consistent-this':
+        - error
+        - self
+    'eol-last': error
+    'func-names':
+        - warning
+        - never
+    'indent':
+        - warning
+        - 4
+    'key-spacing':
+        - warning
+        - { beforeColon: false, afterColon: true, mode: strict }
+    'linebreak-style':
+        - error
+        - unix
+    'max-depth':
+        - warning
+        - 4
+    'max-nested-callbacks':
+        - error
+        - 3
+    'max-params':
+        - warning
+        - 4
+    'max-statements-per-line':
+        - warning
+        - 1
+    'new-cap': error
+    'new-parens': warning
+    'newline-per-chained-call': warning
+    'no-array-constructor': error
+    'no-bitwise': warning
+    'no-inline-comments': warning
+    'no-lonely-if': warning
+    'no-mixed-operators': error
+    'no-multiple-empty-lines': warning
+    'no-nested-ternary': error
+    'no-new-object': error
+    'no-plusplus':
+        - error
+        - { allowForLoopAfterthoughts: true }
+    'no-spaced-func': error
+    'no-tabs': error
+    'no-underscore-dangle': error
+    'no-unneeded-ternary': error
+    'no-whitespace-before-property': error
+    'object-curly-newline':
+        - warning
+        - { multiline: true }
+    'object-property-newline': warning
+    'one-var-declaration-per-line':
+        - error
+        - always
+    'quote-props':
+        - error
+        - "as-needed"
+    'require-jsdoc':
+        - warning
+        - {require: { FunctionDeclaration: true, MethodDefinition: true, ClassDeclaration: false }}
+    'semi':
+        - error
+        - always
+    'space-before-blocks':
+        - warning
+        - always
+    'space-before-function-paren':
+        - warning
+        - always
+    'space-infix-ops': error
+    'unicode-bom':
+        - error
+        - never
+
+    # ECMAScript 6
+    'arrow-body-style':
+        - error
+        - always
+    'arrow-parens':
+        - error
+        - always
+    'arrow-spacing': warning
+    'generator-star-spacing': warning
+    'no-confusing-arrow': warning
+    'no-duplicate-imports': warning
+    'no-useless-computed-key': warning
+    'no-useless-constructor': error
+    'no-useless-rename': warning
+    'no-var': warning
+    'object-shorthand': warning
+    'prefer-arrow-callback': warning
+    'prefer-const': warning
+    'prefer-rest-params': error
+    'prefer-spread': error
+    'prefer-template': error
+    'sort-imports': warning
