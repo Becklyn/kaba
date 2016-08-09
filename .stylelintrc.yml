@@ -101,7 +101,7 @@ rules:
 
     # Selector list
     selector-list-comma-newline-after: always
-    selector-list-comma-newline-before: never
+    selector-list-comma-newline-before: never-multi-line
     selector-list-comma-space-before: never
 
     # Root rule
