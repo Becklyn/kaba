@@ -67,6 +67,7 @@ module.exports = class ScssCompiler
             )
             .then(css => this.postProcess(css))
             .then(
+                /** @type {{css: string}} postProcessResult */
                 (postProcessResult) =>
                 {
                     if (!debug)
