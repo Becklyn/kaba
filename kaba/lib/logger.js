@@ -49,8 +49,8 @@ class Logger
      */
     log (message)
     {
-        var now = new Date();
-        var time = [
+        let now = new Date();
+        let time = [
             now.getHours(),
             now.getMinutes(),
             now.getSeconds()
@@ -58,7 +58,7 @@ class Logger
             .map((number) => 1 === number.toString().length ? `0${number}` : number)
             .join(":");
 
-        var date = chalk.gray(`[${time}]`);
+        let date = chalk.gray(`[${time}]`);
 
         console.log(`${date} ${this.prefix}${message}`);
     }

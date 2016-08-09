@@ -78,11 +78,11 @@ module.exports = class ScssTask
             (resolve, reject) => {
                 glob(this.config.srcDir,
                     (error, directories) => {
-                        var tasks = [];
+                        let tasks = [];
 
                         directories.forEach(
                             (dir) => {
-                                var task = new ScssDirectoryTask(dir, this.config);
+                                let task = new ScssDirectoryTask(dir, this.config);
                                 tasks.push(task.compile(false, true));
                             }
                         );
@@ -114,7 +114,7 @@ module.exports = class ScssTask
 
                         directories.forEach(
                             (dir) => {
-                                var task = new ScssDirectoryTask(dir, this.config);
+                                let task = new ScssDirectoryTask(dir, this.config);
                                 task.watch();
                             }
                         )

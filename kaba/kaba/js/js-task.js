@@ -39,7 +39,7 @@ module.exports = class JsTask
 
                         directories.map(
                             (dir) => {
-                                var task = new JsDirectoryTask(dir, this.config);
+                                let task = new JsDirectoryTask(dir, this.config);
                                 task.run(debug);
                             }
                         );

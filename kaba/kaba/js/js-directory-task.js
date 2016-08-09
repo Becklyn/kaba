@@ -88,7 +88,7 @@ module.exports = class JsDirectoryTask
                         console.time("build");
 
                         // create browserify instance
-                        var browserifyInstance = browserify({
+                        let browserifyInstance = browserify({
                             cache: {},
                             packageCache: {},
                             entries: file,

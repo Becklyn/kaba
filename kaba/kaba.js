@@ -52,7 +52,7 @@ Kaba.prototype.set = function (taskName, taskFunction)
         throw new Error("Only functions can be registered as tasks, " + typeof taskFunction + " given.");
     }
 
-    var taskId = this.taskCounter;
+    let taskId = this.taskCounter;
     this.taskCounter += 1;
 
     // generate a new task function, that properly emits the required timing events
@@ -62,7 +62,7 @@ Kaba.prototype.set = function (taskName, taskFunction)
             id: taskId
         });
 
-        var taskDone = () => {
+        let taskDone = () => {
             this.emit("end", {
                 task: taskName,
                 id: taskId
@@ -174,11 +174,11 @@ Kaba.prototype.prepareTaskFunctionsForAsync = function (taskFunctions, callArgum
  */
 Kaba.prototype.series = function (...taskFunctions)
 {
-    var normalizedTaskFunctions = this.normalizeTaskFunctions(taskFunctions);
+    let normalizedTaskFunctions = this.normalizeTaskFunctions(taskFunctions);
 
     return (globalDone, ...callArguments) =>
     {
-        var transformedFunctions = this.prepareTaskFunctionsForAsync(normalizedTaskFunctions, callArguments);
+        let transformedFunctions = this.prepareTaskFunctionsForAsync(normalizedTaskFunctions, callArguments);
         return async.series(transformedFunctions, globalDone);
     };
 };
@@ -191,11 +191,11 @@ Kaba.prototype.series = function (...taskFunctions)
  */
 Kaba.prototype.parallel = function (...taskFunctions)
 {
-    var normalizedTaskFunctions = this.normalizeTaskFunctions(taskFunctions);
+    let normalizedTaskFunctions = this.normalizeTaskFunctions(taskFunctions);
 
     return (globalDone, ...callArguments) =>
     {
-        var transformedFunctions = this.prepareTaskFunctionsForAsync(normalizedTaskFunctions, callArguments);
+        let transformedFunctions = this.prepareTaskFunctionsForAsync(normalizedTaskFunctions, callArguments);
         return async.parallel(transformedFunctions, globalDone);
     };
 };

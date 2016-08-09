@@ -43,7 +43,7 @@ module.exports = function (config = {})
     }, config);
 
     // build internal config
-    var srcDir = config.input.replace(/\/+$/, "") + "/";
+    let srcDir = config.input.replace(/\/+$/, "") + "/";
 
     /** @var {InternalScssTaskConfig} internalConfig */
     let internalConfig = {
