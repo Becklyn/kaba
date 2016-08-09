@@ -158,7 +158,7 @@ module.exports = class JsDirectoryTask
                 }
             )
             .catch(
-                (error) => this.logger.log("ERROR: " + error.message)
+                (error) => this.logger.log(chalk.red("ERROR: " + error.message))
             )
     }
 
