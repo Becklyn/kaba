@@ -79,12 +79,15 @@ module.exports = class ScssLinter
             {
                 postcss([
                     stylelint({
-                        configFile: __dirname + "/../../../.stylelintrc.yml"
+                        configFile: __dirname + "/../../../.stylelintrc.yml",
                     }),
-                    reporter({clearMessages: true})
+                    reporter({
+                        clearMessages: true,
+                    }),
                 ])
                     .process(fileContent, {
-                        from: file // required to have file names in the report
+                        from: file, // required to have file names in the report
+                        syntax: scssSyntax,
                     })
                     .then();
             }
