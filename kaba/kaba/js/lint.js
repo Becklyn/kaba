@@ -20,11 +20,29 @@ module.exports = function (file, srcDir, config)
         return;
     }
 
-    let engine = new CLIEngine({
+    let esLintConfig = {
         configFile: __dirname + "/../../../.eslintrc.yml",
-        ignore: false
-    });
+        ignore: false,
+        ecmaFeatures: {}
+    };
 
+    // set specific options for different file extensions
+    switch (path.extname(file))
+    {
+        case ".jsx":
+            esLintConfig.ecmaFeatures.jsx = true;
+            break;
+
+        case ".js":
+            // continue with linting
+            break;
+
+        default:
+            // abort linting, as any other file extension is given
+            return;
+    }
+
+    let engine = new CLIEngine(esLintConfig);
     let formatter = engine.getFormatter();
 
     Promise.promisify(fs.readFile)(file, {encoding: "utf-8"})
