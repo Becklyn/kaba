@@ -65,7 +65,6 @@ rules:
     'radix':
         - error
         - always
-    'vars-on-top': warn
     'wrap-iife': error
 
     # Strict mode
@@ -199,7 +198,7 @@ rules:
     'no-useless-computed-key': warn
     'no-useless-constructor': error
     'no-useless-rename': warn
-    'no-var': warn
+    'no-var': error
     'object-shorthand': warn
     'prefer-arrow-callback': warn
     'prefer-const': warn
