@@ -44,23 +44,19 @@ module.exports = function (file, srcDir, config)
 
     let engine = new CLIEngine(esLintConfig);
     let formatter = engine.getFormatter();
+    let report = engine.executeOnFiles([file]);
 
-    Promise.promisify(fs.readFile)(file, {encoding: "utf-8"})
-        .then(
-            (fileContent) => engine.executeOnFiles([file])
-        )
-        .then(
-            (report) =>
+    if (report.results)
+    {
+        // make all paths relative
+        report.results = report.results.map(
+            (entry) =>
             {
-                report.results = report.results.map(
-                    (entry) =>
-                    {
-                        entry.filePath = path.relative(srcDir, entry.filePath);
-                        return entry;
-                    }
-                );
-
-                console.log(formatter(report.results));
+                entry.filePath = path.relative(srcDir, entry.filePath);
+                return entry;
             }
         );
+
+        console.log(formatter(report.results));
+    }
 };
