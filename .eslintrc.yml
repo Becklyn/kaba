@@ -60,7 +60,7 @@ rules:
     'no-useless-concat': error
     'no-useless-escape': warn
     'no-void': error
-    'no-warn-comments': warn
+    'no-warning-comments': warn
     'no-with': error
     'radix':
         - error
