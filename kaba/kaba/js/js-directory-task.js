@@ -24,15 +24,15 @@ module.exports = class JsDirectoryTask
 {
     /**
      * @param {string} srcDir
-     * @param {InternalJsTaskConfig} options
+     * @param {JsTaskConfig} config
      */
-    constructor (srcDir, options)
+    constructor (srcDir, config)
     {
         /**
          * @private
-         * @type {InternalJsTaskConfig}
+         * @type {JsTaskConfig}
          */
-        this.options = options;
+        this.config = config;
 
         /**
          * @private
@@ -53,7 +53,7 @@ module.exports = class JsDirectoryTask
          * @private
          * @type {string}
          */
-        this.outputDir = path.resolve(this.srcDir, options.output);
+        this.outputDir = path.resolve(this.srcDir, config.output);
 
         /**
          * @private
@@ -122,7 +122,7 @@ module.exports = class JsDirectoryTask
                             // register event listener for linter and update
                             browserifyInstance
                                 .on("update", () => this.buildFromBrowserify(browserifyInstance, file, debug))
-                                .on("file", (file) => lint(file, this.srcDir, this.options));
+                                .on("file", (file) => lint(file, this.srcDir, this.config));
                         }
 
                         // if not debug, build from the browserify instance

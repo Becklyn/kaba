@@ -12,13 +12,13 @@ module.exports = class JsTask
 {
     /**
      *
-     * @param {InternalJsTaskConfig} config
+     * @param {JsTaskConfig} config
      */
     constructor (config)
     {
         /**
          * @private
-         * @type {InternalJsTaskConfig}
+         * @type {JsTaskConfig}
          */
         this.config = config;
     }
@@ -30,7 +30,7 @@ module.exports = class JsTask
         return new Promise (
             (resolve, reject) => {
 
-                glob(this.config.srcDir,
+                glob(this.config.input,
                     (error, directories) => {
                         if (error)
                         {

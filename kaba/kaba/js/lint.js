@@ -11,7 +11,7 @@ const filePathMatcher = require("../../lib/file-path-matcher");
  *
  * @param {string} file
  * @param {string} srcDir
- * @param {InternalJsTaskConfig} config
+ * @param {JsTaskConfig} config
  */
 module.exports = function (file, srcDir, config)
 {

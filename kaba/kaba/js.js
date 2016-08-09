@@ -6,20 +6,11 @@
  *      output: string,
  *      ignoreLintFor: Array.<(string|RegExp)>,
  * }} JsTaskConfig
- *
- * @typedef {{
- *      srcDir: string,
- *      output: string,
- *      ignoreLintFor: Array.<(string|RegExp)>,
- * }} InternalJsTaskConfig
  */
-
 
 let fs = require("fs");
 let JsTask = require("./js/js-task");
 const _ = require("lodash");
-
-
 
 
 /**
@@ -39,19 +30,11 @@ module.exports = function (config = {})
     }, config);
 
     // build internal config
-    var srcDir = config.input.replace(/\/+$/, "") + "/";
-
-    /** @var {InternalJsTaskConfig} internalConfig */
-    let internalConfig = {
-        // ensure exactly one slash at the end
-        srcDir: srcDir,
-        output: config.output,
-        ignoreLintFor: config.ignoreLintFor
-    };
+    config.input = config.input.replace(/\/+$/, "") + "/";
 
     return function (done, debug)
     {
-        let task = new JsTask(internalConfig);
+        let task = new JsTask(config);
         task.run(debug);
     }
 };
