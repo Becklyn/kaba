@@ -39,6 +39,7 @@ module.exports = function (config = {})
 
     // ensure one trailing slash
     config.input = config.input.replace(/\/+$/, "") + "/";
+    config.externals = _.pickBy(config.externals, (value) => !!value);
 
     return function (done, debug)
     {
