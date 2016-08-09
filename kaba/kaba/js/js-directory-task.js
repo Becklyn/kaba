@@ -102,11 +102,7 @@ module.exports = class JsDirectoryTask
                         });
                         browserifyInstance.transform(globalsTransform, {
                             global: true,
-                            globals: {
-                                jquery: "window.jQuery",
-                                dropzone: "window.Dropzone",
-                                routing: "window.Routing"
-                            }
+                            globals: this.config.externals
                         });
 
                         // register event listeners
