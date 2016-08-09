@@ -23,13 +23,15 @@ const _ = require("lodash");
 module.exports = function (config = {})
 {
     config = _.assign({
+        // input directory (can be a glob to multiple directories)
         input: "src/**/Resources/assets/js/",
+        // output directory (relative to input directory)
         output: "../../public/js",
         // list of file path paths (string or regex). If the file path matches one of these entries, the file won't be linted
         ignoreLintFor: ["/node_modules/", "/vendor/"]
     }, config);
 
-    // build internal config
+    // ensure one trailing slash
     config.input = config.input.replace(/\/+$/, "") + "/";
 
     return function (done, debug)
