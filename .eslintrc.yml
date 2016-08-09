@@ -24,7 +24,7 @@ rules:
         - property
     'dot-notation':
         - error
-        - { allowKeywords: false }
+        - allowKeywords: false
     eqeqeq:
         - error
         - smart
@@ -82,7 +82,8 @@ rules:
     'no-undef-init': error
     'no-use-before-define':
         - error
-        - { classes: false, functions: false }
+        - classes: false
+          functions: false
 
     # Node.js and CommonJS
     'global-require': error
@@ -94,13 +95,14 @@ rules:
         - always
     'camelcase':
         - error
-        - { properties: always }
+        - properties: always
     'comma-dangle':
         - warn
         - "always-multiline"
     'comma-spacing':
         - warn
-        - { before: false, after: true }
+        - before: false
+          after: true
     'comma-style':
         - warn
         - last
@@ -116,7 +118,9 @@ rules:
         - 4
     'key-spacing':
         - warn
-        - { beforeColon: false, afterColon: true, mode: strict }
+        - beforeColon: false
+          afterColon: true
+          mode: strict
     'linebreak-style':
         - error
         - unix
@@ -145,7 +149,7 @@ rules:
     'no-new-object': error
     'no-plusplus':
         - error
-        - { allowForLoopAfterthoughts: true }
+        - allowForLoopAfterthoughts: true
     'no-spaced-func': error
     'no-tabs': error
     'no-underscore-dangle': error
@@ -153,7 +157,7 @@ rules:
     'no-whitespace-before-property': error
     'object-curly-newline':
         - warn
-        - { multiline: true }
+        - multiline: true
     'object-property-newline': warn
     'one-var-declaration-per-line':
         - error
@@ -163,7 +167,10 @@ rules:
         - "as-needed"
     'require-jsdoc':
         - warn
-        - {require: { FunctionDeclaration: true, MethodDefinition: true, ClassDeclaration: false }}
+        - require:
+            FunctionDeclaration: true
+            MethodDefinition: true
+            ClassDeclaration: false
     'semi':
         - error
         - always
