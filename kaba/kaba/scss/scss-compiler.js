@@ -21,7 +21,7 @@ module.exports = class ScssCompiler
      *
      * @param {string} srcDir
      * @param {string} outputDir
-     * @param {InternalScssTaskConfig} config
+     * @param {ScssTaskConfig} config
      * @param {Logger} logger
      */
     constructor (srcDir, outputDir, config, logger)
@@ -40,7 +40,7 @@ module.exports = class ScssCompiler
 
         /**
          * @private
-         * @type {InternalScssTaskConfig}
+         * @type {ScssTaskConfig}
          */
         this.config = config;
 

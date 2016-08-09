@@ -20,7 +20,7 @@ module.exports = class ScssDirectoryTask
     /**
      *
      * @param {string} srcDir
-     * @param {InternalScssTaskConfig} config
+     * @param {ScssTaskConfig} config
      */
     constructor (srcDir, config)
     {
@@ -38,7 +38,7 @@ module.exports = class ScssDirectoryTask
 
         /**
          * @private
-         * @type {InternalScssTaskConfig}
+         * @type {ScssTaskConfig}
          */
         this.config = config;
 

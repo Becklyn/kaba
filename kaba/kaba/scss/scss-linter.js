@@ -12,14 +12,14 @@ module.exports = class ScssLinter
 {
     /**
      *
-     * @param {InternalScssTaskConfig} config
+     * @param {ScssTaskConfig} config
      * @param {ScssDependencyResolver} dependencyResolver
      */
     constructor (config, dependencyResolver)
     {
         /**
          * @private
-         * @type {InternalScssTaskConfig}
+         * @type {ScssTaskConfig}
          */
         this.config = config;
 

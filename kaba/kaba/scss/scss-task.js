@@ -21,13 +21,13 @@ module.exports = class ScssTask
 {
     /**
      *
-     * @param {InternalScssTaskConfig} config
+     * @param {ScssTaskConfig} config
      */
     constructor (config)
     {
         /**
          * @private
-         * @type {InternalScssTaskConfig}
+         * @type {ScssTaskConfig}
          */
         this.config = config;
 
@@ -76,7 +76,7 @@ module.exports = class ScssTask
     {
         return new Promise(
             (resolve, reject) => {
-                glob(this.config.srcDir,
+                glob(this.config.input,
                     (error, directories) => {
                         let tasks = [];
 
@@ -104,7 +104,7 @@ module.exports = class ScssTask
     {
         return new Promise(
             (resolve, reject) => {
-                glob(this.config.srcDir,
+                glob(this.config.input,
                     (error, directories) => {
 
                         if (error)
