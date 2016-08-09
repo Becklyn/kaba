@@ -47,6 +47,6 @@ module.exports = function (config = {})
     return function (done, debug)
     {
         let task = new JsTask(config);
-        task.run(debug);
+        task.run(done, debug);
     }
 };

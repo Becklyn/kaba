@@ -25,28 +25,34 @@ module.exports = class JsTask
 
 
 
-    run (debug)
+    run (done, debug)
     {
-        return new Promise (
-            (resolve, reject) => {
+        glob(this.config.input,
+            (error, directories) => {
+                if (error)
+                {
+                    reject(error);
+                }
 
-                glob(this.config.input,
-                    (error, directories) => {
-                        if (error)
-                        {
-                            reject(error);
-                        }
-
-                        directories.map(
-                            (dir) => {
-                                let task = new JsDirectoryTask(dir, this.config);
-                                task.run(debug);
-                            }
-                        );
-
-                        resolve();
+                directories.map(
+                    (dir) => {
+                        let task = new JsDirectoryTask(dir, this.config);
+                        task.run(debug);
                     }
                 );
+
+                if (debug)
+                {
+                    process
+                        .on("SIGINT", () => {
+                            done();
+                            setTimeout(process.exit, 1);
+                        });
+                }
+                else
+                {
+                    done();
+                }
             }
         );
     }

@@ -56,7 +56,8 @@ module.exports = class ScssTask
     {
         if (debug)
         {
-            this.watchProject();
+            this.watchProject()
+                .then(done);
         }
         else
         {
@@ -118,7 +119,13 @@ module.exports = class ScssTask
                                 let task = new ScssDirectoryTask(dir, this.config);
                                 task.watch();
                             }
-                        )
+                        );
+
+                        process
+                            .on("SIGINT", () => {
+                                resolve();
+                                setTimeout(process.exit, 1);
+                            });
                     }
                 )
             }
