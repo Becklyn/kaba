@@ -72,9 +72,8 @@ module.exports = class ScssDirectoryTask
      * Compiles the complete directory
      *
      * @param {boolean} debug
-     * @param {boolean} lint
      */
-    compile (debug, lint = false)
+    compile (debug)
     {
         return new Promise(
             (resolve, reject) => {
@@ -83,7 +82,7 @@ module.exports = class ScssDirectoryTask
                     (error, files) => {
                         let tasks = this.compileFileList(files, debug);
 
-                        if (lint)
+                        if (debug)
                         {
                             files.forEach(
                                 (file) => this.linter.lintWithDependencies(file)
