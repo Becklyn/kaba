@@ -134,6 +134,7 @@ module.exports = class ScssDirectoryTask
     }
 
 
+
     /**
      * Compiles a single file
      *
@@ -144,7 +145,7 @@ module.exports = class ScssDirectoryTask
      */
     compileFile (file, debug)
     {
-        return this.compiler.compileFile(file, this.outputDir, debug)
+        return this.compiler.compileFile(file, debug)
             .then(
                 () => this.logger.log("Compiled " + chalk.yellow(path.basename(file)))
             )
