@@ -35,7 +35,6 @@
     "through2": "^2.0.1",
     "transformify": "^0.1.2",
     "uglify-js": "^2.6.2",
-    "uglify-save-license": "^0.4.1",
     "watchify": "^3.7.0"
   }
 }

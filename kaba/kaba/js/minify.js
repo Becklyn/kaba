@@ -1,26 +1,23 @@
-"use strict";
-
 const uglify = require("uglify-js");
-const uglifyLicenseMatcher = require("uglify-save-license");
 
 
 module.exports = function (code, debug)
 {
     try
     {
-        let result = uglify.minify(code, {
-                output: {
-                    comments: debug ? true : uglifyLicenseMatcher
+        /* eslint camelcase: "off" */
+        const result = uglify.minify(code, {
+            output: {
+                comments: debug,
+            },
+            fromString: true,
+            mangle: true,
+            compressor: {
+                global_defs: {
+                    DEBUG: false,
                 },
-                fromString: true,
-                mangle: true,
-                compressor: {
-                    global_defs: {
-                        DEBUG: false
-                    }
-                }
-            }
-        );
+            },
+        });
 
         return result.code;
     }
