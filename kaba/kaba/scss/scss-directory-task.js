@@ -164,24 +164,6 @@ module.exports = class ScssDirectoryTask
     }
 
 
-    /**
-     * Lints the complete project
-     */
-    lint ()
-    {
-        return new Promise(
-            (resolve, reject) => {
-                glob(
-                    this.srcDir + "/!(_)*.scss",
-                    (error, files) => {
-                        files.forEach(file => this.linter.lint(file))
-                    }
-                )
-            }
-        );
-    }
-
-
 
     /**
      * Starts the watcher for the complete directory
