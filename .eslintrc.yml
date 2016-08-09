@@ -11,14 +11,14 @@ extends: 'eslint:recommended'
 
 rules:
     # Possible Errors
-    'valid-jsdoc': warning
+    'valid-jsdoc': warn
 
     # Best Practices
     'block-scoped-var': error
     curly:
         - error
         - all
-    'default-case': warning
+    'default-case': warn
     'dot-location':
         - error
         - property
@@ -35,37 +35,37 @@ rules:
     'no-extend-native': error
     'no-extra-label': error
     'no-floating-decimal': error
-    'no-implicit-globals': warning
+    'no-implicit-globals': warn
     'no-implied-eval': error
     'no-invalid-this': error
     'no-iterator': error
     'no-labels': error
     'no-lone-blocks': error
     'no-loop-func': error
-    'no-magic-numbers': warning
-    'no-multi-spaces': warning
+    'no-magic-numbers': warn
+    'no-multi-spaces': warn
     'no-multi-str': error
     'no-new-func': error
     'no-new-wrappers': error
     'no-octal-escape': error
     'no-proto': error
-    'no-return-assign': warning
+    'no-return-assign': warn
     'no-script-url': error
-    'no-self-compare': warning
+    'no-self-compare': warn
     'no-sequences': error
     'no-throw-literal': error
     'no-unmodified-loop-condition': error
-    'no-unused-expressions': warning
+    'no-unused-expressions': warn
     'no-useless-call': error
     'no-useless-concat': error
-    'no-useless-escape': warning
+    'no-useless-escape': warn
     'no-void': error
-    'no-warning-comments': warning
+    'no-warn-comments': warn
     'no-with': error
     'radix':
         - error
         - always
-    'vars-on-top': warning
+    'vars-on-top': warn
     'wrap-iife': error
 
     # Strict mode
@@ -86,61 +86,61 @@ rules:
 
     # Node.js and CommonJS
     'global-require': error
-    'no-new-require': warning
+    'no-new-require': warn
 
     # Stylistic Issues
     'block-spacing':
-        - warning
+        - warn
         - always
     'camelcase':
         - error
         - { properties: always }
     'comma-dangle':
-        - warning
+        - warn
         - "always-multiline"
     'comma-spacing':
-        - warning
+        - warn
         - { before: false, after: true }
     'comma-style':
-        - warning
+        - warn
         - last
     'consistent-this':
         - error
         - self
     'eol-last': error
     'func-names':
-        - warning
+        - warn
         - never
     'indent':
-        - warning
+        - warn
         - 4
     'key-spacing':
-        - warning
+        - warn
         - { beforeColon: false, afterColon: true, mode: strict }
     'linebreak-style':
         - error
         - unix
     'max-depth':
-        - warning
+        - warn
         - 4
     'max-nested-callbacks':
         - error
         - 3
     'max-params':
-        - warning
+        - warn
         - 4
     'max-statements-per-line':
-        - warning
+        - warn
         - 1
     'new-cap': error
-    'new-parens': warning
-    'newline-per-chained-call': warning
+    'new-parens': warn
+    'newline-per-chained-call': warn
     'no-array-constructor': error
-    'no-bitwise': warning
-    'no-inline-comments': warning
-    'no-lonely-if': warning
+    'no-bitwise': warn
+    'no-inline-comments': warn
+    'no-lonely-if': warn
     'no-mixed-operators': error
-    'no-multiple-empty-lines': warning
+    'no-multiple-empty-lines': warn
     'no-nested-ternary': error
     'no-new-object': error
     'no-plusplus':
@@ -152,9 +152,9 @@ rules:
     'no-unneeded-ternary': error
     'no-whitespace-before-property': error
     'object-curly-newline':
-        - warning
+        - warn
         - { multiline: true }
-    'object-property-newline': warning
+    'object-property-newline': warn
     'one-var-declaration-per-line':
         - error
         - always
@@ -162,16 +162,16 @@ rules:
         - error
         - "as-needed"
     'require-jsdoc':
-        - warning
+        - warn
         - {require: { FunctionDeclaration: true, MethodDefinition: true, ClassDeclaration: false }}
     'semi':
         - error
         - always
     'space-before-blocks':
-        - warning
+        - warn
         - always
     'space-before-function-paren':
-        - warning
+        - warn
         - always
     'space-infix-ops': error
     'unicode-bom':
@@ -185,18 +185,18 @@ rules:
     'arrow-parens':
         - error
         - always
-    'arrow-spacing': warning
-    'generator-star-spacing': warning
-    'no-confusing-arrow': warning
-    'no-duplicate-imports': warning
-    'no-useless-computed-key': warning
+    'arrow-spacing': warn
+    'generator-star-spacing': warn
+    'no-confusing-arrow': warn
+    'no-duplicate-imports': warn
+    'no-useless-computed-key': warn
     'no-useless-constructor': error
-    'no-useless-rename': warning
-    'no-var': warning
-    'object-shorthand': warning
-    'prefer-arrow-callback': warning
-    'prefer-const': warning
+    'no-useless-rename': warn
+    'no-var': warn
+    'object-shorthand': warn
+    'prefer-arrow-callback': warn
+    'prefer-const': warn
     'prefer-rest-params': error
     'prefer-spread': error
     'prefer-template': error
-    'sort-imports': warning
+    'sort-imports': warn
