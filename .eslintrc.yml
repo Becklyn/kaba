@@ -6,12 +6,17 @@ parserOptions:
 
 env:
     browser: true
+    commonjs: true
 
 extends: 'eslint:recommended'
 
 rules:
     # Possible Errors
-    'valid-jsdoc': warn
+    'valid-jsdoc':
+        - warn
+        - requireReturn: false
+          requireParamDescription: false
+          requireReturnDescription: false
 
     # Best Practices
     'block-scoped-var': error
@@ -22,9 +27,6 @@ rules:
     'dot-location':
         - error
         - property
-    'dot-notation':
-        - error
-        - allowKeywords: false
     eqeqeq:
         - error
         - smart
@@ -156,7 +158,7 @@ rules:
     'no-whitespace-before-property': error
     'object-curly-newline':
         - warn
-        - multiline: true
+        - always
     'object-property-newline': warn
     'one-var-declaration-per-line':
         - error
@@ -187,7 +189,7 @@ rules:
     # ECMAScript 6
     'arrow-body-style':
         - error
-        - always
+        - "as-needed"
     'arrow-parens':
         - error
         - always
@@ -204,5 +206,5 @@ rules:
     'prefer-const': warn
     'prefer-rest-params': error
     'prefer-spread': error
-    'prefer-template': error
+    'prefer-template': warn
     'sort-imports': warn
