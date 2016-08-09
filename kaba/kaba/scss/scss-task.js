@@ -1,17 +1,17 @@
 "use strict";
 
 // libraries
-let chokidar = require("chokidar");
-let glob = require("glob");
-let path = require("path");
-let fs = require("fs-extra");
-let Promise = require("bluebird");
-let writeOutputFile = require("../../lib/file-writer");
+const chokidar = require("chokidar");
+const glob = require("glob");
+const path = require("path");
+const fs = require("fs-extra");
+const Promise = require("bluebird");
+const writeOutputFile = require("../../lib/file-writer");
 const chalk = require("chalk");
 
 const ScssDependencyResolver = require("./scss-dependency-resolver");
-let ScssLinter = require("./scss-linter");
-let Logger = require("../../lib/logger");
+const ScssLinter = require("./scss-linter");
+const Logger = require("../../lib/logger");
 const ScssDirectoryTask = require("./scss-directory-task");
 
 

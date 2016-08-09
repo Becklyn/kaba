@@ -1,8 +1,8 @@
 "use strict";
 
-let path = require("path");
-let fs = require("fs-extra");
-let Promise = require("bluebird");
+const path = require("path");
+const fs = require("fs-extra");
+const Promise = require("bluebird");
 
 
 

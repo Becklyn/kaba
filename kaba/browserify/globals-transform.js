@@ -1,8 +1,8 @@
 "use strict";
 
-var through = require('through2');
-var transformify = require('transformify');
-var replaceRequires = require("replace-requires");
+const through = require('through2');
+const transformify = require('transformify');
+const replaceRequires = require("replace-requires");
 
 
 module.exports = function (file, options)

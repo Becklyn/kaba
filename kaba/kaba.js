@@ -1,8 +1,8 @@
 "use strict";
 
-var inherits = require('util').inherits;
-var EventEmitter = require('events').EventEmitter;
-var async = require("async");
+const inherits = require('util').inherits;
+const EventEmitter = require('events').EventEmitter;
+const async = require("async");
 
 // Define Kaba class
 function Kaba ()

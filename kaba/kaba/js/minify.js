@@ -1,7 +1,7 @@
 "use strict";
 
-let uglify = require("uglify-js");
-let uglifyLicenseMatcher = require("uglify-save-license");
+const uglify = require("uglify-js");
+const uglifyLicenseMatcher = require("uglify-save-license");
 
 
 module.exports = function (code, debug)

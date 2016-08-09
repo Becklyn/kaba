@@ -1,8 +1,8 @@
 "use strict";
 
-let chalk = require("chalk");
-let fileReader = require("./file-reader");
-let path = require("path");
+const chalk = require("chalk");
+const fileReader = require("./file-reader");
+const path = require("path");
 
 
 class Logger

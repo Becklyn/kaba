@@ -1,20 +1,20 @@
 "use strict";
 
-let browserify = require("browserify");
-let watchify = require("watchify");
-let glob = require("glob");
-let path = require("path");
-let Promise = require("bluebird");
-let fs = require("fs-extra");
-let fileWriter = require("../../lib/file-writer");
-let Logger = require("../../lib/logger");
-let chalk = require("chalk");
-let globalsTransform = require("../../browserify/globals-transform");
-let bundleCollapser = require("bundle-collapser");
-let StreamHelper = require("../../lib/stream-helper");
+const browserify = require("browserify");
+const watchify = require("watchify");
+const glob = require("glob");
+const path = require("path");
+const Promise = require("bluebird");
+const fs = require("fs-extra");
+const fileWriter = require("../../lib/file-writer");
+const Logger = require("../../lib/logger");
+const chalk = require("chalk");
+const globalsTransform = require("../../browserify/globals-transform");
+const bundleCollapser = require("bundle-collapser");
+const StreamHelper = require("../../lib/stream-helper");
 
-let minify = require("./minify");
-let lint = require("./lint");
+const minify = require("./minify");
+const lint = require("./lint");
 
 
 /**

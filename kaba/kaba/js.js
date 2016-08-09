@@ -8,8 +8,8 @@
  * }} JsTaskConfig
  */
 
-let fs = require("fs");
-let JsTask = require("./js/js-task");
+const fs = require("fs");
+const JsTask = require("./js/js-task");
 const _ = require("lodash");
 
 

@@ -1,9 +1,9 @@
 "use strict";
 
-let CLIEngine = require("eslint").CLIEngine;
-let Promise = require("bluebird");
-let fs = require("fs");
-let path = require("path");
+const CLIEngine = require("eslint").CLIEngine;
+const Promise = require("bluebird");
+const fs = require("fs");
+const path = require("path");
 const filePathMatcher = require("../../lib/file-path-matcher");
 
 
