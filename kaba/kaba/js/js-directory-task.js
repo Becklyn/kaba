@@ -10,7 +10,6 @@ const fileWriter = require("../../lib/file-writer");
 const Logger = require("../../lib/logger");
 const chalk = require("chalk");
 const globalsTransform = require("../../browserify/globals-transform");
-const bundleCollapser = require("bundle-collapser");
 const StreamHelper = require("../../lib/stream-helper");
 
 const minify = require("./minify");
@@ -63,7 +62,6 @@ module.exports = class JsDirectoryTask
     }
 
 
-
     /**
      * Runs the task
      *
@@ -77,7 +75,7 @@ module.exports = class JsDirectoryTask
 
     /**
      *
-     * @param debug
+     * @param {boolean} debug
      */
     compileProject (debug)
     {
@@ -88,12 +86,12 @@ module.exports = class JsDirectoryTask
                         console.time("build");
 
                         // create browserify instance
-                        let browserifyInstance = browserify({
+                        const browserifyInstance = browserify({
                             cache: {},
                             packageCache: {},
                             entries: file,
                             debug: debug,
-                            fullPaths: true // debug
+                            fullPaths: debug
                         });
 
                         // load plugins
@@ -128,29 +126,21 @@ module.exports = class JsDirectoryTask
                         // if not debug, build from the browserify instance
                         this.buildFromBrowserify(browserifyInstance, file, debug);
                     }
-                )
-
+                );
             }
         );
     }
 
     /**
+     * Builds the file from the given browserify instance
      *
-     * @param browserifyInstance
-     * @param file
-     * @param debug
+     * @param {browserify} browserifyInstance
+     * @param {string} file
+     * @param {boolean} debug
      */
     buildFromBrowserify (browserifyInstance, file, debug)
     {
-        let buffers = [];
-
         StreamHelper.readStream(browserifyInstance.bundle())
-            .then(
-                (code) =>
-                {
-                    return StreamHelper.readStream(bundleCollapser(code));
-                }
-            )
             .then(
                 (code) => {
                     code = minify(code, debug);
@@ -162,8 +152,8 @@ module.exports = class JsDirectoryTask
                 }
             )
             .catch(
-                (error) => this.logger.log(chalk.red("ERROR: " + error.message))
-            )
+                (error) => this.logger.log(chalk.red(`ERROR: ${error.message}`))
+            );
     }
 
 
