@@ -50,12 +50,6 @@ module.exports = class ScssDirectoryTask
 
         /**
          * @private
-         * @type {?FSWatcher}
-         */
-        this.watcher = null;
-
-        /**
-         * @private
          * @type {ScssCompiler}
          */
         this.compiler = new ScssCompiler(this.srcDir, this.outputDir, config, this.logger);
@@ -196,7 +190,7 @@ module.exports = class ScssDirectoryTask
     {
         this.logger.log("Started watching " + chalk.yellow(this.srcDir));
 
-        this.watcher = chokidar.watch(this.srcDir + "/**/*.scss", {
+        chokidar.watch(this.srcDir + "/**/*.scss", {
             ignoreInitial: true
         })
             .on("add", path => this.onFileChanged(path))
