@@ -46,7 +46,7 @@ module.exports = function (file, srcDir, config)
     let formatter = engine.getFormatter();
     let report = engine.executeOnFiles([file]);
 
-    if (report.results)
+    if (report.errorCount || report.warningCount)
     {
         // make all paths relative
         report.results = report.results.map(
