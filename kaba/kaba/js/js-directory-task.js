@@ -105,6 +105,10 @@ module.exports = class JsDirectoryTask
                             globals: this.config.externals
                         });
 
+                        // register user transforms
+                        this.config.transforms
+                            .forEach((transformConfigs) => browserifyInstance.transform(...transformConfigs));
+
                         // register event listeners
                         browserifyInstance
                             .on("file", (file) => this.logger.log("Build: " + file));

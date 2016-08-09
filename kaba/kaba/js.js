@@ -5,7 +5,8 @@
  *      input: string,
  *      output: string,
  *      ignoreLintFor: Array.<(string|RegExp)>,
- *      externals: Object.<string, string>
+ *      externals: Object.<string, string>,
+ *      transforms: Array.<Array>
  * }} JsTaskConfig
  */
 
@@ -34,7 +35,9 @@ module.exports = function (config = {})
         externals: {
             jquery: "window.jQuery",
             routing: "window.Routing"
-        }
+        },
+        // a list of transforms
+        transforms: []
     });
 
     // ensure one trailing slash

@@ -150,12 +150,30 @@ kaba.task("css", kaba.shelf.js({
 
 All configuration options:
 
-| Option          | Type                       | Description                                                                                                  | Default value                    | Comment                                                                                      |
-| --------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------ | -------------------------------- | -------------------------------------------------------------------------------------------- |
-| `input`         | `string`                   | A glob that matches all directories that contain JavaScript files                                            | `"src/**/Resources/assets/js/"`  | As this parameter is passed unaltered to [glob] it will accept everything that glob accepts. |
-| `output`        | `string`                   | The output dir for compiled files                                                                            | `"../../public/js"`              | This path is relative to the (resolved) `input` path for the given file.                     |
-| `ignoreLintFor` | `array.<(RegExp\|string)>` | If the one of these strings occur (or the regex matches) the current file path, the file will not be linted. | `["/node_modules/", "/vendor/"]` |                                                                                              |
+| Option          | Type                       | Description                                                                                                  | Default value                                          | Comment                                                                                                                        |
+| --------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| `input`         | `string`                   | A glob that matches all directories that contain JavaScript files                                            | `"src/**/Resources/assets/js/"`                        | As this parameter is passed unaltered to [glob] it will accept everything that glob accepts.                                   |
+| `output`        | `string`                   | The output dir for compiled files                                                                            | `"../../public/js"`                                    | This path is relative to the (resolved) `input` path for the given file.                                                       |
+| `ignoreLintFor` | `array.<(RegExp\|string)>` | If the one of these strings occur (or the regex matches) the current file path, the file will not be linted. | `["/node_modules/", "/vendor/"]`                       |                                                                                                                                |
+| `externals`     | `Object.<string,string>`   | The list of external variables and what they should compile to.                                              | `{jquery: "window.jQuery", routing: "window.Routing"}` | The added entries do not replace the entries, but are additionally added. Remove externals by explicitly setting them to null. |
+| `transforms`    | `Array.<Array>`            | A list of additional transforms.                                                                             | `[]`                                                   | A list of arrays, where the array values are the parameters to the `.transform()` call on the browserify instance.             |
 
+
+The `transforms` entry is passed directly to browserify, so if you want to add a call like this:
+
+```js
+browserify.transform(myTransform, {some: "config"});
+```
+
+the configuration should look like this:
+
+```js
+js.shelf.js({
+   transforms: [
+       [myTransform, {some: "config"}]
+   ] 
+});
+```
 
 
 ### `kaba.shelf.scss(configuration)` SCSS
