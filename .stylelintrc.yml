@@ -9,38 +9,61 @@ rules:
     # Font family
     font-family-name-quotes: always-unless-keyword
 
+    # Font weight
+    font-weight-notation: numeric
+
     # Function
     function-calc-no-unspaced-operator: true
+    function-comma-newline-after: never-multi-line
+    function-comma-newline-before: never-multi-line
     function-comma-space-after: always
+    function-comma-space-before: never
+    function-linear-gradient-no-nonstandard-direction: true
     function-max-empty-lines: 0
     function-name-case: lower
     function-url-quotes: always
+    function-whitespace-after: always
 
     # Number
     number-leading-zero: never
     number-no-trailing-zeros: true
-    length-zero-no-unit: true
 
     # String
     string-no-newline: true
     string-quotes: double
+
+    # Length
+    length-zero-no-unit: true
 
     # Unit
     unit-blacklist: ["pc", "in", "cm", "mm", "ex"]
     unit-case: lower
     unit-no-unknown: true
 
+    # Value
+    value-keyword-case: lower
+    value-no-vendor-prefix: true
+
     # Value list
     value-list-comma-space-after: always-single-line
     value-list-comma-space-before: never
+
+    # Custom property
+    custom-property-no-outside-root: true
 
     # Shorthand property
     shorthand-property-no-redundant-values: true
 
     # Property
     property-case: lower
+    property-no-unknown: true
+    property-no-vendor-prefix: true
+
+    # Keyframe declaration
+    keyframe-declaration-no-important: true
 
     # Declaration
+    declaration-bang-space-after: never
     declaration-bang-space-before: always
     declaration-colon-space-after: always-single-line
     declaration-colon-space-before: never
@@ -48,9 +71,11 @@ rules:
 
     # Declaration block
     declaration-block-no-duplicate-properties: true
+    declaration-block-no-ignored-properties: true
     declaration-block-no-shorthand-property-overrides: true
     declaration-block-semicolon-newline-after: always-multi-line
     declaration-block-semicolon-space-after: always-single-line
+    declaration-block-semicolon-space-before: never
     declaration-block-single-line-max-declarations: 3
     declaration-block-trailing-semicolon: always
 
@@ -76,6 +101,8 @@ rules:
 
     # Selector list
     selector-list-comma-newline-after: always
+    selector-list-comma-newline-before: never
+    selector-list-comma-space-before: never
 
     # Root rule
     root-no-standard-properties: true
@@ -99,6 +126,12 @@ rules:
     at-rule-name-space-after: always-single-line
     at-rule-semicolon-newline-after: always
 
+    # stylelint-disable comment
+    stylelint-disable-reason: always-after
+
+    # Comments
+    comment-no-empty: true
+
     # General / Sheet
     indentation: 4
     max-empty-lines: 2
@@ -106,6 +139,5 @@ rules:
     no-duplicate-selectors: true
     no-eol-whitespace: true
     no-extra-semicolons: true
-    no-missing-eof-newline: true
+    no-missing-end-of-source-newline: true
     no-unknown-animations: true
-    stylelint-disable-reason: always-before
