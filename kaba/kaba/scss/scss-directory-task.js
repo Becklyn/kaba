@@ -147,7 +147,7 @@ module.exports = class ScssDirectoryTask
     {
         return this.compiler.compileFile(file, debug)
             .then(
-                () => this.logger.log("Compiled " + chalk.yellow(path.basename(file)))
+                () => this.logger.log(`Compiled ${chalk.yellow(path.basename(file))}`)
             )
             .catch(
                 (error) => {
@@ -164,21 +164,19 @@ module.exports = class ScssDirectoryTask
     }
 
 
-
     /**
      * Starts the watcher for the complete directory
      */
     watch ()
     {
-        this.logger.log("Started watching " + chalk.yellow(this.srcDir));
+        this.logger.log(`Started watching ${chalk.yellow(this.srcDir)}`);
 
-        chokidar.watch(this.srcDir + "/**/*.scss", {
-            ignoreInitial: true
+        chokidar.watch(`${this.srcDir}/**/*.scss`, {
+            ignoreInitial: true,
         })
-            .on("add", path => this.onFileChanged(path))
-            .on("change", path => this.onFileChanged(path));
+            .on("add", (file) => this.onFileChanged(file))
+            .on("change", (file) => this.onFileChanged(file));
     }
-
 
 
     /**
