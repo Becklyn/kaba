@@ -1,14 +1,14 @@
 const uglify = require("uglify-js");
 
 
-module.exports = function (code, debug)
+module.exports = function (code)
 {
     try
     {
         /* eslint camelcase: "off" */
         const result = uglify.minify(code, {
             output: {
-                comments: debug,
+                comments: false,
             },
             fromString: true,
             mangle: true,

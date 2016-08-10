@@ -139,7 +139,11 @@ module.exports = class JsDirectoryTask
         StreamHelper.readStream(browserifyInstance.bundle())
             .then(
                 (code) => {
-                    code = minify(code, debug);
+
+                    if (!debug)
+                    {
+                        code = minify(code);
+                    }
 
                     if (null !== code)
                     {
