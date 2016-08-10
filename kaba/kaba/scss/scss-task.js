@@ -56,6 +56,11 @@ module.exports = class ScssTask
     {
         if (debug)
         {
+            // compile project and start watchers
+            // the watchers ignore the initial events, as otherwise all dependencies would repeatedly
+            // issue a recompile on the main file
+            this.compileProject();
+
             this.watchProject()
                 .then(done);
         }
