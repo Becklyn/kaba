@@ -72,6 +72,7 @@ module.exports = class ScssDirectoryTask
      * Compiles the complete directory
      *
      * @param {boolean} debug
+     * @returns {Promise}
      */
     compile (debug)
     {
@@ -92,11 +93,10 @@ module.exports = class ScssDirectoryTask
                         Promise.all(tasks)
                             .then(resolve);
                     }
-                )
+                );
             }
         );
     }
-
 
 
     /**
@@ -110,8 +110,8 @@ module.exports = class ScssDirectoryTask
      */
     compileFileList (files, debug)
     {
-        let compiledFiles = {};
-        let tasks = [];
+        const compiledFiles = {};
+        const tasks = [];
 
         files.filter(
             // filter hidden SCSS files
