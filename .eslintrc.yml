@@ -116,6 +116,7 @@ rules:
     'indent':
         - warn
         - 4
+        - SwitchCase: 1
     'key-spacing':
         - warn
         - beforeColon: false
