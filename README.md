@@ -143,7 +143,7 @@ So leave your entry-level files at the root and move included files in subdirect
 
 
 ```js
-kaba.task("css", kaba.shelf.js({
+kaba.task("js", kaba.shelf.js({
     input: "assets/js"
 }));
 ```
@@ -182,7 +182,7 @@ This function compiles SCSS files using [node-sass].
 
 
 ```js
-kaba.task("js", kaba.shelf.scss({
+kaba.task("css", kaba.shelf.scss({
     input: "assets/scss"
 }));
 ```
