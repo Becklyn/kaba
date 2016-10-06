@@ -203,7 +203,9 @@ rules:
     'no-useless-constructor': error
     'no-useless-rename': warn
     'no-var': error
-    'object-shorthand': warn
+    'object-shorthand': 
+        - warn
+        - "consistent-as-needed"
     'prefer-arrow-callback': warn
     'prefer-const': warn
     'prefer-rest-params': error
