@@ -37,7 +37,7 @@ rules:
     'no-extend-native': error
     'no-extra-label': error
     'no-floating-decimal': error
-    'no-implicit-globals': warn
+    'no-implicit-globals': error
     'no-implied-eval': error
     'no-invalid-this': error
     'no-iterator': error
