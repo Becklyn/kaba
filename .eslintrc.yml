@@ -50,6 +50,11 @@ rules:
     'no-new-wrappers': error
     'no-octal-escape': error
     'no-proto': error
+    'no-redeclare': error
+    'no-restricted-properties':
+        - error
+        - property: setInterval
+          message: "Don't use setInterval. Use repeated setTimeout instead."
     'no-return-assign': warn
     'no-script-url': error
     'no-self-compare': warn
@@ -110,6 +115,7 @@ rules:
         - error
         - self
     'eol-last': error
+    'func-call-spacing': warn
     'func-names':
         - warn
         - never
