@@ -87,7 +87,7 @@ module.exports = class JsDirectoryTask
                             packageCache: {},
                             entries: file,
                             debug: debug,
-                            fullPaths: debug
+                            fullPaths: debug,
                         });
 
                         // load plugins
@@ -96,7 +96,7 @@ module.exports = class JsDirectoryTask
                         });
                         browserifyInstance.transform(globalsTransform, {
                             global: true,
-                            globals: this.config.externals
+                            globals: this.config.externals,
                         });
 
                         // register user transforms

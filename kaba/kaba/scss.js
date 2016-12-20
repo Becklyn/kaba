@@ -45,5 +45,5 @@ module.exports = function (config = {})
     {
         let task = new ScssTask(config);
         task.run(done, debug);
-    }
+    };
 };

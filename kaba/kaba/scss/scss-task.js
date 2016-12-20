@@ -45,7 +45,6 @@ module.exports = class ScssTask
     }
 
 
-
     /**
      * Runs the task
      *
@@ -70,7 +69,6 @@ module.exports = class ScssTask
                 .then(done);
         }
     }
-
 
 
     /**
