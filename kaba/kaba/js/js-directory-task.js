@@ -90,9 +90,24 @@ module.exports = class JsDirectoryTask
                             fullPaths: debug,
                         });
 
-                        // load plugins
+                        // load plugins + presets
+                        const babelPresets = ["es2015"];
+                        const babelPlugins = [];
+
+                        if (this.config.react || this.config.preact)
+                        {
+                            babelPresets.push("react");
+                        }
+
+                        if (this.config.preact)
+                        {
+                            babelPlugins.push(["transform-react-jsx", {pragma: "h"}]);
+                        }
+
+
                         browserifyInstance.transform("babelify", {
-                            presets: ["es2015"]
+                            presets: babelPresets,
+                            plugins: babelPlugins,
                         });
                         browserifyInstance.transform(globalsTransform, {
                             global: true,

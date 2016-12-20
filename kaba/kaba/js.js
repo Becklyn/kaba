@@ -35,8 +35,12 @@ module.exports = function (config = {})
         // external global variables for JS compilation
         externals: {
             jquery: "window.jQuery",
-            routing: "window.Routing"
+            routing: "window.Routing",
         },
+        // flag whether react should be supported
+        react: false,
+        // flag whether preact should be support
+        preact: false,
         // a list of transforms
         transforms: [],
     });
