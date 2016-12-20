@@ -6,7 +6,9 @@
  *      output: string,
  *      ignoreLintFor: Array.<(string|RegExp)>,
  *      externals: Object.<string, string>,
- *      transforms: Array.<Array>
+ *      transforms: Array.<Array>,
+ *      react: boolean,
+ *      preact: boolean,
  * }} JsTaskConfig
  */
 
@@ -36,7 +38,7 @@ module.exports = function (config = {})
             routing: "window.Routing"
         },
         // a list of transforms
-        transforms: []
+        transforms: [],
     });
 
     // ensure one trailing slash
