@@ -106,6 +106,7 @@ module.exports = class JsDirectoryTask
 
 
                         browserifyInstance.transform("babelify", {
+                            global: true,
                             presets: babelPresets,
                             plugins: babelPlugins,
                         });
