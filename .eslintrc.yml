@@ -162,11 +162,6 @@ rules:
     'no-underscore-dangle': error
     'no-unneeded-ternary': error
     'no-whitespace-before-property': error
-    'object-curly-newline':
-        - warn
-        - ObjectExpression: # object literals
-              minProperties: 1
-              multiline: true
     'object-property-newline': warn
     'one-var-declaration-per-line':
         - error
