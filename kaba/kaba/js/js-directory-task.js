@@ -7,6 +7,7 @@ const Logger = require("../../lib/logger");
 const path = require("path");
 const StreamHelper = require("../../lib/stream-helper");
 const watchify = require("watchify");
+const presetES2015 = require("babel-preset-es2015");
 
 const minify = require("./minify");
 const lint = require("./lint");
@@ -91,7 +92,7 @@ module.exports = class JsDirectoryTask
                         });
 
                         // load plugins + presets
-                        const babelPresets = ["es2015"];
+                        const babelPresets = [presetES2015];
                         const babelPlugins = [];
 
                         if (this.config.react || this.config.preact)
