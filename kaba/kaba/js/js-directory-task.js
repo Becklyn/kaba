@@ -89,6 +89,7 @@ module.exports = class JsDirectoryTask
                             entries: file,
                             debug: debug,
                             fullPaths: debug,
+                            comments: debug,
                         });
 
                         // load plugins + presets
