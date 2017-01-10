@@ -106,12 +106,12 @@ module.exports = class JsDirectoryTask
                             babelPlugins.push(["transform-react-jsx", {pragma: "h"}]);
                         }
 
-
                         browserifyInstance.transform("babelify", {
                             global: true,
                             presets: babelPresets,
                             plugins: babelPlugins,
                         });
+
                         browserifyInstance.transform(globalsTransform, {
                             global: true,
                             globals: this.config.externals,
@@ -123,7 +123,7 @@ module.exports = class JsDirectoryTask
 
                         // register event listeners
                         browserifyInstance
-                            .on("file", (file) => this.logger.log("Build: " + file));
+                            .on("file", (f) => this.logger.log(`Build: ${f}`));
 
                         // register debug modes
                         if (debug)
@@ -134,7 +134,7 @@ module.exports = class JsDirectoryTask
                             // register event listener for linter and update
                             browserifyInstance
                                 .on("update", () => this.buildFromBrowserify(browserifyInstance, file, debug))
-                                .on("file", (file) => lint(file, this.srcDir, this.config));
+                                .on("file", (f) => lint(f, this.srcDir, this.config));
                         }
 
                         // if not debug, build from the browserify instance
