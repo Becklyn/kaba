@@ -190,9 +190,6 @@ rules:
         - never
 
     # ECMAScript 6
-    'arrow-body-style':
-        - error
-        - "as-needed"
     'arrow-parens':
         - error
         - always
