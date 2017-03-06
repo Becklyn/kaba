@@ -71,19 +71,23 @@ module.exports = class ScssDirectoryTask
     /**
      * Compiles the complete directory
      *
-     * @param {boolean} debug
      * @returns {Promise}
      */
-    compile (debug)
+    compile ()
     {
         return new Promise(
             (resolve, reject) => {
                 glob(
                     this.srcDir + "/!(_)*.scss",
                     (error, files) => {
-                        let tasks = this.compileFileList(files, debug);
+                        if (error)
+                        {
+                            reject(error);
+                        }
 
-                        if (debug)
+                        let tasks = this.compileFileList(files);
+
+                        if (this.config.lint)
                         {
                             files.forEach(
                                 (file) => this.linter.lintWithDependencies(file)
@@ -104,11 +108,10 @@ module.exports = class ScssDirectoryTask
      *
      * @private
      * @param {String[]} files
-     * @param {Boolean} debug
      *
      * @return {Promise[]}
      */
-    compileFileList (files, debug)
+    compileFileList (files)
     {
         const compiledFiles = {};
         const tasks = [];
@@ -123,7 +126,7 @@ module.exports = class ScssDirectoryTask
                     // filter out duplicates
                     if (!compiledFiles[file])
                     {
-                        let task = this.compileFile(file, debug);
+                        let task = this.compileFile(file);
                         tasks.push(task);
                         compiledFiles[file] = true;
                     }
@@ -140,12 +143,11 @@ module.exports = class ScssDirectoryTask
      *
      * @private
      * @param {string} file
-     * @param {boolean} debug
      * @returns {Promise}
      */
-    compileFile (file, debug)
+    compileFile (file)
     {
-        return this.compiler.compileFile(file, debug)
+        return this.compiler.compileFile(file)
             .then(
                 () => this.logger.log(`Compiled ${chalk.yellow(path.basename(file))}`)
             )

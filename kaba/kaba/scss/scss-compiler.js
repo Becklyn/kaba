@@ -51,12 +51,11 @@ module.exports = class ScssCompiler
     /**
      * Compiles a single file
      * @param {string} file
-     * @param {boolean} debug
      * @returns {Promise}
      */
-    compileFile (file, debug)
+    compileFile (file)
     {
-        return this.compileScss(file, debug)
+        return this.compileScss(file)
             .then(
                 (result) => result.css,
                 (error) => {
@@ -68,7 +67,7 @@ module.exports = class ScssCompiler
                 /** @type {{css: string}} postProcessResult */
                 (postProcessResult) =>
                 {
-                    if (!debug)
+                    if (!this.config.debug)
                     {
                         return this.minify(postProcessResult.css);
                     }
@@ -79,7 +78,7 @@ module.exports = class ScssCompiler
             .then(
                 (css) =>
                 {
-                    writeOutputFile(this.generateOutputFileName(file), css)
+                    writeOutputFile(this.generateOutputFileName(file), css);
                 }
             );
     }
@@ -89,18 +88,17 @@ module.exports = class ScssCompiler
      *
      * @private
      * @param {string} file
-     * @param {boolean} debug
      * @returns {Promise}
      */
-    compileScss (file, debug)
+    compileScss (file)
     {
-        return new Promise (
-            function (resolve, reject)
+        return new Promise(
+            (resolve, reject) =>
             {
                 sass.render({
                         file: file,
                         outputStyle: "compact",
-                        sourceMapEmbed: debug
+                        sourceMapEmbed: this.config.debug,
                     },
                     function (err, result)
                     {

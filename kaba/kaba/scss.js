@@ -5,6 +5,9 @@
  *      browsers: string[],
  *      ignoreLintFor: Array.<(string|RegExp)>,
  *      outputFileName: function(string, string):string,
+ *      debug: boolean,
+ *      watch: boolean,
+ *      lint: boolean,
  * }} ScssTaskConfig
  */
 
@@ -34,6 +37,12 @@ module.exports = function (config = {})
         ignoreLintFor: ["/node_modules/", "/vendor/"],
         // Transforms the file name before writing the out file
         outputFileName: (outputFileName, inputFileName) => outputFileName,
+        // Whether to build for debug
+        debug: null,
+        // Whether to start the watcher
+        watch: null,
+        // Whether to lint the files
+        lint: null,
     }, config);
 
     // build internal config
@@ -41,7 +50,22 @@ module.exports = function (config = {})
 
     return function (done, debug)
     {
+        if (null === config.debug)
+        {
+            config.debug = debug;
+        }
+
+        if (null === config.watch)
+        {
+            config.watch = debug;
+        }
+
+        if (null === config.lint)
+        {
+            config.lint = debug;
+        }
+
         let task = new ScssTask(config);
-        task.run(done, debug);
+        task.run(done);
     };
 };

@@ -49,23 +49,22 @@ module.exports = class ScssTask
      * Runs the task
      *
      * @param {function} done
-     * @param {Boolean} debug Flag, whether the task should run in debug mode
      */
-    run (done, debug)
+    run (done)
     {
-        if (debug)
-        {
-            // compile project and start watchers
-            // the watchers ignore the initial events, as otherwise all dependencies would repeatedly
-            // issue a recompile on the main file
-            this.compileProject();
+        // compile project and start watchers
+        // the watchers ignore the initial events, as otherwise all dependencies would repeatedly
+        // issue a recompile on the main file
+        const compilePipeline = this.compileProject();
 
+        if (this.config.watch)
+        {
             this.watchProject()
                 .then(done);
         }
         else
         {
-            this.compileProject()
+            compilePipeline
                 .then(done);
         }
     }
@@ -81,13 +80,19 @@ module.exports = class ScssTask
         return new Promise(
             (resolve, reject) => {
                 glob(this.config.input,
-                    (error, directories) => {
+                    (error, directories) =>
+                    {
+                        if (error)
+                        {
+                            reject(error);
+                        }
+
                         let tasks = [];
 
                         directories.forEach(
                             (dir) => {
                                 let task = new ScssDirectoryTask(dir, this.config);
-                                tasks.push(task.compile(false));
+                                tasks.push(task.compile());
                             }
                         );
 
@@ -110,8 +115,8 @@ module.exports = class ScssTask
         return new Promise(
             (resolve, reject) => {
                 glob(this.config.input,
-                    (error, directories) => {
-
+                    (error, directories) =>
+                    {
                         if (error)
                         {
                             reject(error);
