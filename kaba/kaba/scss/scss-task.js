@@ -79,7 +79,8 @@ module.exports = class ScssTask
     {
         return new Promise(
             (resolve, reject) => {
-                glob(this.config.input,
+                glob(
+                    this.config.input,
                     (error, directories) =>
                     {
                         if (error)
@@ -99,7 +100,7 @@ module.exports = class ScssTask
                         Promise.all(tasks)
                             .then(resolve);
                     }
-                )
+                );
             }
         );
     }
@@ -114,7 +115,8 @@ module.exports = class ScssTask
     {
         return new Promise(
             (resolve, reject) => {
-                glob(this.config.input,
+                glob(
+                    this.config.input,
                     (error, directories) =>
                     {
                         if (error)
