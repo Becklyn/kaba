@@ -182,9 +182,12 @@ module.exports = class JsDirectoryTask
      */
     generateOutputFileName (file)
     {
+        const outputFileName = this.config.transformFilePath(path.basename(file));
+
         return path.join(
             this.outputDir,
-            path.relative(this.srcDir, file)
+            path.dirname(path.relative(this.srcDir, file)),
+            outputFileName
         );
     }
 };
