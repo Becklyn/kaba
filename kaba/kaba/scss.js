@@ -1,19 +1,15 @@
-"use strict";
-
 /**
  * @typedef {{
  *      input: string,
  *      output: string,
  *      browsers: string[],
  *      ignoreLintFor: Array.<(string|RegExp)>,
+ *      outputFileName: function(string, string):string,
  * }} ScssTaskConfig
  */
 
-const fs = require("fs-extra");
 const ScssTask = require("./scss/scss-task");
 const _ = require("lodash");
-const path = require("path");
-
 
 
 
@@ -35,7 +31,9 @@ module.exports = function (config = {})
         // browsers to support
         browsers: ["last 2 versions", "IE 10"],
         // list of file path paths (string or regex). If the file path matches one of these entries, the file won't be linted
-        ignoreLintFor: ["/node_modules/", "/vendor/"]
+        ignoreLintFor: ["/node_modules/", "/vendor/"],
+        // Transforms the file name before writing the out file
+        outputFileName: (outputFileName, inputFileName) => outputFileName,
     }, config);
 
     // build internal config

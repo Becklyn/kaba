@@ -1,12 +1,8 @@
-"use strict";
-
-// single steps
 const autoprefixer = require("autoprefixer");
-const chalk = require("chalk");
 const csso = require("csso");
-const fs = require("fs-extra");
 const path = require("path");
 const postcss = require("postcss");
+const Promise = require("bluebird");
 const sass = require("node-sass");
 const writeOutputFile = require("../../lib/file-writer");
 const BuildError = require("../../lib/build-error");
@@ -63,9 +59,11 @@ module.exports = class ScssCompiler
         return this.compileScss(file, debug)
             .then(
                 (result) => result.css,
-                (error) => { throw new BuildError(error) }
+                (error) => {
+                    throw new BuildError(error);
+                }
             )
-            .then(css => this.postProcess(css))
+            .then((css) => this.postProcess(css))
             .then(
                 /** @type {{css: string}} postProcessResult */
                 (postProcessResult) =>
@@ -108,7 +106,7 @@ module.exports = class ScssCompiler
                     {
                         if (err)
                         {
-                            reject (err);
+                            reject(err);
                         }
 
                         resolve(result);
@@ -160,12 +158,14 @@ module.exports = class ScssCompiler
     generateOutputFileName (file)
     {
         let relativeSrcPath = path.relative(this.srcDir, file);
+        let outputFileName = path.basename(file, ".scss") + ".css";
+        outputFileName = this.config.outputFileName(outputFileName, path.basename(file));
 
         // join output dir + relative src dir + file name (with extension switched to css)
         return path.join(
             this.outputDir,
             path.dirname(relativeSrcPath),
-            path.basename(file, ".scss") + ".css"
+            outputFileName
         );
     }
 };

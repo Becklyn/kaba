@@ -7,7 +7,7 @@
  *      transforms: Array.<Array>,
  *      react: boolean,
  *      preact: boolean,
- *      transformFilePath: function(string):string,
+ *      outputFileName: function(string):string,
  * }} JsTaskConfig
  */
 
@@ -43,7 +43,7 @@ module.exports = function (config = {})
         // a list of transforms
         transforms: [],
         // Transforms the file name before writing the out file
-        transformFilePath: (fileName) => fileName,
+        outputFileName: (fileName) => fileName,
     });
 
     // ensure one trailing slash

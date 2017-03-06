@@ -145,6 +145,7 @@ module.exports = class JsDirectoryTask
         );
     }
 
+
     /**
      * Builds the file from the given browserify instance
      *
@@ -182,7 +183,7 @@ module.exports = class JsDirectoryTask
      */
     generateOutputFileName (file)
     {
-        const outputFileName = this.config.transformFilePath(path.basename(file));
+        const outputFileName = this.config.outputFileName(path.basename(file));
 
         return path.join(
             this.outputDir,
