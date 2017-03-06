@@ -61,20 +61,17 @@ module.exports = class JsDirectoryTask
 
     /**
      * Runs the task
-     *
-     * @param {Boolean} debug Flag, whether the task should run in debug mode
      */
-    run (debug)
+    run ()
     {
-        this.compileProject(debug);
+        this.compileProject();
     }
 
 
     /**
-     *
-     * @param {boolean} debug
+     * Compiles the complete project
      */
-    compileProject (debug)
+    compileProject ()
     {
         glob(this.inputFilesGlob,
             (err, files) => {
@@ -87,9 +84,9 @@ module.exports = class JsDirectoryTask
                             cache: {},
                             packageCache: {},
                             entries: file,
-                            debug: debug,
-                            fullPaths: debug,
-                            comments: debug,
+                            debug: this.config.debug,
+                            fullPaths: this.config.debug,
+                            comments: this.config.debug,
                         });
 
                         // load plugins + presets
@@ -125,20 +122,20 @@ module.exports = class JsDirectoryTask
                         browserifyInstance
                             .on("file", (f) => this.logger.log(`Build: ${f}`));
 
-                        // register debug modes
-                        if (debug)
+                        // whether to start a watcher
+                        if (this.config.watch)
                         {
                             // add watchify as plugin
                             browserifyInstance.plugin(watchify);
 
                             // register event listener for linter and update
                             browserifyInstance
-                                .on("update", () => this.buildFromBrowserify(browserifyInstance, file, debug))
+                                .on("update", () => this.buildFromBrowserify(browserifyInstance, file))
                                 .on("file", (f) => lint(f, this.srcDir, this.config));
                         }
 
                         // if not debug, build from the browserify instance
-                        this.buildFromBrowserify(browserifyInstance, file, debug);
+                        this.buildFromBrowserify(browserifyInstance, file);
                     }
                 );
             }
@@ -151,15 +148,14 @@ module.exports = class JsDirectoryTask
      *
      * @param {browserify} browserifyInstance
      * @param {string} file
-     * @param {boolean} debug
      */
-    buildFromBrowserify (browserifyInstance, file, debug)
+    buildFromBrowserify (browserifyInstance, file)
     {
         StreamHelper.readStream(browserifyInstance.bundle())
             .then(
                 (code) => {
 
-                    if (!debug)
+                    if (!this.config.debug)
                     {
                         code = minify(code);
                     }

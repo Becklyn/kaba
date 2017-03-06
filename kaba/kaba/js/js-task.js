@@ -1,8 +1,5 @@
-"use strict";
-
 const JsDirectoryTask = require("./js-directory-task");
 const glob = require("glob");
-const Promise = require("bluebird");
 
 
 /**
@@ -31,7 +28,7 @@ module.exports = class JsTask
             (error, directories) => {
                 if (error)
                 {
-                    reject(error);
+                    throw error;
                 }
 
                 directories.map(
@@ -41,7 +38,7 @@ module.exports = class JsTask
                     }
                 );
 
-                if (debug)
+                if (this.config.watch)
                 {
                     process
                         .on("SIGINT", () => {

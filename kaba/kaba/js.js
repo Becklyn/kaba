@@ -8,6 +8,8 @@
  *      react: boolean,
  *      preact: boolean,
  *      outputFileName: function(string):string,
+ *      debug: boolean,
+ *      watch: boolean,
  * }} JsTaskConfig
  */
 
@@ -44,6 +46,10 @@ module.exports = function (config = {})
         transforms: [],
         // Transforms the file name before writing the out file
         outputFileName: (fileName) => fileName,
+        // Whether to build for debug
+        debug: null,
+        // Whether to start the watcher
+        watch: null,
     });
 
     // ensure one trailing slash
@@ -52,7 +58,17 @@ module.exports = function (config = {})
 
     return function (done, debug)
     {
+        if (null === config.debug)
+        {
+            config.debug = debug;
+        }
+
+        if (null === config.watch)
+        {
+            config.watch = debug;
+        }
+
         let task = new JsTask(config);
         task.run(done, debug);
-    }
+    };
 };
