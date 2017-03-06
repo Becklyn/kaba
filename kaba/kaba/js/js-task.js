@@ -21,8 +21,12 @@ module.exports = class JsTask
     }
 
 
-
-    run (done, debug)
+    /**
+     * Runs the task
+     *
+     * @param {function()} done
+     */
+    run (done)
     {
         glob(this.config.input,
             (error, directories) => {
@@ -34,7 +38,7 @@ module.exports = class JsTask
                 directories.map(
                     (dir) => {
                         let task = new JsDirectoryTask(dir, this.config);
-                        task.run(debug);
+                        task.run();
                     }
                 );
 
