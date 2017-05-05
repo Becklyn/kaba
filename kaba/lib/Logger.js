@@ -1,30 +1,38 @@
-"use strict";
-
 const chalk = require("chalk");
-const fileReader = require("./file-reader");
 const path = require("path");
 
 
-class Logger
+/**
+ * A generic, prefixed logger
+ */
+module.exports = class Logger
 {
     /**
      *
      * @param {string} prefix
      * @param {string} color
-     * @param {string} baseDir
      */
-    constructor (prefix, color, baseDir)
+    constructor (prefix, color)
     {
-        if (!chalk[color])
+        if (typeof chalk[color] === "undefined")
         {
-            throw new Error("Unknown color: " + color);
+            throw new Error(`Unknown color: ${color}`);
         }
+
+        /**
+         * Builds a new child logger.
+         * Needs to pass the reference to the child class explicitly to break the circular dependency
+         *
+         * @type {function}
+         */
+        this.createChildLogger = (ChildClass, baseDir) => new ChildClass(prefix, color, baseDir);
+
 
         /**
          * @private
          * @type {string}
          */
-        this.prefix = "[" + chalk[color](prefix) + "] ";
+        this.prefix = chalk[color](prefix);
 
 
         /**
@@ -32,13 +40,6 @@ class Logger
          * @type {string}
          */
         this.emptyPrefix = " ".repeat(prefix.length + 3);
-
-
-        /**
-         * @private
-         * @type {string}
-         */
-        this.baseDir = baseDir;
     }
 
 
@@ -49,8 +50,8 @@ class Logger
      */
     log (message)
     {
-        let now = new Date();
-        let time = [
+        const now = new Date();
+        const time = [
             now.getHours(),
             now.getMinutes(),
             now.getSeconds()
@@ -58,9 +59,7 @@ class Logger
             .map((number) => 1 === number.toString().length ? `0${number}` : number)
             .join(":");
 
-        let date = chalk.gray(`[${time}]`);
-
-        console.log(`${date} ${this.prefix}${message}`);
+        console.log(`${chalk.gray(`[${time}]`)} [${this.prefix}] ${message}`);
     }
 
 
@@ -69,7 +68,7 @@ class Logger
      *
      * @param {string} message
      */
-    logWithoutPrefix (message)
+    raw (message)
     {
         console.log(this.emptyPrefix + message);
     }
@@ -79,7 +78,7 @@ class Logger
      * Logs the given error
      * @param {string|{toString: function}|Error} error
      */
-    logError (error)
+    error (error)
     {
         if (typeof error === "object")
         {
@@ -97,38 +96,6 @@ class Logger
             }
         }
 
-        this.log(chalk.red("Error") + ` ${error}`);
+        this.log(`${chalk.red("Error")} ${error}`);
     }
-
-
-    /**
-     * Logs the given build error
-     *
-     * @param {BuildError} buildError
-     */
-    logBuildError (buildError)
-    {
-        let error = buildError.reason;
-        let line = fileReader.getLine(error.file, error.line);
-        let relativeFile = path.relative(this.baseDir, error.file);
-
-        if (!line)
-        {
-            line = error.formatted;
-        }
-        else
-        {
-            line += "\n" + "-".repeat(error.column - 1) + "^";
-        }
-
-        this.log(chalk.red("Build Error") + " in " + chalk.yellow(relativeFile) + " (" + chalk.yellow(`${error.line}:${error.column}`) + "): " + error.message);
-
-        line.split("\n").forEach(
-            (l) => this.logWithoutPrefix("    " + chalk.gray(l))
-        );
-
-        console.log("");
-    }
-}
-
-module.exports = Logger;
+};
