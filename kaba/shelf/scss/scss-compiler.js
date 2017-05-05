@@ -1,11 +1,11 @@
+const BuildError = require("../../lib/build-error");
+const Promise = require("bluebird");
 const autoprefixer = require("autoprefixer");
 const csso = require("csso");
 const path = require("path");
 const postcss = require("postcss");
-const Promise = require("bluebird");
 const sass = require("node-sass");
 const writeOutputFile = require("../../lib/file-writer");
-const BuildError = require("../../lib/build-error");
 
 
 /**
@@ -105,6 +105,7 @@ module.exports = class ScssCompiler
                         if (err)
                         {
                             reject(err);
+                            return;
                         }
 
                         resolve(result);
