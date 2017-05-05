@@ -36,7 +36,7 @@ module.exports = function (config = {})
         // output directory (relative to input directory)
         output: "../../public/css",
         // browsers to support
-        browsers: ["last 2 versions", "IE 10"],
+        browsers: ["last 2 versions", "IE 10", "IE 11"],
         // list of file path paths (string or regex). If the file path matches one of these entries, the file won't be linted
         ignoreLintFor: ["/node_modules/", "/vendor/"],
         // Transforms the file name before writing the out file

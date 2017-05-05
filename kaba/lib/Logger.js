@@ -59,7 +59,7 @@ module.exports = class Logger
             .map((number) => 1 === number.toString().length ? `0${number}` : number)
             .join(":");
 
-        console.log(`${chalk.gray(`[${time}]`)} [${this.prefix}] ${message}`);
+        this.prependAndLogAllLines(message, `${chalk.gray(`[${time}]`)} [${this.prefix}] `);
     }
 
 
@@ -70,7 +70,20 @@ module.exports = class Logger
      */
     raw (message)
     {
-        console.log(this.emptyPrefix + message);
+        this.prependAndLogAllLines(message, this.emptyPrefix);
+    }
+
+
+    /**
+     * Logs all lines by prepending the given prefix
+     *
+     * @private
+     * @param {string} message
+     * @param {string} prefix
+     */
+    prependAndLogAllLines (message, prefix)
+    {
+        console.log(message.replace(/^/mg, prefix));
     }
 
 

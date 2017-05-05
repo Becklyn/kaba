@@ -3,6 +3,7 @@
  *      input: string,
  *      output: string,
  *      ignoreLintFor: Array.<(string|RegExp)>,
+ *      browsers: string[],
  *      externals: Object.<string, string>,
  *      transforms: Array.<Array>,
  *      react: boolean,
@@ -37,6 +38,8 @@ module.exports = function (config = {})
         output: "../../public/js",
         // list of file path paths (string or regex). If the file path matches one of these entries, the file won't be linted
         ignoreLintFor: ["/node_modules/", "/vendor/"],
+        // browsers to support
+        browsers: ["last 2 versions", "IE 10", "IE 11"],
         // external global variables for JS compilation
         externals: {
             jquery: "window.jQuery",
@@ -50,10 +53,6 @@ module.exports = function (config = {})
         transforms: [],
         // Transforms the file name before writing the out file
         outputFileName: (fileName) => fileName,
-        // Whether to build for debug
-        debug: null,
-        // Whether to start the watcher
-        watch: null,
     });
 
     // ensure one trailing slash

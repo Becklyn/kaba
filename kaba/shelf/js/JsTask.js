@@ -26,6 +26,27 @@ module.exports = class JsTask
          * @type {Logger}
          */
         this.logger = logger;
+
+        /**
+         * @private
+         * @type {JsDirectoryTask[]}
+         */
+        this.directories = this.loadDirectories();
+    }
+
+
+    /**
+     * Loads all tasks
+     *
+     * @private
+     * @returns {JsDirectoryTask[]}
+     */
+    loadDirectories ()
+    {
+        return glob.sync(this.config.input)
+            .map(
+                (dir) => new JsDirectoryTask(dir, this.config, this.logger.createChildLogger(BuildLogger, dir))
+            );
     }
 
 
@@ -36,37 +57,12 @@ module.exports = class JsTask
      */
     compile (done)
     {
-        glob(this.config.input,
-            (error, directories) =>
-            {
-                if (error)
-                {
-                    this.logger.error(error);
-                    done();
-                    return;
-                }
-
-                directories.map(
-                    (dir) => {
-                        const task = new JsDirectoryTask(dir, this.config, this.logger.createChildLogger(BuildLogger, dir));
-                        task.run();
-                    }
-                );
-
-                if (this.config.watch)
-                {
-                    process
-                        .on("SIGINT", () => {
-                            done();
-                            setTimeout(process.exit, 1);
-                        });
-                }
-                else
-                {
-                    done();
-                }
-            }
+        const tasks = this.directories.map(
+            (task) => task.compile()
         );
+
+        Promise.all(tasks)
+            .then(done);
     }
 
 
