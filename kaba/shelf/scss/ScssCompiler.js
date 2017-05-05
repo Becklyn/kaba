@@ -1,4 +1,4 @@
-const BuildError = require("../../lib/build-error");
+const BuildError = require("../../lib/BuildError");
 const Promise = require("bluebird");
 const autoprefixer = require("autoprefixer");
 const csso = require("csso");

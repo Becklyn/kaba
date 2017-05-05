@@ -1,4 +1,4 @@
-const BuildError = require("../../lib/build-error");
+const BuildError = require("../../lib/BuildError");
 const Promise = require("bluebird");
 const ScssCompiler = require("./ScssCompiler");
 const ScssDependencyResolver = require("./ScssDependencyResolver");
