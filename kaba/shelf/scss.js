@@ -8,13 +8,17 @@
  *      debug: boolean,
  *      watch: boolean,
  *      lint: boolean,
+ *      verbose: boolean,
  * }} ScssTaskConfig
  */
 
 const ScssTask = require("./scss/scss-task");
+const Logger = require("../lib/Logger");
+const defaultEnvironment = require("./app-environment");
 const _ = require("lodash");
 
 
+const logger = new Logger("SCSS", "blue");
 
 /**
  * Main task for Sass
@@ -37,35 +41,33 @@ module.exports = function (config = {})
         ignoreLintFor: ["/node_modules/", "/vendor/"],
         // Transforms the file name before writing the out file
         outputFileName: (outputFileName, inputFileName) => outputFileName,
-        // Whether to build for debug
-        debug: null,
-        // Whether to start the watcher
-        watch: null,
-        // Whether to lint the files
-        lint: null,
     }, config);
 
     // build internal config
     config.input = config.input.replace(/\/+$/, "") + "/";
 
-    return function (done, debug)
+
+
+    return function (done, env)
     {
-        if (null === config.debug)
-        {
-            config.debug = debug;
-        }
+        // keep the user defined parameters
+        config = _.assign({}, defaultEnvironment, env, config);
+        let task = new ScssTask(config, logger);
 
-        if (null === config.watch)
+        switch (config.mode)
         {
-            config.watch = debug;
-        }
+            case "compile":
+                task.compile(done);
+                break;
 
-        if (null === config.lint)
-        {
-            config.lint = debug;
-        }
+            case "lint":
+                task.lint(done);
+                break;
 
-        let task = new ScssTask(config);
-        task.run(done);
+            default:
+                logger.error(`Unsupported mode: ${config.mode}`);
+                done();
+                break;
+        }
     };
 };
