@@ -1,4 +1,5 @@
-const JsDirectoryTask = require("./js-directory-task");
+const BuildLogger = require("../../lib/BuildLogger");
+const JsDirectoryTask = require("./JsDirectoryTask");
 const glob = require("glob");
 
 
@@ -10,14 +11,21 @@ module.exports = class JsTask
     /**
      *
      * @param {JsTaskConfig} config
+     * @param {Logger} logger
      */
-    constructor (config)
+    constructor (config, logger)
     {
         /**
          * @private
          * @type {JsTaskConfig}
          */
         this.config = config;
+
+        /**
+         * @private
+         * @type {Logger}
+         */
+        this.logger = logger;
     }
 
 
@@ -26,18 +34,21 @@ module.exports = class JsTask
      *
      * @param {function()} done
      */
-    run (done)
+    compile (done)
     {
         glob(this.config.input,
-            (error, directories) => {
+            (error, directories) =>
+            {
                 if (error)
                 {
-                    throw error;
+                    this.logger.error(error);
+                    done();
+                    return;
                 }
 
                 directories.map(
                     (dir) => {
-                        let task = new JsDirectoryTask(dir, this.config);
+                        const task = new JsDirectoryTask(dir, this.config, this.logger.createChildLogger(BuildLogger, dir));
                         task.run();
                     }
                 );
@@ -56,5 +67,16 @@ module.exports = class JsTask
                 }
             }
         );
+    }
+
+
+    /**
+     * Lints the complete project
+     * @param {function} done
+     */
+    lint (done)
+    {
+        this.logger.error("No linting implemented yet.");
+        done();
     }
 };

@@ -13,8 +13,12 @@
  * }} JsTaskConfig
  */
 
-const JsTask = require("./js/js-task");
+const JsTask = require("./js/JsTask");
+const Logger = require("../lib/Logger");
 const _ = require("lodash");
+const defaultEnvironment = require("./app-environment");
+
+const logger = new Logger("JS", "yellow");
 
 
 /**
@@ -40,7 +44,7 @@ module.exports = function (config = {})
         },
         // flag whether react should be supported
         react: false,
-        // flag whether preact should be support
+        // flag whether preact should be supported
         preact: false,
         // a list of transforms
         transforms: [],
@@ -56,19 +60,26 @@ module.exports = function (config = {})
     config.input = config.input.replace(/\/+$/, "") + "/";
     config.externals = _.pickBy(config.externals, (value) => !!value);
 
-    return function (done, debug)
+    return function (done, env)
     {
-        if (null === config.debug)
-        {
-            config.debug = debug;
-        }
+        // keep the user defined parameters
+        config = _.assign({}, defaultEnvironment, env, config);
+        const task = new JsTask(config, logger);
 
-        if (null === config.watch)
+        switch (config.mode)
         {
-            config.watch = debug;
-        }
+            case "compile":
+                task.compile(done);
+                break;
 
-        let task = new JsTask(config);
-        task.run(done);
+            case "lint":
+                task.lint(done);
+                break;
+
+            default:
+                logger.error(`Unsupported mode: ${config.mode}`);
+                done();
+                break;
+        }
     };
 };

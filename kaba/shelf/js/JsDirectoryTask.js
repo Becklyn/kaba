@@ -22,8 +22,9 @@ module.exports = class JsDirectoryTask
     /**
      * @param {string} srcDir
      * @param {JsTaskConfig} config
+     * @param {BuildLogger} logger
      */
-    constructor (srcDir, config)
+    constructor (srcDir, config, logger)
     {
         /**
          * @private
@@ -54,9 +55,9 @@ module.exports = class JsDirectoryTask
 
         /**
          * @private
-         * @type {Logger}
+         * @type {BuildLogger}
          */
-        this.logger = new Logger("JS", "blue", srcDir);
+        this.logger = logger;
     }
 
 
