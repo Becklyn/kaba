@@ -1,5 +1,6 @@
 "use strict";
 
+const Promise = require("bluebird");
 const fs = require("fs");
 const postcss = require("postcss");
 const reporter = require("postcss-reporter");
@@ -35,27 +36,37 @@ module.exports = class ScssLinter
      * Lints the given file and all imported files
      *
      * @param {String} file the file path
+     *
+     * @return {Promise}
      */
     lintWithDependencies (file)
     {
-        // remember which files were linted to only lint each file once
-        let lintedFiles = {};
+        return new Promise(
+            (resolve) => {
+                // remember which files were linted to only lint each file once
+                const lintedFiles = {};
+                const tasks = [];
 
-        // find the imported files
-        let filesToLint = this.dependencyResolver.findDependencies(file);
+                // find the imported files
+                const filesToLint = this.dependencyResolver.findDependencies(file);
 
-        // add the current file
-        filesToLint.push(file);
+                // add the current file
+                filesToLint.push(file);
 
-        filesToLint.forEach(
-            (file) =>
-            {
-                // filter out duplicates
-                if (!lintedFiles[file])
-                {
-                    this.lint(file);
-                    lintedFiles[file] = true;
-                }
+                filesToLint.forEach(
+                    (file) =>
+                    {
+                        // filter out duplicates
+                        if (!lintedFiles[file])
+                        {
+                            tasks.push(this.lint(file));
+                            lintedFiles[file] = true;
+                        }
+                    }
+                );
+
+                Promise.all(tasks)
+                    .then(resolve);
             }
         );
     }
@@ -65,31 +76,45 @@ module.exports = class ScssLinter
      * Lints the given file
      *
      * @param {String} file the file path
+     *
+     * @return {Promise}
      */
     lint (file)
     {
-        if (filePathMatcher(file, this.config.ignoreLintFor))
-        {
-            return;
-        }
-
-
-        fs.readFile(file, "utf-8",
-            (err, fileContent) =>
+        return new Promise(
+            (resolve, reject) =>
             {
-                postcss([
-                    stylelint({
-                        configFile: __dirname + "/../../../.stylelintrc.yml",
-                    }),
-                    reporter({
-                        clearMessages: true,
-                    }),
-                ])
-                    .process(fileContent, {
-                        from: file, // required to have file names in the report
-                        syntax: scssSyntax,
-                    })
-                    .then();
+                if (filePathMatcher(file, this.config.ignoreLintFor))
+                {
+                    resolve();
+                    return;
+                }
+
+
+                fs.readFile(file, "utf-8",
+                    (err, fileContent) =>
+                    {
+                        if (err)
+                        {
+                            reject(err);
+                            return;
+                        }
+
+                        postcss([
+                            stylelint({
+                                configFile: __dirname + "/../../../.stylelintrc.yml",
+                            }),
+                            reporter({
+                                clearMessages: true,
+                            }),
+                        ])
+                            .process(fileContent, {
+                                from: file, // required to have file names in the report
+                                syntax: scssSyntax,
+                            })
+                            .then(resolve);
+                    }
+                );
             }
         );
     }
