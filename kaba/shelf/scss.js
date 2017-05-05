@@ -17,7 +17,7 @@ const ScssTask = require("./scss/ScssTask");
 const _ = require("lodash");
 const defaultEnvironment = require("./app-environment");
 
-const logger = new Logger("SCSS", "blue");
+const logger = new Logger("SCSS", "magenta");
 
 
 /**
