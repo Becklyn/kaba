@@ -12,13 +12,13 @@
  * }} ScssTaskConfig
  */
 
-const ScssTask = require("./scss/scss-task");
 const Logger = require("../lib/Logger");
-const defaultEnvironment = require("./app-environment");
+const ScssTask = require("./scss/ScssTask");
 const _ = require("lodash");
-
+const defaultEnvironment = require("./app-environment");
 
 const logger = new Logger("SCSS", "blue");
+
 
 /**
  * Main task for Sass

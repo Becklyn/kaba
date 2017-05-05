@@ -1,5 +1,3 @@
-"use strict";
-
 /**
  * @typedef {{
  *      imports: String[],
@@ -9,7 +7,6 @@
  */
 
 const sassGraph = require("sass-graph");
-const fs = require("fs-extra");
 const path = require("path");
 
 

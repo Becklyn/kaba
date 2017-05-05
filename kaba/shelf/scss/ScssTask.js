@@ -1,7 +1,7 @@
 const BuildLogger = require("../../lib/BuildLogger");
 const Promise = require("bluebird");
-const ScssDirectoryTask = require("./scss-directory-task");
-const ScssLinter = require("./scss-linter");
+const ScssDirectoryTask = require("./ScssDirectoryTask");
+const ScssLinter = require("./ScssLinter");
 const glob = require("glob");
 
 

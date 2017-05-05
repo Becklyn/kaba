@@ -1,14 +1,12 @@
-"use strict";
-
 const BuildError = require("../../lib/build-error");
+const Promise = require("bluebird");
+const ScssCompiler = require("./ScssCompiler");
+const ScssDependencyResolver = require("./ScssDependencyResolver");
+const ScssLinter = require("./ScssLinter");
 const chalk = require("chalk");
 const chokidar = require("chokidar");
 const glob = require("glob");
 const path = require("path");
-const Promise = require("bluebird");
-const ScssCompiler = require("./scss-compiler");
-const ScssDependencyResolver = require("./scss-dependency-resolver");
-const ScssLinter = require("./scss-linter");
 
 
 /**
