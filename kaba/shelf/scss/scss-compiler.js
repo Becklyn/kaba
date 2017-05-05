@@ -83,6 +83,7 @@ module.exports = class ScssCompiler
             );
     }
 
+
     /**
      * Compiles the file in the given file path
      *

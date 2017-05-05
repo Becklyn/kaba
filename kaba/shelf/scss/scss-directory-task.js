@@ -79,10 +79,12 @@ module.exports = class ScssDirectoryTask
             (resolve, reject) => {
                 glob(
                     this.srcDir + "/!(_)*.scss",
-                    (error, files) => {
+                    (error, files) =>
+                    {
                         if (error)
                         {
                             reject(error);
+                            return;
                         }
 
                         let tasks = this.compileFileList(files);
