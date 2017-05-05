@@ -52,7 +52,7 @@ module.exports = function (config = {})
     {
         // keep the user defined parameters
         config = _.assign({}, defaultEnvironment, env, config);
-        let task = new ScssTask(config, logger);
+        const task = new ScssTask(config, logger);
 
         switch (config.mode)
         {
