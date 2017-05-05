@@ -36,5 +36,8 @@
     "transformify": "^0.1.2",
     "uglify-js": "^2.8.7",
     "watchify": "^3.9.0"
-  }
+  },
+    "engines": {
+        "node": ">=6.5"
+    }
 }
