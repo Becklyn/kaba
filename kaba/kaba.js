@@ -1,9 +1,5 @@
-const EventEmitter = require('events');
+const EventEmitter = require("events");
 const async = require("async");
-
-
-// export a single instance
-module.exports = new Kaba();
 
 
 /**
@@ -14,6 +10,12 @@ class Kaba extends EventEmitter
     constructor ()
     {
         super();
+
+        /**
+         * @private
+         * @type {string}
+         */
+        this.version = require("../package.json").version;
 
         /**
          * The list of all defined tasks
@@ -34,14 +36,16 @@ class Kaba extends EventEmitter
 
         // define default tasks
         this.shelf = {
-            scss: require("./kaba/scss"),
-            js: require("./kaba/js")
+            scss: require("./shelf/scss"),
+            js: require("./shelf/js")
         };
     }
 
 
     /**
-     * Returns the registered task by name
+     * Returns the registered task by name.
+     *
+     * Although this method is private, it will be used by kaba-cli
      *
      * @private
      * @param {string} taskName
@@ -196,3 +200,7 @@ class Kaba extends EventEmitter
             : this.DEFAULT_TASK_NAME;
     }
 }
+
+
+// export a single instance
+module.exports = new Kaba();
