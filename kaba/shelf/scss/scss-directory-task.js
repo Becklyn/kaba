@@ -4,7 +4,6 @@ const BuildError = require("../../lib/build-error");
 const chalk = require("chalk");
 const chokidar = require("chokidar");
 const glob = require("glob");
-const Logger = require("../../lib/logger");
 const path = require("path");
 const Promise = require("bluebird");
 const ScssCompiler = require("./scss-compiler");
@@ -21,8 +20,9 @@ module.exports = class ScssDirectoryTask
      *
      * @param {string} srcDir
      * @param {ScssTaskConfig} config
+     * @param {BuildLogger} logger
      */
-    constructor (srcDir, config)
+    constructor (srcDir, config, logger)
     {
         /**
          * @private
@@ -44,9 +44,9 @@ module.exports = class ScssDirectoryTask
 
         /**
          * @private
-         * @type {Logger}
+         * @type {BuildLogger}
          */
-        this.logger = new Logger("CSS", "blue", this.srcDir);
+        this.logger = logger;
 
         /**
          * @private
@@ -93,6 +93,38 @@ module.exports = class ScssDirectoryTask
                                 (file) => this.linter.lintWithDependencies(file)
                             );
                         }
+
+                        Promise.all(tasks)
+                            .then(resolve);
+                    }
+                );
+            }
+        );
+    }
+
+
+    /**
+     * Lints the complete directory
+     *
+     * @return {Promise}
+     */
+    lint ()
+    {
+        return new Promise(
+            (resolve, reject) => {
+                glob(
+                    this.srcDir + "/!(_)*.scss",
+                    (error, files) =>
+                    {
+                        if (error)
+                        {
+                            reject(error);
+                            return;
+                        }
+
+                        const tasks = files.map(
+                            (file) => this.linter.lintWithDependencies(file)
+                        );
 
                         Promise.all(tasks)
                             .then(resolve);
@@ -159,7 +191,7 @@ module.exports = class ScssDirectoryTask
                     }
                     else
                     {
-                        this.logger.logError(error);
+                        this.logger.error(error);
                     }
                 }
             );
@@ -196,12 +228,12 @@ module.exports = class ScssDirectoryTask
         this.linter.lint(file);
 
         // find dependents to generate compile list
-        let changedFiles = this.dependencyResolver.findDependents(file);
+        const changedFiles = this.dependencyResolver.findDependents(file);
 
         // add the current file to the compile list
         changedFiles.push(file);
 
         // compile the list of files
-        this.compileFileList(changedFiles, true);
+        this.compileFileList(changedFiles);
     }
 };
