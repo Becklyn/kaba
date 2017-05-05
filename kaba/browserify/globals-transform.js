@@ -1,5 +1,3 @@
-"use strict";
-
 const through = require('through2');
 const transformify = require('transformify');
 const replaceRequires = require("replace-requires");

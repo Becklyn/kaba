@@ -1,5 +1,3 @@
-"use strict";
-
 const CLIEngine = require("eslint").CLIEngine;
 const Promise = require("bluebird");
 const fs = require("fs");
