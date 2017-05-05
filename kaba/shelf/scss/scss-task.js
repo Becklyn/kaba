@@ -1,20 +1,8 @@
-"use strict";
-
-// libraries
-const chokidar = require("chokidar");
-const glob = require("glob");
-const path = require("path");
-const fs = require("fs-extra");
+const BuildLogger = require("../../lib/BuildLogger");
 const Promise = require("bluebird");
-const writeOutputFile = require("../../lib/file-writer");
-const chalk = require("chalk");
-
-const ScssDependencyResolver = require("./scss-dependency-resolver");
-const ScssLinter = require("./scss-linter");
-const Logger = require("../../lib/logger");
 const ScssDirectoryTask = require("./scss-directory-task");
-
-
+const ScssLinter = require("./scss-linter");
+const glob = require("glob");
 
 
 module.exports = class ScssTask
@@ -22,8 +10,9 @@ module.exports = class ScssTask
     /**
      *
      * @param {ScssTaskConfig} config
+     * @param {Logger} logger
      */
-    constructor (config)
+    constructor (config, logger)
     {
         /**
          * @private
@@ -33,24 +22,32 @@ module.exports = class ScssTask
 
         /**
          * @private
-         * @type {ScssDependencyResolver}
+         * @type {Logger}
          */
-        // this.dependencyResolver = new ScssDependencyResolver(path.dirname(config.input));
+        this.logger = logger;
 
         /**
          * @private
          * @type {ScssLinter}
          */
         this.linter = new ScssLinter(config);
+
+        /**
+         * All directory tasks
+         *
+         * @private
+         * @type {ScssDirectoryTask[]}
+         */
+        this.directories = this.loadDirectories();
     }
 
 
     /**
-     * Runs the task
+     * Compiles the project
      *
      * @param {function} done
      */
-    run (done)
+    compile (done)
     {
         // compile project and start watchers
         // the watchers ignore the initial events, as otherwise all dependencies would repeatedly
@@ -69,6 +66,36 @@ module.exports = class ScssTask
         }
     }
 
+    /**
+     * Lints all files
+     *
+     * @param {function} done
+     */
+    lint (done)
+    {
+        const tasks = this.directories.map(
+            (task) => task.lint()
+        );
+
+        Promise.all(tasks)
+            .then(done);
+    }
+
+
+    /**
+     * Loads all tasks
+     *
+     * @private
+     * @returns {ScssDirectoryTask[]}
+     */
+    loadDirectories ()
+    {
+        return glob.sync(this.config.input)
+            .map(
+                (dir) => new ScssDirectoryTask(dir, this.config, this.logger.createChildLogger(BuildLogger, dir))
+            );
+    }
+
 
     /**
      * Compiles the complete project
@@ -77,32 +104,11 @@ module.exports = class ScssTask
      */
     compileProject ()
     {
-        return new Promise(
-            (resolve, reject) => {
-                glob(
-                    this.config.input,
-                    (error, directories) =>
-                    {
-                        if (error)
-                        {
-                            reject(error);
-                        }
-
-                        let tasks = [];
-
-                        directories.forEach(
-                            (dir) => {
-                                let task = new ScssDirectoryTask(dir, this.config);
-                                tasks.push(task.compile());
-                            }
-                        );
-
-                        Promise.all(tasks)
-                            .then(resolve);
-                    }
-                );
-            }
+        const tasks = this.directories.map(
+            (task) => task.compile()
         );
+
+        return Promise.all(tasks);
     }
 
 
@@ -122,6 +128,7 @@ module.exports = class ScssTask
                         if (error)
                         {
                             reject(error);
+                            return;
                         }
 
                         directories.forEach(
