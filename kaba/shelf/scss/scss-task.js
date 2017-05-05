@@ -133,7 +133,7 @@ module.exports = class ScssTask
 
                         directories.forEach(
                             (dir) => {
-                                let task = new ScssDirectoryTask(dir, this.config);
+                                const task = new ScssDirectoryTask(dir, this.config);
                                 task.watch();
                             }
                         );
