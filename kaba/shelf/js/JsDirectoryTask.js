@@ -1,3 +1,4 @@
+const CompilationStartNotifier = require("./CompilationStartNotifier");
 const chalk = require("chalk");
 const glob = require("glob");
 const lint = require("./lint");
@@ -143,7 +144,7 @@ module.exports = class JsDirectoryTask
 
                     // plugins
                     plugins: [
-
+                        new CompilationStartNotifier(this.logger),
                     ],
 
                     // devtool
