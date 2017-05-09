@@ -3,7 +3,6 @@ const CompilationStartNotifier = require("./CompilationStartNotifier");
 const chalk = require("chalk");
 const filePathMatcher = require("../../lib/file-path-matcher");
 const glob = require("glob");
-const lint = require("./lint");
 const path = require("path");
 const webpack = require("webpack");
 
