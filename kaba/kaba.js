@@ -33,12 +33,23 @@ class Kaba extends EventEmitter
          */
         this.DEFAULT_TASK_NAME = "";
 
+        /**
+         * @private
+         * @type {number}
+         */
+        this.exitCode = 0;
+
 
         // define default tasks
         this.shelf = {
-            scss: require("./shelf/scss"),
-            js: require("./shelf/js")
+            scss: require("./shelf/scss")(this),
+            js: require("./shelf/js")(this),
         };
+
+
+        process.on("exit", () => {
+            process.exit(this.exitCode);
+        });
     }
 
 
