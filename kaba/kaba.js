@@ -81,9 +81,19 @@ class Kaba extends EventEmitter
      */
     task (taskName, taskFunction)
     {
+        if (typeof taskName !== "string" && null !== taskName)
+        {
+            throw new Error(`Please pass a string as task name`)
+        }
+
+        if (typeof taskFunction !== "function")
+        {
+            throw new Error(`Only functions can be registered as tasks, ${typeof taskFunction} given.`);
+        }
+
         taskName = this.normalizeTaskName(taskName);
 
-        if (this.tasks[taskName])
+        if (typeof this.tasks[taskName] !== "undefined")
         {
             if (this.DEFAULT_TASK_NAME === taskName)
             {
@@ -93,11 +103,6 @@ class Kaba extends EventEmitter
             {
                 throw new Error(`Task with name ${taskName} already defined.`);
             }
-        }
-
-        if (typeof taskFunction !== "function")
-        {
-            throw new Error(`Only functions can be registered as tasks, ${typeof taskFunction} given.`);
         }
 
         const taskId = this.listTasks().length;
