@@ -79,7 +79,20 @@ module.exports = class JsTask
      */
     lint (done)
     {
-        this.logger.error("No linting implemented yet.");
-        done();
+        const tasks = this.directories.map(
+            (task) => task.lint()
+        );
+
+        Promise.all(tasks)
+            .then((results) => {
+                const hadErrors = results[0];
+
+                if (hadErrors)
+                {
+                    this.kaba.setErrorExit();
+                }
+
+                done();
+            });
     }
 };

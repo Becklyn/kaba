@@ -11,6 +11,7 @@
  *      outputFileName: function(string):string,
  *      debug: boolean,
  *      watch: boolean,
+ *      lint: boolean,
  * }} JsTaskConfig
  */
 
