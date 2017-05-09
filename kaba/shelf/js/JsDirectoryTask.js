@@ -142,6 +142,13 @@ module.exports = class JsDirectoryTask
                         ],
                     },
 
+                    resolveLoader: {
+                        modules: [
+                            `${process.cwd()}/node_modules`,
+                            `${__dirname}/../../../node_modules`,
+                        ],
+                    },
+
                     // plugins
                     plugins: [
                         new CompilationStartNotifier(this.logger),
