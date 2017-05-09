@@ -160,11 +160,6 @@ module.exports = class JsDirectoryTask
                     // target
                     target: "web",
 
-                    // Watching
-                    watchOptions: {
-                        ignored: /node_modules/,
-                    },
-
                     // externals
                     externals: this.config.externals,
                 };
@@ -207,7 +202,9 @@ module.exports = class JsDirectoryTask
                 }
                 else
                 {
-                    const watcher = compiler.watch(
+                    const watcher = compiler.watch({
+                            ignored: /node_modules/,
+                        },
                         (err, stats) =>
                         {
                             if (err)
@@ -215,6 +212,8 @@ module.exports = class JsDirectoryTask
                                 reject(err);
                                 return;
                             }
+
+                            this.logStats(stats);
                         }
                     );
 
