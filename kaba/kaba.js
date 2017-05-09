@@ -1,5 +1,9 @@
 const EventEmitter = require("events");
 const async = require("async");
+const chalk = require("chalk");
+const fs = require("fs-extra");
+const glob = require("glob");
+const path = require("path");
 
 
 /**
@@ -218,6 +222,86 @@ class Kaba extends EventEmitter
     setErrorExit ()
     {
         this.exitCode = 1;
+    }
+
+
+    /**
+     * Initializes the project with the given init files
+     *
+     * Called internally by kaba-cli
+     *
+     * @private
+     * @param {string} file
+     * @return {string|bool} true, or the error message
+     */
+    initProject (file)
+    {
+        const targetPath = `${process.cwd()}/kabafile.js`;
+
+        if (!/^[a-z\-_0-9]+$/.test(file))
+        {
+            return `Invalid init file name given. Init files may only contain a-z, 0-9, "-" and "_".`;
+        }
+
+        if (fs.existsSync(targetPath))
+        {
+            return `kabafile was already created, can't run init.`;
+        }
+
+        const initFiles = this.getAllInitFiles();
+
+        if (typeof initFiles[file] === "undefined")
+        {
+            return `Can't find init file “${file}”.`;
+        }
+
+        fs.copySync(initFiles[file], targetPath);
+        return true;
+    }
+
+
+    /**
+     * Returns a map of all init files
+     *
+     * @returns {Object.<string, string>}
+     */
+    getAllInitFiles ()
+    {
+        const files = {};
+
+        glob.sync(`${__dirname}/../init/*.js`).forEach(
+            (file) => {
+                files[path.basename(file, ".js")] = file;
+            }
+        );
+
+        return files;
+    }
+
+
+    /**
+     * Returns a list of all init identifiers
+     *
+     * Called internally by kaba-cli
+     *
+     * @private
+     * @returns {string[]}
+     */
+    getAllInitIdentifiers ()
+    {
+        const identifiers = [];
+        const initFiles = this.getAllInitFiles();
+
+        for (const id in initFiles)
+        {
+            if (initFiles.hasOwnProperty(id))
+            {
+                identifiers.push(id);
+            }
+        }
+
+        identifiers.sort();
+        return identifiers;
     }
 }
 
