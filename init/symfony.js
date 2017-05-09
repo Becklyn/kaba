@@ -7,4 +7,4 @@ kaba.task("scss", scss);
 kaba.task("js", js);
 
 kaba.task("", kaba.parallel(scss, js));
-kaba.task("release", kaba.task(""));
+kaba.task("release", kaba.parallel(""));
