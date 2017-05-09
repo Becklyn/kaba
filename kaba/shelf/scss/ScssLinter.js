@@ -64,7 +64,9 @@ module.exports = class ScssLinter
                 );
 
                 Promise.all(tasks)
-                    .then(resolve);
+                    .then((results) => {
+                        resolve(results.includes(true));
+                    });
             }
         );
     }
@@ -88,7 +90,6 @@ module.exports = class ScssLinter
                     return;
                 }
 
-
                 fs.readFile(file, "utf-8",
                     (err, fileContent) =>
                     {
@@ -110,7 +111,9 @@ module.exports = class ScssLinter
                                 from: file, // required to have file names in the report
                                 syntax: scssSyntax,
                             })
-                            .then(resolve);
+                            .then((result) => {
+                                resolve(0 < result.messages.length);
+                            });
                     }
                 );
             }

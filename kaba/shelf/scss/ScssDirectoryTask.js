@@ -127,7 +127,9 @@ module.exports = class ScssDirectoryTask
                         );
 
                         Promise.all(tasks)
-                            .then(resolve);
+                            .then((results) => {
+                                resolve(results.includes(true));
+                            });
                     }
                 );
             }

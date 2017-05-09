@@ -85,7 +85,15 @@ module.exports = class ScssTask
         );
 
         Promise.all(tasks)
-            .then(done);
+            .then((results) => {
+
+                if (results.includes(true))
+                {
+                    this.kaba.setErrorExit();
+                }
+
+                done();
+            });
     }
 
 
