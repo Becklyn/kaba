@@ -210,6 +210,15 @@ class Kaba extends EventEmitter
             ? taskName
             : this.DEFAULT_TASK_NAME;
     }
+
+
+    /**
+     * Sets an error exit
+     */
+    setErrorExit ()
+    {
+        this.exitCode = 1;
+    }
 }
 
 

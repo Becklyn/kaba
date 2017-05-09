@@ -21,53 +21,61 @@ const logger = new Logger("SCSS", "magenta");
 
 
 /**
- * Main task for Sass
+ * Task builder for SASS
  *
- * @param {ScssTaskConfig} config
- *
+ * @param {Kaba} kaba
  * @returns {Function}
  */
-module.exports = function (config = {})
-{
-    // parse user config
-    config = _.assign({
-        // input directory (can be a glob to multiple directories)
-        input: "src/**/Resources/assets/scss/",
-        // output directory (relative to input directory)
-        output: "../../public/css",
-        // browsers to support
-        browsers: ["last 2 versions", "IE 10", "IE 11"],
-        // list of file path paths (string or regex). If the file path matches one of these entries, the file won't be linted
-        ignoreLintFor: ["/node_modules/", "/vendor/"],
-        // Transforms the file name before writing the out file
-        outputFileName: (outputFileName, inputFileName) => outputFileName,
-    }, config);
+module.exports = (kaba) => {
 
-    // build internal config
-    config.input = config.input.replace(/\/+$/, "") + "/";
-
-
-
-    return function (done, env)
+    /**
+     * Main task for Sass
+     *
+     * @param {ScssTaskConfig} config
+     * @returns {Function}
+     */
+    return (config = {}) =>
     {
-        // keep the user defined parameters
-        config = _.assign({}, defaultEnvironment, env, config);
-        const task = new ScssTask(config, logger);
+        // parse user config
+        config = _.assign({
+            // input directory (can be a glob to multiple directories)
+            input: "src/**/Resources/assets/scss/",
+            // output directory (relative to input directory)
+            output: "../../public/css",
+            // browsers to support
+            browsers: ["last 2 versions", "IE 10", "IE 11"],
+            // list of file path paths (string or regex). If the file path matches one of these entries, the file won't be linted
+            ignoreLintFor: ["/node_modules/", "/vendor/"],
+            // Transforms the file name before writing the out file
+            outputFileName: (outputFileName, inputFileName) => outputFileName,
+        }, config);
 
-        switch (config.mode)
+        // build internal config
+        config.input = config.input.replace(/\/+$/, "") + "/";
+
+
+
+        return function (done, env)
         {
-            case "compile":
-                task.compile(done);
-                break;
+            // keep the user defined parameters
+            config = _.assign({}, defaultEnvironment, env, config);
+            const task = new ScssTask(config, logger, kaba);
 
-            case "lint":
-                task.lint(done);
-                break;
+            switch (config.mode)
+            {
+                case "compile":
+                    task.compile(done);
+                    break;
 
-            default:
-                logger.error(`Unsupported mode: ${config.mode}`);
-                done();
-                break;
-        }
-    };
+                case "lint":
+                    task.lint(done);
+                    break;
+
+                default:
+                    logger.error(`Unsupported mode: ${config.mode}`);
+                    done();
+                    break;
+            }
+        };
+    }
 };

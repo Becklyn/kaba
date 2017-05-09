@@ -23,62 +23,70 @@ const logger = new Logger("JS", "yellow");
 
 
 /**
- * Main task for Sass
+ * Task builder for JS
  *
- * @param {JsTaskConfig} config
- *
+ * @param {Kaba} kaba
  * @returns {Function}
  */
-module.exports = function (config = {})
-{
-    config = _.defaultsDeep(config, {
-        // input directory (can be a glob to multiple directories)
-        input: "src/**/Resources/assets/js/",
-        // output directory (relative to input directory)
-        output: "../../public/js",
-        // list of file path paths (string or regex). If the file path matches one of these entries, the file won't be linted
-        ignoreLintFor: ["/node_modules/", "/vendor/"],
-        // browsers to support
-        browsers: ["last 2 versions", "IE 10", "IE 11"],
-        // external global variables for JS compilation
-        externals: {
-            jquery: "window.jQuery",
-            routing: "window.Routing",
-        },
-        // flag whether react should be supported
-        react: false,
-        // flag whether preact should be supported
-        preact: false,
-        // a list of transforms
-        transforms: [],
-        // Transforms the file name before writing the out file
-        outputFileName: (fileName) => fileName,
-    });
+module.exports = (kaba) => {
 
-    // ensure one trailing slash
-    config.input = config.input.replace(/\/+$/, "") + "/";
-    config.externals = _.pickBy(config.externals, (value) => !!value);
-
-    return function (done, env)
+    /**
+     * Main task for JS
+     *
+     * @param {JsTaskConfig} config
+     * @returns {Function}
+     */
+    return (config = {}) =>
     {
-        // keep the user defined parameters
-        config = _.assign({}, defaultEnvironment, env, config);
-        const task = new JsTask(config, logger);
+        config = _.defaultsDeep(config, {
+            // input directory (can be a glob to multiple directories)
+            input: "src/**/Resources/assets/js/",
+            // output directory (relative to input directory)
+            output: "../../public/js",
+            // list of file path paths (string or regex). If the file path matches one of these entries, the file won't be linted
+            ignoreLintFor: ["/node_modules/", "/vendor/"],
+            // browsers to support
+            browsers: ["last 2 versions", "IE 10", "IE 11"],
+            // external global variables for JS compilation
+            externals: {
+                jquery: "window.jQuery",
+                routing: "window.Routing",
+            },
+            // flag whether react should be supported
+            react: false,
+            // flag whether preact should be supported
+            preact: false,
+            // a list of transforms
+            transforms: [],
+            // Transforms the file name before writing the out file
+            outputFileName: (fileName) => fileName,
+        });
 
-        switch (config.mode)
+        // ensure one trailing slash
+        config.input = config.input.replace(/\/+$/, "") + "/";
+        config.externals = _.pickBy(config.externals, (value) => !!value);
+
+        return function (done, env)
         {
-            case "compile":
-                task.compile(done);
-                break;
+            // keep the user defined parameters
+            config = _.assign({}, defaultEnvironment, env, config);
+            const task = new JsTask(config, logger, kaba);
 
-            case "lint":
-                task.lint(done);
-                break;
+            switch (config.mode)
+            {
+                case "compile":
+                    task.compile(done);
+                    break;
 
-            default:
-                logger.error(`Unsupported mode: ${config.mode}`);
-                done();
-                break;
-        }
+                case "lint":
+                    task.lint(done);
+                    break;
+
+                default:
+                    logger.error(`Unsupported mode: ${config.mode}`);
+                    done();
+                    break;
+            }
+        };
     };
 };

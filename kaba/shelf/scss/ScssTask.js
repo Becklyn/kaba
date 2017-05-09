@@ -11,8 +11,9 @@ module.exports = class ScssTask
      *
      * @param {ScssTaskConfig} config
      * @param {Logger} logger
+     * @param {Kaba} kaba
      */
-    constructor (config, logger)
+    constructor (config, logger, kaba)
     {
         /**
          * @private
@@ -25,6 +26,12 @@ module.exports = class ScssTask
          * @type {Logger}
          */
         this.logger = logger;
+
+        /**
+         * @private
+         * @type {Kaba}
+         */
+        this.kaba = kaba;
 
         /**
          * @private

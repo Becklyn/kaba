@@ -12,8 +12,9 @@ module.exports = class JsTask
      *
      * @param {JsTaskConfig} config
      * @param {Logger} logger
+     * @param {Kaba} kaba
      */
-    constructor (config, logger)
+    constructor (config, logger, kaba)
     {
         /**
          * @private
@@ -26,6 +27,12 @@ module.exports = class JsTask
          * @type {Logger}
          */
         this.logger = logger;
+
+        /**
+         * @private
+         * @type {Kaba}
+         */
+        this.kaba = kaba;
 
         /**
          * @private
