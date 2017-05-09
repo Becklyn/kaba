@@ -1,5 +1,7 @@
+const CLIEngine = require("eslint").CLIEngine;
 const CompilationStartNotifier = require("./CompilationStartNotifier");
 const chalk = require("chalk");
+const filePathMatcher = require("../../lib/file-path-matcher");
 const glob = require("glob");
 const lint = require("./lint");
 const path = require("path");
@@ -30,7 +32,6 @@ module.exports = class JsDirectoryTask
          */
         this.srcDir = srcDir;
 
-
         /**
          * The input glob with which the files are matched
          *
@@ -53,6 +54,7 @@ module.exports = class JsDirectoryTask
     }
 
 
+    //region Compilation
     /**
      * Compiles the complete project
      *
@@ -86,7 +88,6 @@ module.exports = class JsDirectoryTask
             }
         );
     }
-
 
 
     /**
@@ -182,6 +183,20 @@ module.exports = class JsDirectoryTask
                     );
                 }
 
+                if (this.config.lint)
+                {
+                    webpackConfig.module.rules.push({
+                        enforce: "pre",
+                        test: /\.jsx?$/,
+                        exclude: /node_modules|vendor/,
+                        loader: "eslint-loader",
+                        options: {
+                            presets: ["es2015"],
+                            configFile: `${__dirname}/../../../.eslintrc.yml`,
+                        },
+                    });
+                }
+
                 const compiler = webpack(webpackConfig);
 
                 if (!this.config.watch)
@@ -225,6 +240,100 @@ module.exports = class JsDirectoryTask
             }
         );
     }
+    //endregion
+
+
+    //region Linting
+    /**
+     * Lints the complete project
+     *
+     * @returns {Promise}
+     */
+    lint ()
+    {
+        return new Promise(
+            (resolve, reject) =>
+            {
+                glob(this.inputFilesGlob,
+                    {
+                        absolute: true,
+                    },
+                    (err, files) =>
+                    {
+                        if (err)
+                        {
+                            reject(err);
+                            return;
+                        }
+
+                        const taskResults = files.map(
+                            (file) => this.lintFile(file)
+                        );
+
+                        resolve(taskResults.includes(true));
+                    }
+                );
+            }
+        );
+    }
+
+
+    /**
+     * Lints the given file
+     *
+     * @param {string} file
+     * @return {boolean} whether there was a linting error
+     */
+    lintFile (file)
+    {
+        if (filePathMatcher(file, this.config.ignoreLintFor))
+        {
+            return false;
+        }
+
+        let esLintConfig = {
+            configFile: __dirname + "/../../../.eslintrc.yml",
+            ignore: false,
+            ecmaFeatures: {}
+        };
+
+        // set specific options for different file extensions
+        switch (path.extname(file))
+        {
+            case ".jsx":
+                esLintConfig.ecmaFeatures.jsx = true;
+                break;
+
+            case ".js":
+                // continue with linting
+                break;
+
+            default:
+                // abort linting, as any other file extension is given
+                return false;
+        }
+
+        let engine = new CLIEngine(esLintConfig);
+        let formatter = engine.getFormatter();
+        let report = engine.executeOnFiles([file]);
+
+        if (report.errorCount || report.warningCount)
+        {
+            // make all paths relative
+            report.results = report.results.map(
+                (entry) =>
+                {
+                    entry.filePath = path.relative(process.cwd(), entry.filePath);
+                    return entry;
+                }
+            );
+
+            console.log(formatter(report.results));
+        }
+
+        return report.errorCount > 0;
+    }
+    //endregion
 
 
     /**
@@ -235,9 +344,13 @@ module.exports = class JsDirectoryTask
      */
     logStats (stats)
     {
+        this.logger.log("");
+
         this.logger.log(stats.toString({
             colors: true,
         }));
+
+        this.logger.log("");
     }
 
 
