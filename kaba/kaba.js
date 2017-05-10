@@ -294,19 +294,8 @@ class Kaba extends EventEmitter
      */
     getAllInitIdentifiers ()
     {
-        const identifiers = [];
-        const initFiles = this.getAllInitFiles();
-
-        for (const id in initFiles)
-        {
-            if (initFiles.hasOwnProperty(id))
-            {
-                identifiers.push(id);
-            }
-        }
-
-        identifiers.sort();
-        return identifiers;
+        return Object.keys(this.getAllInitFiles())
+            .sort();
     }
 }
 
