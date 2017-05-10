@@ -259,6 +259,8 @@ rules:
     'react/jsx-equals-spacing':
         - warn
         - "never"
+    'react/jsx-filename-extension':
+        - error
     'react/jsx-indent':
         - warn
         - 4
