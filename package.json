@@ -23,6 +23,7 @@
         "csso": "^3.1.1",
         "eslint": "^3.17.0",
         "eslint-loader": "^1.7.1",
+        "eslint-plugin-react": "^7.0.0",
         "fs-extra": "^2.0.0",
         "glob": "^7.1.1",
         "lodash": "^4.17.4",
