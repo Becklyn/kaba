@@ -1,3 +1,13 @@
+/**
+ * @typedef {{
+ *  debug: boolean,
+ *  watch: boolean,
+ *  lint: boolean,
+ *  verbose: boolean,
+ *  mode: string,
+ *  cliVersion: ?string,
+ * }} KabaAppEnvironment
+ */
 module.exports = {
     // Whether to build for debug
     debug: false,
@@ -9,4 +19,5 @@ module.exports = {
     verbose: false,
     // What to do when running a shelf task
     mode: "compile",
+    cliVersion: null,
 };

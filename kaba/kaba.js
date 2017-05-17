@@ -11,6 +11,9 @@ const path = require("path");
  */
 class Kaba extends EventEmitter
 {
+    /**
+     *
+     */
     constructor ()
     {
         super();
@@ -49,7 +52,6 @@ class Kaba extends EventEmitter
             scss: require("./shelf/scss")(this),
             js: require("./shelf/js")(this),
         };
-
 
         process.on("exit", () => {
             process.exit(this.exitCode);
@@ -108,7 +110,15 @@ class Kaba extends EventEmitter
         const taskId = this.listTasks().length;
 
         // generate a new task function, that properly emits the required timing events
-        this.tasks[taskName] = (done, ...taskArguments) => {
+        /**
+         * @param {function} done
+         * @param {KabaAppEnvironment} env
+         * @param {...*} taskArguments
+         */
+        this.tasks[taskName] = (done, env,...taskArguments) => {
+
+            this.ensureCompatibilityWithCliVersion(env);
+
             this.emit("start", {
                 task: taskName,
                 id: taskId
@@ -123,8 +133,25 @@ class Kaba extends EventEmitter
             };
 
             // run task
-            taskFunction(taskDone, ...taskArguments);
+            taskFunction(taskDone, env, ...taskArguments);
         };
+    }
+
+
+    /**
+     * Checks whether kaba is compatible with the given CLI version
+     *
+     * @private
+     * @param {KabaAppEnvironment} env
+     * @returns {boolean}
+     */
+    ensureCompatibilityWithCliVersion (env)
+    {
+        // just the presence of the attribute is enough
+        if (null == env.cliVersion)
+        {
+            throw new Error("Your kaba version is incompatible with the used kaba-cli version. Please use kaba-cli >= 2.0");
+        }
     }
 
 
