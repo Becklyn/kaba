@@ -169,6 +169,8 @@ module.exports = class JsDirectoryTask
                                 warnings: false,
                                 drop_console: false,
                             },
+                            extractComments: true,
+                            sourceMap: true,
                         })
                     );
 
