@@ -67,8 +67,8 @@ module.exports = (kaba) => {
                     task.compile(done);
                     break;
 
-                case "lint":
-                    task.lint(done);
+                case "validate":
+                    task.validate(done);
                     break;
 
                 default:

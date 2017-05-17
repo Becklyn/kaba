@@ -74,10 +74,10 @@ module.exports = class JsTask
 
 
     /**
-     * Lints the complete project
+     * Validates the complete project
      * @param {function} done
      */
-    lint (done)
+    validate (done)
     {
         const tasks = this.directories.map(
             (task) => task.lint()

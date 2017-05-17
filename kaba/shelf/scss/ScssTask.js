@@ -74,12 +74,13 @@ module.exports = class ScssTask
         }
     }
 
+
     /**
-     * Lints all files
+     * Validates all files
      *
      * @param {function} done
      */
-    lint (done)
+    validate (done)
     {
         const tasks = this.directories.map(
             (task) => task.lint()
