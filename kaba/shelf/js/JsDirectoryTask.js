@@ -152,7 +152,7 @@ module.exports = class JsDirectoryTask
                     ],
 
                     // devtool
-                    devtool: this.config.debug ? "inline-source-map" : "hidden-source-map",
+                    devtool: this.config.debug ? "inline-source-map" : (this.config.sourceMaps ? "hidden-source-map" : false),
 
                     // target
                     target: "web",
@@ -170,7 +170,7 @@ module.exports = class JsDirectoryTask
                                 drop_console: false,
                             },
                             extractComments: true,
-                            sourceMap: true,
+                            sourceMap: this.config.debug || this.config.sourceMaps,
                         })
                     );
 

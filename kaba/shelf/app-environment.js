@@ -6,6 +6,7 @@
  *  verbose: boolean,
  *  mode: string,
  *  cliVersion: ?string,
+ *  sourceMaps: boolean,
  * }} KabaAppEnvironment
  */
 module.exports = {
@@ -20,4 +21,5 @@ module.exports = {
     // What to do when running a shelf task
     mode: "compile",
     cliVersion: null,
+    sourceMaps: false,
 };

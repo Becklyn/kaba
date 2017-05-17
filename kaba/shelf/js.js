@@ -8,6 +8,7 @@
  *      debug: boolean,
  *      watch: boolean,
  *      lint: boolean,
+ *      sourceMaps: boolean,
  * }} JsTaskConfig
  */
 
