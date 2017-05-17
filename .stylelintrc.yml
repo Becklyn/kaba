@@ -64,6 +64,12 @@ rules:
     declaration-bang-space-before: always
     declaration-colon-space-after: always-single-line
     declaration-colon-space-before: never
+    declaration-empty-line-before:
+        - always
+        - except:
+            - "after-comment"
+            - "after-declaration"
+            - "first-nested"
     declaration-no-important: true
 
     # Declaration block
@@ -101,7 +107,11 @@ rules:
     selector-list-comma-space-before: never
 
     # Rule
-    rule-empty-line-before: always-multi-line
+    rule-empty-line-before:
+        - always-multi-line
+        - except:
+            - "after-single-line-comment"
+            - "first-nested"
 
     # Media feature
     media-feature-colon-space-after: always
