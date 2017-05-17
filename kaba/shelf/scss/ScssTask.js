@@ -63,7 +63,8 @@ module.exports = class ScssTask
 
         if (this.config.watch)
         {
-            this.watchProject()
+            compilePipeline
+                .then(() => this.watchProject())
                 .then(done);
         }
         else
@@ -135,31 +136,17 @@ module.exports = class ScssTask
     watchProject ()
     {
         return new Promise(
-            (resolve, reject) => {
-                glob(
-                    this.config.input,
-                    (error, directories) =>
-                    {
-                        if (error)
-                        {
-                            reject(error);
-                            return;
-                        }
+            (resolve) => {
 
-                        directories.forEach(
-                            (dir) => {
-                                const task = new ScssDirectoryTask(dir, this.config);
-                                task.watch();
-                            }
-                        );
+                this.directories.map(
+                    (task) => task.watch()
+                );
 
-                        process
-                            .on("SIGINT", () => {
-                                resolve();
-                                setTimeout(process.exit, 1);
-                            });
-                    }
-                )
+                process
+                    .on("SIGINT", (event) => {
+                        resolve();
+                        setTimeout(process.exit, 1);
+                    });
             }
         );
     }
