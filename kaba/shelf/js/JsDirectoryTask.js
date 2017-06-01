@@ -116,7 +116,7 @@ module.exports = class JsDirectoryTask
                             // Babel
                             {
                                 test: /\.jsx?$/,
-                                exclude: /node_modules/,
+                                include: this.config.transformDirectories,
                                 use: {
                                     loader: "babel-loader?cacheDirectory",
                                     options: {

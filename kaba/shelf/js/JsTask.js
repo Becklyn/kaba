@@ -50,7 +50,13 @@ module.exports = class JsTask
      */
     loadDirectories ()
     {
-        return glob.sync(this.config.input)
+        const sourceDirs = glob.sync(this.config.input, {
+            absolute: true,
+        });
+
+        this.config.transformDirectories = this.config.transformDirectories.concat(sourceDirs);
+
+        return sourceDirs
             .map(
                 (dir) => new JsDirectoryTask(dir, this.config, this.logger.createChildLogger(BuildLogger, dir))
             );

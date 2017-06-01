@@ -5,6 +5,7 @@
  *      ignoreLintFor: Array.<(string|RegExp)>,
  *      externals: Object.<string, string>,
  *      outputFileName: function(string):string,
+ *      transformDirectories: array.<RegExp|string>,
  *      debug: boolean,
  *      watch: boolean,
  *      lint: boolean,
@@ -48,9 +49,13 @@ module.exports = (kaba) => {
                 jquery: "window.jQuery",
                 routing: "window.Routing",
             },
+            transformDirectories: [],
             // Transforms the file name before writing the out file
             outputFileName: (fileName) => fileName,
         });
+
+        // always transform mojave
+        config.transformDirectories.push(/\/node_modules\/mojave\//);
 
         // ensure one trailing slash
         config.input = config.input.replace(/\/+$/, "") + "/";
