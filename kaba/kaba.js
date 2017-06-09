@@ -77,7 +77,6 @@ class Kaba extends EventEmitter
     /**
      * Sets an entry in the registry
      *
-     * @private
      * @param {?string} taskName
      * @param {Function} taskFunction
      */
