@@ -1,3 +1,4 @@
+const CheckerPlugin = require("awesome-typescript-loader").CheckerPlugin;
 const CLIEngine = require("eslint").CLIEngine;
 const CompilationStartNotifier = require("./CompilationStartNotifier");
 const chalk = require("chalk");
@@ -126,12 +127,21 @@ module.exports = class JsDirectoryTask
                                     },
                                 },
                             },
+                            {
+                                test: /\.tsx?$/,
+                                include: this.config.transformDirectories,
+                                loader: "awesome-typescript-loader",
+                                query: {
+                                    configFileName: path.resolve(__dirname, `../../../tsconfig.json`),
+                                },
+                            },
+                            { enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
                         ],
                     },
 
                     // resolve
                     resolve: {
-                        extensions: [".js", ".json", ".jsx"],
+                        extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
 
                         modules: [
                             `${process.cwd()}/node_modules`,
@@ -149,6 +159,7 @@ module.exports = class JsDirectoryTask
                     // plugins
                     plugins: [
                         new CompilationStartNotifier(this.logger),
+                        new CheckerPlugin(),
                     ],
 
                     // devtool
