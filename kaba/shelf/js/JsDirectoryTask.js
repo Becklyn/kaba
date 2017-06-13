@@ -135,7 +135,6 @@ module.exports = class JsDirectoryTask
                                     configFileName: path.resolve(__dirname, `../../../tsconfig.json`),
                                 },
                             },
-                            { enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
                         ],
                     },
 
