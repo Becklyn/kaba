@@ -87,7 +87,7 @@ rules:
     # Selector
     selector-combinator-space-after: always
     selector-combinator-space-before: always
-    selector-no-id: true
+    selector-max-id: 0
     selector-pseudo-class-case: lower
     selector-pseudo-element-case: lower
     selector-pseudo-element-colon-notation: double
