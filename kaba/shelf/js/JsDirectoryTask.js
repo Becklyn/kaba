@@ -38,7 +38,7 @@ module.exports = class JsDirectoryTask
          * @private
          * @type {string}
          */
-        this.inputFilesGlob = `${srcDir}/*.js`;
+        this.inputFilesGlob = `${srcDir}/*.{js,jsx,ts,tsx}`;
 
         /**
          * @private
