@@ -94,6 +94,7 @@ rules:
     'no-label-var': error
     'no-restricted-globals': error
     'no-shadow-restricted-names': error
+    'no-shadow': error
     'no-undef-init': error
     'no-use-before-define':
         - error
