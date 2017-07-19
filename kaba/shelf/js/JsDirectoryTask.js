@@ -159,6 +159,7 @@ module.exports = class JsDirectoryTask
                     plugins: [
                         new CompilationStartNotifier(this.logger),
                         new CheckerPlugin(),
+                        new webpack.optimize.ModuleConcatenationPlugin(),
                     ],
 
                     // devtool
