@@ -5,12 +5,12 @@
  *      ignoreLintFor: Array.<(string|RegExp)>,
  *      externals: Object.<string, string>,
  *      outputFileName: function(string):string,
- *      transformNodeModules: Array.<RegExp|string>,
+ *      transformNodeModules: Array.<string>,
  *      debug: boolean,
  *      watch: boolean,
  *      lint: boolean,
  *      sourceMaps: boolean,
- *      excludeDirectories: (RegExp|Array.<RegExp|string>),
+ *      excludeDirectories: Array.<RegExp>,
  * }} JsTaskConfig
  */
 
@@ -50,7 +50,7 @@ module.exports = (kaba) => {
                 jquery: "window.jQuery",
                 routing: "window.Routing",
             },
-            transformDirectories: [],
+            transformNodeModules: [],
             // Transforms the file name before writing the out file
             outputFileName: (fileName) => fileName,
         });

@@ -42,45 +42,22 @@ module.exports = class JsTask
         this.directories = this.loadDirectories();
 
         // builds the exclude directories
-        this.config.excludeDirectories = this.buildExcludeRegex();
+        this.config.excludeDirectories = this.buildExcludeList();
     }
 
 
     /**
      * Builds the regexp which directories are excluded from the build
      *
-     * @return {RegExp}
+     * @return {Array.<RegExp>}
      */
-    buildExcludeRegex ()
+    buildExcludeList ()
     {
-        // load excluded node_modules dirs
-        const possibleExclusions = glob.sync(`node_modules/*/`);
-        const exclusions = possibleExclusions
-            .map((dir) => path.basename(dir))
-            .filter(
-                (dir) => {
-                    for (let i = 0; i < this.config.transformNodeModules; i++)
-                    {
-                        const includeRule = this.config.transformNodeModules[i];
-
-                        if (typeof includeRule === "string" && includeRule === dir)
-                        {
-                            // is explicitly allowed, so not blacklisted
-                            return false;
-                        }
-
-                        if (typeof includeRule.test !== "undefined" && includeRule.test(dir))
-                        {
-                            // is explicitly allowed, so not blacklisted
-                            return false;
-                        }
-                    }
-
-                    return true;
-                }
-            );
-
-        return new RegExp(`^node_modules/(${exclusions.join("|")})/`)
+        return this.config.transformNodeModules.map(
+            (dir) => {
+                return new RegExp(`node_modules/(?!${dir})/`);
+            }
+        );
     }
 
     /**
