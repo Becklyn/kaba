@@ -5,11 +5,12 @@
  *      ignoreLintFor: Array.<(string|RegExp)>,
  *      externals: Object.<string, string>,
  *      outputFileName: function(string):string,
- *      transformDirectories: array.<RegExp|string>,
+ *      transformNodeModules: Array.<RegExp|string>,
  *      debug: boolean,
  *      watch: boolean,
  *      lint: boolean,
  *      sourceMaps: boolean,
+ *      excludeDirectories: (RegExp|Array.<RegExp|string>),
  * }} JsTaskConfig
  */
 
@@ -55,7 +56,8 @@ module.exports = (kaba) => {
         });
 
         // always transform mojave
-        config.transformDirectories.push(/\/node_modules\/mojave\//);
+        config.transformNodeModules.push("mojave");
+        config.excludeDirectories = [];
 
         // ensure one trailing slash
         config.input = config.input.replace(/\/+$/, "") + "/";

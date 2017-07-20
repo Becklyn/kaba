@@ -117,19 +117,17 @@ module.exports = class JsDirectoryTask
                             // Babel
                             {
                                 test: /\.jsx?$/,
-                                include: this.config.transformDirectories,
-                                use: {
-                                    loader: "babel-loader?cacheDirectory",
-                                    options: {
-                                        presets: [
-                                            [require("kaba-babel-preset")],
-                                        ],
-                                    },
+                                exclude: this.config.excludeDirectories,
+                                loader: "babel-loader?cacheDirectory",
+                                options: {
+                                    presets: [
+                                        require("kaba-babel-preset"),
+                                    ],
                                 },
                             },
                             {
                                 test: /\.tsx?$/,
-                                include: this.config.transformDirectories,
+                                exclude: this.config.excludeDirectories,
                                 loader: "awesome-typescript-loader",
                                 query: {
                                     configFileName: path.resolve(__dirname, `../../../tsconfig.json`),
