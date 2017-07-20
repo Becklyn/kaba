@@ -171,10 +171,7 @@ module.exports = class JsDirectoryTask
 
                     // don't automatically polyfill certain node libraries
                     // as we don't care about these implementations and they just add weight
-                    node: {
-                        // mainly used for `setImmediate`
-                        setImmediate: false,
-                    },
+                    node: false,
                 };
 
                 if (!this.config.debug)
