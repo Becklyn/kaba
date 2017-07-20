@@ -55,7 +55,7 @@ module.exports = class JsTask
     {
         return this.config.transformNodeModules.map(
             (dir) => {
-                return new RegExp(`node_modules/(?!${dir})/`);
+                return new RegExp(`/node_modules/((?!${dir}).)*?/`);
             }
         );
     }
