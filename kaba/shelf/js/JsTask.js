@@ -40,25 +40,8 @@ module.exports = class JsTask
          * @type {JsDirectoryTask[]}
          */
         this.directories = this.loadDirectories();
-
-        // builds the exclude directories
-        this.config.excludeDirectories = this.buildExcludeList();
     }
 
-
-    /**
-     * Builds the regexp which directories are excluded from the build
-     *
-     * @return {Array.<RegExp>}
-     */
-    buildExcludeList ()
-    {
-        return this.config.transformNodeModules.map(
-            (dir) => {
-                return new RegExp(`/node_modules/((?!${dir}).)*?/`);
-            }
-        );
-    }
 
     /**
      * Loads all tasks

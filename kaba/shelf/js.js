@@ -5,12 +5,10 @@
  *      ignoreLintFor: Array.<(string|RegExp)>,
  *      externals: Object.<string, string>,
  *      outputFileName: function(string):string,
- *      transformNodeModules: Array.<string>,
  *      debug: boolean,
  *      watch: boolean,
  *      lint: boolean,
  *      sourceMaps: boolean,
- *      excludeDirectories: Array.<RegExp>,
  * }} JsTaskConfig
  */
 
@@ -50,14 +48,9 @@ module.exports = (kaba) => {
                 jquery: "window.jQuery",
                 routing: "window.Routing",
             },
-            transformNodeModules: [],
             // Transforms the file name before writing the out file
             outputFileName: (fileName) => fileName,
         });
-
-        // always transform mojave
-        config.transformNodeModules.push("mojave");
-        config.excludeDirectories = [];
 
         // ensure one trailing slash
         config.input = config.input.replace(/\/+$/, "") + "/";

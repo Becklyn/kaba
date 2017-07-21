@@ -117,7 +117,6 @@ module.exports = class JsDirectoryTask
                             // Babel
                             {
                                 test: /\.jsx?$/,
-                                exclude: this.config.excludeDirectories,
                                 loader: "babel-loader?cacheDirectory",
                                 options: {
                                     presets: [
@@ -127,7 +126,6 @@ module.exports = class JsDirectoryTask
                             },
                             {
                                 test: /\.tsx?$/,
-                                exclude: this.config.excludeDirectories,
                                 loader: "awesome-typescript-loader",
                                 query: {
                                     configFileName: path.resolve(__dirname, `../../../tsconfig.json`),
