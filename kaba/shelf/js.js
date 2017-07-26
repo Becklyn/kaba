@@ -9,6 +9,7 @@
  *      watch: boolean,
  *      lint: boolean,
  *      sourceMaps: boolean,
+ *      loaders: Array,
  * }} JsTaskConfig
  */
 
@@ -50,6 +51,8 @@ module.exports = (kaba) => {
             },
             // Transforms the file name before writing the out file
             outputFileName: (fileName) => fileName,
+            // the list of additional loaders for webpack
+            loaders: [],
         });
 
         // ensure one trailing slash

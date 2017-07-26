@@ -172,6 +172,9 @@ module.exports = class JsDirectoryTask
                     node: false,
                 };
 
+                // append custom loaders
+                webpackConfig.module.rules = webpackConfig.module.rules.concat(this.config.loaders);
+
                 if (!this.config.debug)
                 {
                     webpackConfig.plugins.push(
