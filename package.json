@@ -34,7 +34,7 @@
         "sass-graph": "^2.2.4",
         "stylelint": "^8.0.0",
         "typescript": "^2.4.1",
-        "webpack": "^3.3.0"
+        "webpack": "^3.5.0"
     },
     "engines": {
         "node": ">=6.5"
