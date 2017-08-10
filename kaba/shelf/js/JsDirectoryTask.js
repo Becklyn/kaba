@@ -119,6 +119,7 @@ module.exports = class JsDirectoryTask
                                 test: /\.jsx?$/,
                                 loader: "babel-loader?cacheDirectory",
                                 options: {
+                                    babelrc: false,
                                     presets: [
                                         require("kaba-babel-preset"),
                                     ],
