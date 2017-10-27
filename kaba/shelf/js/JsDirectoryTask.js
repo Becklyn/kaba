@@ -157,6 +157,10 @@ module.exports = class JsDirectoryTask
                         new CompilationStartNotifier(this.logger),
                         new CheckerPlugin(),
                         new webpack.optimize.ModuleConcatenationPlugin(),
+                        new webpack.DefinePlugin({
+                            'process.env.NODE_ENV': this.config.debug ? '"development"' : '"production"',
+                        }),
+
                     ],
 
                     // devtool
@@ -186,12 +190,6 @@ module.exports = class JsDirectoryTask
                             },
                             extractComments: true,
                             sourceMap: this.config.debug || this.config.sourceMaps,
-                        })
-                    );
-
-                    webpackConfig.plugins.push(
-                        new webpack.DefinePlugin({
-                            'process.env.NODE_ENV': '"production"',
                         })
                     );
                 }
