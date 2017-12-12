@@ -8,9 +8,13 @@
     },
     "homepage": "https://github.com/Becklyn/kaba",
     "license": "BSD-3-Clause",
+    "bin": {
+        "kaba": "bin/kaba.js"
+    },
     "main": "kaba/kaba.js",
     "dependencies": {
-        "chalk": "^2.3.0"
+        "chalk": "^2.3.0",
+        "webpack": "^4.0.0-alpha.0"
     },
     "engines": {
         "node": ">=8.0"
