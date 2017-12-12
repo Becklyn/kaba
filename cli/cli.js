@@ -9,7 +9,29 @@ class KabaCli
     constructor (cliArgv)
     {
         const argv = minimist(cliArgv, {
-            boolean: ["dev", "d", "h", "help", "v", "version"],
+            boolean: [
+                // dev = debug + watch + sourceMaps
+                "dev",
+                "d",
+
+                // debug
+                "debug",
+
+                // sourceMaps
+                "with-sourcemaps",
+                "with-source-maps",
+
+                // watch
+                "watch",
+
+                // help
+                "h",
+                "help",
+
+                // version
+                "v",
+                "version",
+            ],
         });
 
         /**
@@ -22,35 +44,66 @@ class KabaCli
          * @private
          * @type {boolean}
          */
-        this.version = argv.v || argv.version;
+        this.debug = argv.debug;
+
+        /**
+         * @private
+         * @type {boolean}
+         */
+        this.sourceMaps = argv["with-sourcemaps"] || argv["with-source-maps"];
+
+        /**
+         * @private
+         * @type {boolean}
+         */
+        this.watch = argv.watch;
 
         /**
          * @private
          * @type {boolean}
          */
         this.help = argv.h || argv.help;
+
+        /**
+         * @private
+         * @type {boolean}
+         */
+        this.version = argv.v || argv.version;
     }
 
 
     /**
-     * Returns whether this is a dev build
+     * Returns whether this is a debug build
      *
      * @return {boolean}
      */
-    isDev ()
+    isDebug ()
     {
-        return this.dev;
+        return this.debug || this.dev;
     }
 
+
     /**
-     * Returns whether the version info should be shown
+     * Returns whether to include sourcemaps
      *
      * @return {boolean}
      */
-    showVersion ()
+    includeSourceMaps ()
     {
-        return this.version;
+        return this.sourceMaps || this.dev;
     }
+
+
+    /**
+     * Returns whether the watcher should be activated
+     *
+     * @return {boolean}
+     */
+    isWatch ()
+    {
+        return this.watch || this.dev;
+    }
+
 
     /**
      * Returns whether the help should be shown
@@ -60,6 +113,17 @@ class KabaCli
     showHelp ()
     {
         return this.help;
+    }
+
+
+    /**
+     * Returns whether the version info should be shown
+     *
+     * @return {boolean}
+     */
+    showVersion ()
+    {
+        return this.version;
     }
 }
 
