@@ -10,7 +10,7 @@ class KabaCli
     {
         const argv = minimist(cliArgv, {
             boolean: [
-                // dev = debug + watch + sourceMaps
+                // dev = debug + watch + sourceMaps + lint
                 "dev",
                 "d",
 
@@ -23,6 +23,9 @@ class KabaCli
 
                 // watch
                 "watch",
+
+                // lint
+                "lint",
 
                 // help
                 "h",
@@ -57,6 +60,12 @@ class KabaCli
          * @type {boolean}
          */
         this.watch = argv.watch;
+
+        /**
+         * @private
+         * @type {boolean}
+         */
+        this.lint = argv.lint;
 
         /**
          * @private
@@ -102,6 +111,17 @@ class KabaCli
     isWatch ()
     {
         return this.watch || this.dev;
+    }
+
+
+    /**
+     * Returns whether the code should be linted
+     *
+     * @return {boolean}
+     */
+    isLint ()
+    {
+        return this.lint || this.dev;
     }
 
 
