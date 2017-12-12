@@ -11,7 +11,7 @@
     "bin": {
         "kaba": "bin/kaba.js"
     },
-    "main": "kaba/kaba.js",
+    "main": "lib/kaba.js",
     "dependencies": {
         "chalk": "^2.3.0",
         "webpack": "^4.0.0-alpha.0"
