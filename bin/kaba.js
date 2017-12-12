@@ -25,4 +25,10 @@ else if (cli.showVersion())
     process.exit(0);
 }
 
-return require('webpack/bin/webpack');
+// set environment
+process.env.NODE_ENV = cli.isDebug() ? '"development"' : '"production"';
+
+// strip all other arguments
+process.argv = process.argv.slice(0,2);
+
+require('webpack/bin/webpack');
