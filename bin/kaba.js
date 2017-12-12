@@ -9,9 +9,6 @@ console.log(`${chalk.black(chalk.bgYellow("   🍫  kaba    "))}`);
 console.log(`${chalk.black(chalk.bgYellow("  ~~~~~~~~~~  "))}`);
 console.log(``);
 
-console.log('Running webpack ...');
-console.log();
-
 if (cli.showHelp())
 {
     // @todo implement
@@ -33,6 +30,8 @@ process.argv = process.argv.slice(0,2);
 
 try
 {
+    console.log(chalk`Running {cyan webpack} ...`);
+    console.log();
     require('webpack/bin/webpack');
 }
 catch (e)
