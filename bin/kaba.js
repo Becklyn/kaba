@@ -40,6 +40,6 @@ catch (e)
 
     if (cli.isVerbose())
     {
-        throw e;
+        console.error(e);
     }
 }
