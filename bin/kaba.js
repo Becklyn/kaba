@@ -31,4 +31,16 @@ process.env.NODE_ENV = cli.isDebug() ? '"development"' : '"production"';
 // strip all other arguments
 process.argv = process.argv.slice(0,2);
 
-require('webpack/bin/webpack');
+try
+{
+    require('webpack/bin/webpack');
+}
+catch (e)
+{
+    console.log(chalk`{red Webpack Error: ${e.message}}`);
+
+    if (cli.isVerbose())
+    {
+        throw e;
+    }
+}

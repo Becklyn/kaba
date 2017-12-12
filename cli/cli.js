@@ -1,6 +1,8 @@
 const minimist = require('minimist');
 
-
+/**
+ * Main CLI parser class
+ */
 class KabaCli
 {
     /**
@@ -34,6 +36,9 @@ class KabaCli
                 // version
                 "v",
                 "version",
+
+                // verbose
+                "verbose",
             ],
         });
 
@@ -78,6 +83,12 @@ class KabaCli
          * @type {boolean}
          */
         this.version = argv.v || argv.version;
+
+        /**
+         * @private
+         * @type {boolean}
+         */
+        this.verbose = argv.verbose;
     }
 
 
@@ -144,6 +155,17 @@ class KabaCli
     showVersion ()
     {
         return this.version;
+    }
+
+
+    /**
+     * Returns whether the cli was run in verbose mode
+     *
+     * @return {boolean}
+     */
+    isVerbose ()
+    {
+        return this.verbose;
     }
 }
 
