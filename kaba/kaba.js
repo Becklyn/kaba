@@ -12,6 +12,19 @@ class Kaba
     constructor ()
     {
     }
+
+
+    /**
+     * Returns the built webpack config
+     *
+     * @return {Object}
+     */
+    getWepackConfig ()
+    {
+        return {
+
+        };
+    }
 }
 
 
