@@ -86,18 +86,21 @@ If `runtimeName` is null, only the vendor file will be extract, containing the w
 If `runtimeName` is set, the vendor fill we contain the common chunks and the explicit vendor chunk and the runtime will contain the webpack runtime.
 
 
-#### `.addExternals( externals )`
+#### `.setExternals( externals )`
 
 Adds the given imports as externals.
 
 *   `externals` `Object<string,string>` required
     The mapping for externals. See [`webpackConfig.externals`] for details.
-    By default, the following externals are registered:
+    Example:
+
     ```js
-    kaba.addExternals({
+    kaba.setExternals({
         routing: "window.Routing",
     });
     ```
+    
+    By default no externals are registered.
 
 
 #### `.disableModuleConcatenation()` *(deprecated)*
