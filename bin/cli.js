@@ -3,7 +3,7 @@ const minimist = require('minimist');
 /**
  * Main CLI parser class
  */
-class KabaCli
+class Cli
 {
     /**
      * @param {Object} cliArgv
@@ -169,4 +169,4 @@ class KabaCli
     }
 }
 
-module.exports = new KabaCli(process.argv.slice(2));
+module.exports = new Cli(process.argv.slice(2));
