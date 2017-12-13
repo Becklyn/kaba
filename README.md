@@ -26,6 +26,21 @@ npx kaba
 ./node_modules/.bin/kaba
 ```
 
+
+### CLI Arguments
+
+| Parameter            | Alias               | Meaning                                                                  |
+| -------------------- | ------------------- | ------------------------------------------------------------------------ |
+| `--dev`              | `-d`                | Dev mode. Equivalent to `--debug --watch --with-sourcemaps --lint`       |
+| `--debug`            |                     | Builds the file in debug mode (non-minified and with env `development`). |
+| `--with-source-maps` | `--with-sourcemaps` | Outputs source maps.                                                     |
+| `--watch`            |                     | Starts the file watcher.                                                 |
+| `--lint`             |                     | Lints all compiled files.                                                |
+| `--help`             | `-h`                | Prints the help.                                                         |
+| `--version`          | `-v`                | Prints the version.                                                      |
+| `--verbose`          |                     | Displays all errors in the runner / config file with stack trace.        |
+
+
 Configuration
 -------------
 
