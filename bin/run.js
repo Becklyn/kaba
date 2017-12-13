@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const chalk = require("chalk");
-const cli = require("../cli/cli");
+const cli = require("./cli");
 
 console.log(``);
 console.log(`${chalk.black(chalk.bgYellow("  ~~~~~~~~~~  "))}`);

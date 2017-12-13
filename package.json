@@ -9,7 +9,7 @@
     "homepage": "https://github.com/Becklyn/kaba",
     "license": "BSD-3-Clause",
     "bin": {
-        "kaba": "bin/kaba.js"
+        "kaba": "bin/run.js"
     },
     "main": "lib/kaba.js",
     "dependencies": {
