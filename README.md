@@ -61,9 +61,17 @@ Defines the entry points for the webpack builds.
     ```
 
 
-#### `.cleanOutputDir()`
+#### `.cleanOutputDir(subDirectories)`
 
 Removes the output directory before the build.
+
+*   `subDirectories` `string[]` required
+    The sub directories relative to the output dir that should be removed.
+    By default set to:
+    ```js
+    kaba.cleanOutputDir(["css", "js"]);
+    ```
+
 Note: if the build is watched, the output dir will only be emptied once at the very beginning.
 
 
@@ -99,7 +107,7 @@ Adds the given imports as externals.
         routing: "window.Routing",
     });
     ```
-    
+
     By default no externals are registered.
 
 
@@ -116,7 +124,7 @@ Sets the output path where all compiled files will be stored. Is relative to `cw
 *   `outputPath` `string` required
     By default the output path is set to:
     ```js
-    kaba.setOutputPath("assets-artifacts/");
+    kaba.setOutputPath("build");
     ```
 
 
