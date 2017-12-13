@@ -59,7 +59,7 @@ module.exports = (new Kaba())
     .getWebpackConfig();
 ```
 
-### All of the available configuration methods
+### Configuration Methods
 
 #### `.addEntries( mapping )`
 
