@@ -1,9 +1,7 @@
 kaba
 ====
 
-A build system, specifically designed for the needs and requirements of [Becklyn Studios].
-
-You will need to install [kaba-cli] for using kaba.
+A build system, specifically designed for the needs and requirements of [Becklyn Studios], built on top of webpack.
 
 
 Installation
@@ -12,209 +10,179 @@ Installation
 Use npm to install kaba locally in your project:
 
 ```bash
-$ npm install -S kaba
+yarn add -D kaba
+# or
+npm install -D kaba
 ```
-
 
 Usage
 -----
 
-First you need to create a `kabafile.js` in your project, which is the config file for your tasks. These tasks can then be executed via `kaba-cli`.
-
-
-### Registering a task
-
-```js
-const kaba = require("kaba");
-
-kaba.task("example", (done, debug) => {
-    console.log("running some task");
-    done();
-});
-```
-
-`.task(name, callback(done, debug))` has two parameters:
-
-* `name` is the name of the task 
-* `callback` is the function that is executed when running this task.
-
-The `callback` receives two parameters:
-
-* `done` a function that should be called as soon as the task has finished.
-* `debug` a bool flag, that indicates whether the task should be run in debug mode (i.e. omitting minification, etc.)
-
-
-### Default task
-
-You can define a default task, that is run if no specific task name is provided:
+Just run the executable:
 
 ```bash
-kaba
+npx kaba
 # or
-kaba --dev
-```
-
-This task should have the special name `""` or `null`:
-
-```js
-kaba.task("", (done, debug) => {
-    console.log("default task here");
-    done();
-});
-```
-
-As with other task names, you can only define a single default task.
-
-
-
-### Combining tasks
-You can combine tasks by either running them sequentially or in parallel.
-
-In all of these helpers you can either pass a task name (as `string`) or a function.
-
-#### Running sequentially with `.series(...tasks)`
-
-You can run tasks in sequence by using the `.series` helper.
-
-```js
-kaba.task("first", /* ... */);
-kaba.task("second", /* ... */);
-
-
-kaba.task("all",
-    kaba.series("first", "second", () => { console.log("all done"); })
-);
-```
-
-#### Running in parallel with `.parallel(...tasks)`
-
-You can run tasks in parallel by using the `.parallel` helper.
-
-```js
-kaba.task("first", /* ... */);
-kaba.task("second", /* ... */);
-
-
-kaba.task("all",
-    kaba.parallel("first", "second", () => { console.log("additional information"); })
-);
-```
-
-Please note: as the tasks are run in parallel, the last task (with `console.log`) could finish first. In the parallel helper, no execution order of the given tasks is guaranteed. 
-
-
-
-#### Combining the run helpers
-
-The helpers can be combined and nested as desired:
-
-```js
-kaba.task("all",
-    kaba.parallel(
-        kaba.series("a", "b", "c"),
-        kaba.series("x", "y", "z")
-    )
-);
+./node_modules/.bin/kaba
 ```
 
 
-### Loading a task
+### CLI Arguments
 
-If you ever need to access an already defined task, you can call `.task(name)` with just one parameter.
-This will give you the callback or `undefined`, if no task with this name is defined.
-
-You probably won't need this however, as you can use the task names in the `.series(name)` and `.parallel(name)` helper directly (as `string`).
-
-
-Shelf
------
-
-kaba comes with two predefined tasks for compiling and minimizing SCSS and JavaScript. 
-
-If run in default mode, the files are minified and optimized. If run in debug mode, the files contain sourcemaps and are not minified, also file watchers are started, that automatically rebuild changed files.
-
-You can access the shelf using `kaba.shelf`.
+| Parameter            | Alias               | Meaning                                                                  |
+| -------------------- | ------------------- | ------------------------------------------------------------------------ |
+| `--dev`              | `-d`                | Dev mode. Equivalent to `--debug --watch --with-sourcemaps --lint`       |
+| `--debug`            |                     | Builds the file in debug mode (non-minified and with env `development`). |
+| `--with-source-maps` | `--with-sourcemaps` | Outputs source maps.                                                     |
+| `--watch`            |                     | Starts the file watcher.                                                 |
+| `--lint`             |                     | Lints all compiled files.                                                |
+| `--help`             | `-h`                | Prints the help.                                                         |
+| `--version`          | `-V`                | Prints the version information.                                          |
+| `--verbose`          |                     | Displays all errors in the runner / config file with stack trace.        |
 
 
-### `kaba.shelf.js(configuration)` JavaScript
+Configuration
+-------------
 
-This function compiles all top-level javascript files in the given directories. It only directly compiles files that are at the root of the given input directory.
-So leave your entry-level files at the root and move included files in subdirectories.
+First, create a `webpack.config.js` in the root of your project.
+Load kaba and export the generate config:
 
 
 ```js
-kaba.task("js", kaba.shelf.js({
-    input: "assets/js"
-}));
+const Kaba = require("kaba");
+
+module.exports = (new Kaba())
+    .addEntries({
+        app: "assets/js/app.js"
+    })
+    .extractSharedEntry()
+    .getWebpackConfig();
 ```
 
-All configuration options:
+### Configuration Methods
 
-| Option           | Type                        | Description                                                                                                              | Default value                                          | Comment                                                                                                                        |
-| ---------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
-| `input`          | `string`                    | A glob that matches all directories that contain JavaScript files                                                        | `"src/**/Resources/assets/js/"`                        | As this parameter is passed unaltered to [glob] it will accept everything that glob accepts.                                   |
-| `output`         | `string`                    | The output dir for compiled files                                                                                        | `"../../public/js"`                                    | This path is relative to the (resolved) `input` path for the given file.                                                       |
-| `ignoreLintFor`  | `array.<(RegExp\|string)>`  | If the one of these strings occur (or the regex matches) the current file path, the file will not be linted.             | `["/node_modules/", "/vendor/"]`                       |                                                                                                                                |
-| `externals`      | `Object.<string,string>`    | The list of external variables and what they should compile to.                                                          | `{jquery: "window.jQuery", routing: "window.Routing"}` | The added entries do not replace the entries, but are additionally added. Remove externals by explicitly setting them to null. |
-| `transforms`     | `Array.<Array>`             | A list of additional transforms.                                                                                         | `[]`                                                   | A list of arrays, where the array values are the parameters to the `.transform()` call on the browserify instance.             |
-| `outputFileName` | `function(string) : string` | Optional transform function to generate the output file name. Receives the `input` filename as parameter.                | –                                                      |                                                                                                                                |
-| `debug`          | `boolean`                   | Flag, whether a debug build should be generated.                                                                         | if `--debug` is set `true`, `false` otherwise          |                                                                                                                                |
-| `watch`          | `boolean`                   | Flag, whether a watcher should be started.                                                                               | if `--debug` is set `true`, `false` otherwise          |                                                                                                                                |
+#### `.addEntries( mapping )`
 
+Defines the entry points for the webpack builds.
 
+*   `mapping` `Object<string,string>` required
+    The mapping object defining the entry points. Similar to [`webpackConfig.entry`]:
 
-The `transforms` entry is passed directly to browserify, so if you want to add a call like this:
-
-```js
-browserify.transform(myTransform, {some: "config"});
-```
-
-the configuration should look like this:
-
-```js
-js.shelf.js({
-   transforms: [
-       [myTransform, {some: "config"}]
-   ] 
-});
-```
+    ```js
+    kaba.addEntries({
+        app: "./assets/js/app.js",
+        page: "./assets/js/page.js",
+    });
+    ```
 
 
-### `kaba.shelf.scss(configuration)` SCSS
+#### `.cleanOutputDir(subDirectories)`
 
-This function compiles SCSS files using [node-sass].
+Removes the output directory before the build.
 
+*   `subDirectories` `string[]` required
+    The sub directories relative to the output dir that should be removed.
+    By default set to:
+    ```js
+    kaba.cleanOutputDir(["css", "js"]);
+    ```
 
-```js
-kaba.task("css", kaba.shelf.scss({
-    input: "assets/scss"
-}));
-```
-
-All files are compiled, even the files in subdirectories. Only import-only files (with prefix `_` in their filename, e.g. `_example.scss`) are not compiled.
-
-All configuration options:
-
-| Option           | Type                                | Description                                                                                                              | Default value                                 | Comment                                                                                               |
-| ---------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `input`          | `string`                            | A glob that matches all directories that contain SCSS files                                                              | `"src/**/Resources/assets/scss/"`             | As this parameter is passed unaltered to [glob] it will accept everything that glob accepts.          |
-| `output`         | `string`                            | The output dir for compiled files                                                                                        | `"../../public/css"`                          | This path is relative to the (resolved) `input` path for the given file.                              |
-| `browsers`       | `array`                             | The list of supported browers                                                                                            | `["last 2 versions", "IE 10"]`                | This value is passed to [autoprefixer], so please look in their documentation for all allowed values. |
-| `ignoreLintFor`  | `array.<(RegExp\|string)>`          | If the one of these strings occur (or the regex matches) the current file path, the file will not be linted.             | `["/node_modules/", "/vendor/"]`              |                                                                                                       |
-| `outputFileName` | `function(string, string) : string` | Optional transform function to generate the output file name. Receives the `output` and `input` filenames as parameters. | –                                             | The first argument is the auto-generated file name.                                                   |
-| `debug`          | `boolean`                           | Flag, whether a debug build should be generated.                                                                         | if `--debug` is set `true`, `false` otherwise |                                                                                                       |
-| `watch`          | `boolean`                           | Flag, whether a watcher should be started.                                                                               | if `--debug` is set `true`, `false` otherwise |                                                                                                       |
-| `lint`           | `boolean`                           | Flag, whether the files should be linted.                                                                                | if `--debug` is set `true`, `false` otherwise |                                                                                                       |
+Note: if the build is watched, the output dir will only be emptied once at the very beginning.
 
 
-Known issues
-------------
+#### `.extractSharedEntry( [ vendorFiles [, vendorName [, runtimeName ] ] ] )`
 
-* New files are not picked up automatically.
+Extract shared entries.
+
+*   `vendorFiles` `string[]` optional (default: `[]`)
+    The vendor packages, that should be definitely included in the vendor file.
+
+*   `vendorName` `string` optional (default: `"vendor"`)
+    The name of the vendor file (`"vendor" -> /vendor.js`)
+
+*   `runtimeName` `string` optional (default: `"runtime"`)
+    The name of the vendor file (`"runtime" -> /runtime.js`)
+    
+Automatically extracts common chunks that are at least referenced 3 times.
+
+If `runtimeName` is null, only the vendor file will be extract, containing the webpack runtime, the common chunks and the explicit vendor chunks.
+If `runtimeName` is set, the vendor fill we contain the common chunks and the explicit vendor chunk and the runtime will contain the webpack runtime.
 
 
+#### `.setExternals( externals )`
+
+Adds the given imports as externals.
+
+*   `externals` `Object<string,string>` required
+    The mapping for externals. See [`webpackConfig.externals`] for details.
+    Example:
+
+    ```js
+    kaba.setExternals({
+        routing: "window.Routing",
+    });
+    ```
+
+    By default no externals are registered.
+
+
+#### `.disableModuleConcatenation()` *(deprecated)*
+
+Disables the module concatenation plugin in webpack.
+Is *deprecated*, because this option will be removed from webpack in v4.
+
+
+#### `.setOutputPath( outputPath )`
+
+Sets the output path where all compiled files will be stored. Is relative to `cwd()`. See [`webpackConfig.output.path`] (except that the path is already joined with `cwd()`).
+
+*   `outputPath` `string` required
+    By default the output path is set to:
+    ```js
+    kaba.setOutputPath("build");
+    ```
+
+
+#### `.setPublicPath( publicPath )`
+
+Sets the public path for dynamic module loading. See [`webpackConfig.output.publicPath`] for details.
+
+*   `publicPath` `string` required
+    By default, the public path is set to:
+    ```js
+    kaba.setPublicPath("/assets/");
+    ```
+
+
+#### `.setBrowserList( list )`
+
+Sets the browser list for [autoprefixer]. See the [browserlist] docs for details about the format.
+
+*   `list` `string[]` required
+    By default, the browser list os set to:
+    ```js
+    kaba.setBrowserList(["last 2 versions", "IE 11"]);
+    ```
+
+
+
+Supported Features
+------------------
+
+* SCSS building + minification
+* Babel with the [`kaba-babel-preset`]
+* Typescript
+* ESLint
+* Stylelint
+* Preact support
+* Source Maps
+
+
+[autoprefixer]: https://github.com/postcss/autoprefixer
+[browserlist]: https://github.com/ai/browserslist
 [Becklyn Studios]: https://www.becklyn.com
-[kaba-cli]: https://www.npmjs.com/package/kaba-cli
-[glob]: https://www.npmjs.com/package/glob
-[autoprefixer]: https://www.npmjs.com/package/autoprefixer
-[node-sass]: https://www.npmjs.com/package/node-sass
+[`kaba-babel-preset`]: https://github.com/Becklyn/kaba-babel-preset
+[`webpackConfig.entry`]: https://webpack.js.org/configuration/entry-context/#entry
+[`webpackConfig.externals`]: https://webpack.js.org/configuration/externals/
+[`webpackConfig.output.path`]: https://webpack.js.org/configuration/output/#output-path
+[`webpackConfig.output.publicPath`]: https://webpack.js.org/configuration/output/#output-publicpath
