@@ -12,17 +12,17 @@ console.log(`  ${chalk.black(chalk.bgYellow("  ~~~~~~~~~~  "))}`);
 console.log(``);
 
 program
-    .option('--dev, -d', 'enables debug, file watchers, linting and source maps')
+    .option('-d, --dev', 'enables debug, file watchers, linting and source maps')
     .option('--debug', 'enables debug builds (non-minified and with env `development`)')
     .option('--with-source-maps', 'outputs source maps')
     .option('--watch', 'starts the file watcher')
     .option('--lint', 'lints all compiled files')
     .option('--verbose', 'show all errors in the runner / config file with stack trace')
-    .option('--version, -V', 'output version info')
+    .option('-V, --versions', 'output version info')
     .parse(process.argv);
 
 
-if (program.version)
+if (program.versions)
 {
     printPackageVersions({
         kaba: "yellow",
