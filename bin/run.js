@@ -2,7 +2,8 @@
 
 const chalk = require("chalk");
 const program = require("commander");
-const Versions = require("../lib/versions");
+const printPackageVersions = require("../lib/print-package-versions");
+
 
 console.log(``);
 console.log(`  ${chalk.black(chalk.bgYellow("  ~~~~~~~~~~  "))}`);
@@ -23,17 +24,16 @@ program
 
 if (program.version)
 {
-    const versions = new Versions({
+    printPackageVersions({
         kaba: "yellow",
         "kaba-babel-preset": "yellow",
         webpack: "cyan",
         "babel-core": "blue",
         "node-sass": "blue",
-        "typescript": "blue",
-        "eslint": "blue",
-        "stylelint": "blue",
+        typescript: "blue",
+        eslint: "blue",
+        stylelint: "blue",
     });
-    versions.print();
     process.exit(0);
 }
 
