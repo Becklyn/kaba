@@ -37,7 +37,7 @@ npx kaba
 | `--watch`            |                     | Starts the file watcher.                                                 |
 | `--lint`             |                     | Lints all compiled files.                                                |
 | `--help`             | `-h`                | Prints the help.                                                         |
-| `--version`          | `-v`                | Prints the version.                                                      |
+| `--version`          | `-V`                | Prints the version information.                                          |
 | `--verbose`          |                     | Displays all errors in the runner / config file with stack trace.        |
 
 
