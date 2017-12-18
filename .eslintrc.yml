@@ -155,7 +155,7 @@ rules:
         - warn
         - max: 1
     'new-cap': error
-    'new-parens': warn
+    'new-parens': error
     'newline-per-chained-call': warn
     'no-array-constructor': error
     'no-bitwise': warn
@@ -201,9 +201,6 @@ rules:
         - never
 
     # ECMAScript 6
-    'arrow-parens':
-        - error
-        - always
     'arrow-spacing': warn
     'generator-star-spacing': warn
     'no-confusing-arrow': warn
