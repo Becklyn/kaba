@@ -43,6 +43,12 @@ try
     // strip all other arguments to not confuse webpack
     process.argv = process.argv.slice(0,2);
 
+    // pass arguments to webpack
+    if (program.verbose)
+    {
+        process.argv.push("--verbose");
+    }
+
     console.log(chalk`Running {cyan webpack} ...`);
     console.log();
     require('webpack/bin/webpack');
