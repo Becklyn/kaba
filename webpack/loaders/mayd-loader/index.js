@@ -1,6 +1,6 @@
 const {exec} = require("child_process");
 
-module.exports = function()
+module.exports = function ()
 {
     const done = this.async();
 
@@ -32,6 +32,6 @@ module.exports = function()
                 `export default [ ${imports.join(", ")} ];`
             );
         }
-    )
+    );
 };
 
