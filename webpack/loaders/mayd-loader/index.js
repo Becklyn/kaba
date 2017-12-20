@@ -15,6 +15,7 @@ module.exports = function ()
 
             const maydBundles = JSON.parse(stdout);
             const imports = [];
+            const constructors = [];
 
             for (const name in maydBundles)
             {
@@ -23,13 +24,14 @@ module.exports = function ()
                     return;
                 }
 
-                imports.push(`require("${maydBundles[name]}")`);
+                imports.push(`import {${name}} from "${maydBundles[name]}";`);
+                constructors.push(name);
 
             }
 
             done(
                 null,
-                `export default [ ${imports.join(", ")} ];`
+                `${imports.join(", ")}\n\nexport const bundles = [ ${constructors.join(", ")} ];`
             );
         }
     );
