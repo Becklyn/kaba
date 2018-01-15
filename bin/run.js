@@ -6,9 +6,9 @@ const printPackageVersions = require("../lib/print-package-versions");
 
 
 console.log(``);
-console.log(`  ${chalk.black(chalk.bgYellow("  ~~~~~~~~~~  "))}`);
-console.log(`  ${chalk.black(chalk.bgYellow("   🍫  kaba    "))}`);
-console.log(`  ${chalk.black(chalk.bgYellow("  ~~~~~~~~~~  "))}`);
+console.log(`  ${chalk.black.bgYellow("  ~~~~~~~~~~  ")}`);
+console.log(`  ${chalk.black.bgYellow("   🍫  kaba    ")}`);
+console.log(`  ${chalk.black.bgYellow("  ~~~~~~~~~~  ")}`);
 console.log(``);
 
 program
