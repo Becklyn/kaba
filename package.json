@@ -13,6 +13,7 @@
     },
     "main": "lib/kaba.js",
     "dependencies": {
+        "autoprefixer": "^7.2.5",
         "awesome-typescript-loader": "^3.4.1",
         "babel-core": "^6.26.0",
         "babel-eslint": "^8.0.3",
