@@ -34,7 +34,6 @@ rules:
     curly:
         - error
         - all
-    'default-case': warn
     'dot-location':
         - error
         - property
