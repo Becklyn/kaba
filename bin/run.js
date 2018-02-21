@@ -15,6 +15,7 @@ program
     .option('-d, --dev', 'enables debug, file watchers, linting and source maps')
     .option('--debug', 'enables debug builds (non-minified and with env `development`)')
     .option('--with-source-maps', 'outputs source maps')
+    .option('--analyze', 'opens the bundle analyzer')
     .option('--watch', 'starts the file watcher')
     .option('--lint', 'lints all compiled files')
     .option('--verbose', 'show all errors in the runner / config file with stack trace')
