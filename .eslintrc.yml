@@ -94,6 +94,10 @@ rules:
     'no-shadow-restricted-names': error
     'no-shadow': error
     'no-undef-init': error
+    'no-unused-vars':
+        - error
+        - args: none
+          argsIgnorePattern: '^_'
     'no-use-before-define':
         - error
         - classes: false
