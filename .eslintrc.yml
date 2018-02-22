@@ -64,7 +64,6 @@ rules:
         - error
         - property: setInterval
           message: "Don't use setInterval. Use repeated setTimeout instead."
-    'no-return-assign': warn
     'no-script-url': error
     'no-self-compare': warn
     'no-sequences': error
