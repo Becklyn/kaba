@@ -46,6 +46,7 @@ if (program.versions)
 try
 {
     const cliConfig = new CliConfig(program);
+    /** @type {KabaBuildConfig} buildConfig */
     const buildConfig = require(`${process.cwd()}/kaba.js`);
 
     const scss = new ScssRunner(buildConfig);
