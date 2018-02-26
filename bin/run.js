@@ -59,7 +59,7 @@ try
             ([scssOk, webpackOk]) =>
             {
                 const duration = process.hrtime(start);
-                const failed = cliConfig.isAnalyze() && (false === scssOk || false === webpackOk);
+                const failed = (false === scssOk || false === webpackOk);
                 const status = failed
                     ? chalk.red("failed")
                     : chalk.green("succeeded");
@@ -88,4 +88,6 @@ catch (e)
     {
         console.error(e);
     }
+
+    process.exit(1);
 }
