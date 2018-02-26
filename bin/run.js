@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 
 const chalk = require("chalk");
+const Config = require("../lib/Config");
 const program = require("commander");
 const printPackageVersions = require("../lib/print-package-versions");
+const ScssRunner = require("../lib/runner/ScssRunner");
+const WebpackRunner = require("../lib/runner/WebpackRunner");
 
 
 console.log(``);
@@ -42,18 +45,22 @@ if (program.versions)
 
 try
 {
-    // strip all other arguments to not confuse webpack
-    process.argv = process.argv.slice(0,2);
+    const cliConfig = new Config(program);
+    const buildConfig = require(`${process.cwd()}/kaba.js`);
 
-    // pass arguments to webpack
-    if (program.verbose)
-    {
-        process.argv.push("--verbose");
-    }
+    const scss = new ScssRunner(buildConfig);
+    const webpack = new WebpackRunner(buildConfig);
 
-    console.log(chalk`Running {cyan webpack} ...`);
-    console.log();
-    require('webpack/bin/webpack');
+    Promise.all([scss.run(), webpack.run()])
+        .then(
+            ([scssOk, webpackOk]) =>
+            {
+                if (cliConfig.isAnalyze() && (!scssOk || !webpackOk))
+                {
+                    process.exit(1);
+                }
+            }
+        );
 }
 catch (e)
 {
