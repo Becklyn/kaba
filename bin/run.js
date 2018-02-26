@@ -2,7 +2,7 @@
 
 const chalk = require("chalk");
 const CliConfig = require("../lib/CliConfig");
-const formatHrTimeDuration = require("../lib/utils").formatHrTimeDuration;
+const Logger = require("../lib/Logger");
 const program = require("commander");
 const printPackageVersions = require("../lib/print-package-versions");
 const SassRunner = require("../lib/runner/SassRunner");
@@ -46,6 +46,8 @@ if (program.versions)
 
 try
 {
+    const logger = new Logger(chalk.bgYellow.black(" kaba "));
+    logger.log("kaba started");
     const start = process.hrtime();
     const cliConfig = new CliConfig(program);
     /** @type {KabaBuildConfig} buildConfig */
@@ -58,13 +60,12 @@ try
         .then(
             ([scssOk, webpackOk]) =>
             {
-                const duration = process.hrtime(start);
                 const failed = (false === scssOk || false === webpackOk);
                 const status = failed
                     ? chalk.red("failed")
                     : chalk.green("succeeded");
 
-                console.log(chalk`Build ${status} after {blue ${formatHrTimeDuration(duration)}}`);
+                logger.logWithDuration(chalk`kaba ${status}`, process.hrtime(start));
 
                 if (failed)
                 {
