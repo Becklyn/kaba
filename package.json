@@ -11,7 +11,7 @@
     "bin": {
         "kaba": "bin/run.js"
     },
-    "main": "lib/kaba.js",
+    "main": "lib/Kaba.js",
     "dependencies": {
         "awesome-typescript-loader": "^3.4.1",
         "babel-core": "^6.26.0",
