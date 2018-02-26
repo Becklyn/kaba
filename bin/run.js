@@ -2,9 +2,10 @@
 
 const chalk = require("chalk");
 const CliConfig = require("../lib/CliConfig");
+const formatHrTimeDuration = require("../lib/utils").formatHrTimeDuration;
 const program = require("commander");
 const printPackageVersions = require("../lib/print-package-versions");
-const ScssRunner = require("../lib/runner/ScssRunner");
+const SassRunner = require("../lib/runner/SassRunner");
 const WebpackRunner = require("../lib/runner/WebpackRunner");
 
 
@@ -45,18 +46,27 @@ if (program.versions)
 
 try
 {
+    const start = process.hrtime();
     const cliConfig = new CliConfig(program);
     /** @type {KabaBuildConfig} buildConfig */
     const buildConfig = require(`${process.cwd()}/kaba.js`);
 
-    const scss = new ScssRunner(buildConfig);
-    const webpack = new WebpackRunner(buildConfig);
+    const scss = new SassRunner(buildConfig.sass, cliConfig);
+    const webpack = new WebpackRunner(buildConfig.webpack, cliConfig);
 
     Promise.all([scss.run(), webpack.run()])
         .then(
             ([scssOk, webpackOk]) =>
             {
-                if (cliConfig.isAnalyze() && (!scssOk || !webpackOk))
+                const duration = process.hrtime(start);
+                const failed = cliConfig.isAnalyze() && (false === scssOk || false === webpackOk);
+                const status = failed
+                    ? chalk.red("failed")
+                    : chalk.green("succeeded");
+
+                console.log(chalk`Build ${status} after {blue ${formatHrTimeDuration(duration)}}`);
+
+                if (failed)
                 {
                     process.exit(1);
                 }
