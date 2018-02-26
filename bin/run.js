@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const chalk = require("chalk");
-const Config = require("../lib/Config");
+const CliConfig = require("../lib/CliConfig");
 const program = require("commander");
 const printPackageVersions = require("../lib/print-package-versions");
 const ScssRunner = require("../lib/runner/ScssRunner");
@@ -45,7 +45,7 @@ if (program.versions)
 
 try
 {
-    const cliConfig = new Config(program);
+    const cliConfig = new CliConfig(program);
     const buildConfig = require(`${process.cwd()}/kaba.js`);
 
     const scss = new ScssRunner(buildConfig);
