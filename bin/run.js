@@ -57,7 +57,14 @@ try
 }
 catch (e)
 {
-    console.log(chalk`{red Webpack Error: ${e.message}}`);
+    if (/cannot find module.*?kaba\.js/i.test(e.message))
+    {
+        console.log(chalk`{red Error}: Could not find {yellow kaba.js}`);
+    }
+    else
+    {
+        console.log(chalk`{red Run Error: ${e.message}}`);
+    }
 
     if (program.verbose)
     {
