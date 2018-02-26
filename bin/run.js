@@ -28,6 +28,7 @@ if (program.versions)
     printPackageVersions({
         kaba: "yellow",
         "kaba-babel-preset": "yellow",
+        "kaba-scss": "yellow",
         webpack: "cyan",
         "babel-core": "blue",
         "node-sass": "blue",
