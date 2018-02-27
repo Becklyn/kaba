@@ -24,6 +24,8 @@
         "fs-extra": "^5.0.0",
         "kaba-babel-preset": "^1.1.1",
         "kaba-scss": "^0.0.2",
+        "ts-loader": "^4.0.0",
+        "typescript": "^2.7.2",
         "webpack": "^4.0.1",
         "webpack-bundle-analyzer": "^2.10.0"
     },
