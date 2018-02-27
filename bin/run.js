@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 
 const chalk = require("chalk");
+const CliConfig = require("../lib/CliConfig");
+const Logger = require("../lib/Logger");
 const program = require("commander");
 const printPackageVersions = require("../lib/print-package-versions");
+const SassRunner = require("../lib/runner/SassRunner");
+const WebpackRunner = require("../lib/runner/WebpackRunner");
 
 
 console.log(``);
@@ -28,6 +32,7 @@ if (program.versions)
     printPackageVersions({
         kaba: "yellow",
         "kaba-babel-preset": "yellow",
+        "kaba-scss": "yellow",
         webpack: "cyan",
         "babel-core": "blue",
         "node-sass": "blue",
@@ -41,25 +46,49 @@ if (program.versions)
 
 try
 {
-    // strip all other arguments to not confuse webpack
-    process.argv = process.argv.slice(0,2);
+    const logger = new Logger(chalk.bgYellow.black(" kaba "));
+    logger.log("kaba started");
+    const start = process.hrtime();
+    const cliConfig = new CliConfig(program);
+    /** @type {KabaBuildConfig} buildConfig */
+    const buildConfig = require(`${process.cwd()}/kaba.js`);
 
-    // pass arguments to webpack
-    if (program.verbose)
-    {
-        process.argv.push("--verbose");
-    }
+    const scss = new SassRunner(buildConfig.sass, cliConfig);
+    const webpack = new WebpackRunner(buildConfig.webpack, cliConfig);
 
-    console.log(chalk`Running {cyan webpack} ...`);
-    console.log();
-    require('webpack/bin/webpack');
+    Promise.all([scss.run(), webpack.run()])
+        .then(
+            ([scssOk, webpackOk]) =>
+            {
+                const failed = (false === scssOk || false === webpackOk);
+                const status = failed
+                    ? chalk.red("failed")
+                    : chalk.green("succeeded");
+
+                logger.logWithDuration(chalk`kaba ${status}`, process.hrtime(start));
+
+                if (failed)
+                {
+                    process.exit(1);
+                }
+            }
+        );
 }
 catch (e)
 {
-    console.log(chalk`{red Webpack Error: ${e.message}}`);
+    if (/cannot find module.*?kaba\.js/i.test(e.message))
+    {
+        console.log(chalk`{red Error}: Could not find {yellow kaba.js}`);
+    }
+    else
+    {
+        console.log(chalk`{red Run Error: ${e.message}}`);
+    }
 
     if (program.verbose)
     {
         console.error(e);
     }
+
+    process.exit(1);
 }
