@@ -4,5 +4,9 @@
         "jsxFactory": "h",
         "moduleResolution": "node",
         "target": "es2015"
-    }
+    },
+    "exclude": [
+        "node_modules",
+        "vendor"
+    ]
 }
