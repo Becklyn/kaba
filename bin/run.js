@@ -22,6 +22,7 @@ program
     .option('--analyze-bundles', 'opens the bundle analyzer')
     .option('--watch', 'starts the file watcher')
     .option('--lint', 'lints all compiled files')
+    .option('--fix', 'automatically fixes the code style (as good as possible)')
     .option('--verbose', 'show all errors in the runner / config file with stack trace')
     .option('-V, --versions', 'output version info')
     .parse(process.argv);
