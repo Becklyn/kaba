@@ -54,7 +54,7 @@ try
     /** @type {KabaBuildConfig} buildConfig */
     const buildConfig = require(`${process.cwd()}/kaba.js`);
 
-    const scss = new SassRunner(buildConfig.sass, cliConfig);
+    const scss = new SassRunner(buildConfig, cliConfig);
     const webpack = new WebpackRunner(buildConfig, cliConfig);
 
     Promise.all([scss.run(), webpack.run()])
