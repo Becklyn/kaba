@@ -51,8 +51,9 @@ try
     logger.log("kaba started");
     const start = process.hrtime();
     const cliConfig = new CliConfig(program);
-    /** @type {KabaBuildConfig} buildConfig */
-    const buildConfig = require(`${process.cwd()}/kaba.js`);
+    /** @type {Kaba} kaba */
+    const kaba = require(`${process.cwd()}/kaba.js`);
+    const buildConfig = kaba.getBuildConfig();
 
     const scss = new SassRunner(buildConfig, cliConfig);
     const webpack = new WebpackRunner(buildConfig, cliConfig);
