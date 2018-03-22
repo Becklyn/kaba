@@ -211,7 +211,6 @@ rules:
     'no-useless-rename': warn
     'no-var': error
     'prefer-arrow-callback': warn
-    'prefer-const': warn
     'prefer-rest-params': error
     'prefer-spread': error
     'sort-imports': warn
