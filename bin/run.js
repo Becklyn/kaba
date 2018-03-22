@@ -69,12 +69,25 @@ try
 
                 logger.logWithDuration(chalk`kaba ${status}`, process.hrtime(start));
 
-                if (failed)
-                {
-                    process.exit(1);
-                }
+                process.exit(failed ? 1 : 0);
             }
+        )
+        .catch(
+            () => console.log("something broke")
         );
+
+    if (cliConfig.isWatch())
+    {
+        const exitCallback = () => {
+            scss.stop();
+            webpack.stop();
+        };
+
+        process.on("exit", exitCallback);
+        process.on("SIGINT", exitCallback);
+        process.on("SIGUSR1", exitCallback);
+        process.on("SIGUSR2", exitCallback);
+    }
 }
 catch (e)
 {
