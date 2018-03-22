@@ -26,6 +26,7 @@
         "glob": "^7.1.2",
         "kaba-babel-preset": "^1.1.1",
         "kaba-scss": "^1.1.2",
+        "pretty-hrtime": "^1.0.3",
         "ts-loader": "^4.0.0",
         "typescript": "^2.7.2",
         "webpack": "^4.0.1",
