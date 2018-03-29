@@ -30,7 +30,6 @@ rules:
 
     # String
     string-no-newline: true
-    string-quotes: double
 
     # Length
     length-zero-no-unit: true
