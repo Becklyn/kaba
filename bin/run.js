@@ -20,6 +20,7 @@ program
     .option('--debug', 'enables debug builds (non-minified and with env `development`)')
     .option('--with-source-maps', 'outputs source maps')
     .option('--analyze-bundles', 'opens the bundle analyzer')
+    .option('--analyze', 'analyzes and lints the code. Should be used in CI')
     .option('--watch', 'starts the file watcher')
     .option('--lint', 'lints all compiled files')
     .option('--fix', 'automatically fixes the code style (as good as possible)')
