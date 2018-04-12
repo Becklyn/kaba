@@ -213,7 +213,6 @@ rules:
     'prefer-arrow-callback': warn
     'prefer-rest-params': error
     'prefer-spread': error
-    'sort-imports': warn
 
     # React
     'react/forbid-component-props': warn
