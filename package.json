@@ -1,6 +1,6 @@
 {
     "name": "kaba",
-    "version": "5.0.1",
+    "version": "5.0.2",
     "description": "Build system which is used internally by Becklyn Studios.",
     "repository": {
         "type": "git",
