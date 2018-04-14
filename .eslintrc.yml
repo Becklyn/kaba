@@ -178,9 +178,6 @@ rules:
     'one-var-declaration-per-line':
         - error
         - always
-    'quote-props':
-        - error
-        - "as-needed"
     'require-jsdoc':
         - warn
         - require:
