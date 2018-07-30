@@ -1,18 +1,18 @@
 #!/usr/bin/env node
 
-const chalk = require("chalk");
 const CliConfig = require("../lib/CliConfig");
+const kleur = require("kleur");
 const Logger = require("../lib/Logger");
-const program = require("commander");
 const printPackageVersions = require("../lib/print-package-versions");
+const program = require("commander");
 const SassRunner = require("../lib/runner/SassRunner");
 const WebpackRunner = require("../lib/runner/WebpackRunner");
 
 
 console.log(``);
-console.log(`  ${chalk.black.bgYellow("  ~~~~~~~~~~  ")}`);
-console.log(`  ${chalk.black.bgYellow("   🍫  kaba    ")}`);
-console.log(`  ${chalk.black.bgYellow("  ~~~~~~~~~~  ")}`);
+console.log(`  ${kleur.black.bgYellow("  ~~~~~~~~~~  ")}`);
+console.log(`  ${kleur.black.bgYellow("   🍫  kaba    ")}`);
+console.log(`  ${kleur.black.bgYellow("  ~~~~~~~~~~  ")}`);
 console.log(``);
 
 program
@@ -48,7 +48,7 @@ if (program.versions)
 
 try
 {
-    const logger = new Logger(chalk.bgYellow.black(" kaba "));
+    const logger = new Logger(kleur.bgYellow.black(" kaba "));
     logger.log("kaba started");
     const start = process.hrtime();
     const cliConfig = new CliConfig(program);
@@ -65,16 +65,16 @@ try
             {
                 const failed = (false === scssOk || false === webpackOk);
                 const status = failed
-                    ? chalk.red("failed")
-                    : chalk.green("succeeded");
+                    ? kleur.red("failed")
+                    : kleur.green("succeeded");
 
-                logger.logWithDuration(chalk`kaba ${status}`, process.hrtime(start));
+                logger.logWithDuration(kleur`kaba ${status}`, process.hrtime(start));
 
                 process.exit(failed ? 1 : 0);
             }
         )
         .catch(
-            () => console.log("something broke")
+            (...args) => console.log("something broke", args)
         );
 
     if (cliConfig.isWatch())
@@ -94,11 +94,11 @@ catch (e)
 {
     if (/cannot find module.*?kaba\.js/i.test(e.message))
     {
-        console.log(chalk`{red Error}: Could not find {yellow kaba.js}`);
+        console.log(`${kleur.red("Error")}: Could not find {yellow kaba.js}`);
     }
     else
     {
-        console.log(chalk`{red Run Error: ${e.message}}`);
+        console.log(kleur.red(`Run Error: ${e.message}`));
     }
 
     if (program.verbose)
