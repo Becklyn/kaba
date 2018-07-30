@@ -4,7 +4,7 @@ const CliConfig = require("../lib/CliConfig");
 const kleur = require("kleur");
 const Logger = require("../lib/Logger");
 const printPackageVersions = require("../lib/print-package-versions");
-const program = require("commander");
+const sade = require("sade");
 const SassRunner = require("../lib/runner/SassRunner");
 const WebpackRunner = require("../lib/runner/WebpackRunner");
 
@@ -15,96 +15,174 @@ console.log(`  ${kleur.black.bgYellow("   🍫  kaba    ")}`);
 console.log(`  ${kleur.black.bgYellow("  ~~~~~~~~~~  ")}`);
 console.log(``);
 
+const program = sade("kaba");
+const kabaVersion = require("../package").version;
+
 program
-    .option('-d, --dev', 'enables debug, file watchers, linting and source maps')
-    .option('--debug', 'enables debug builds (non-minified and with env `development`)')
+    .version(kabaVersion)
+    .option('--verbose', 'show all errors in the runner / config file with stack trace');
+
+program
+    .command("dev")
+    .describe("Starts a watcher, builds debug builds with source maps + lints. Use this for development.")
+    .action(opts =>
+    {
+        runKaba({
+            debug: true,
+            sourceMaps: true,
+            watch: true,
+            lint: true,
+            openBundleAnalyzer: !!opts["analyze-bundles"],
+        }, !!opts.verbose);
+    });
+
+program
+    .command("build")
+    .describe("Generates a production build. Use this for release / deployment.")
     .option('--with-source-maps', 'outputs source maps')
+    .option('--debug', 'enables debug builds (non-minified and with env `development`)')
     .option('--analyze-bundles', 'opens the bundle analyzer')
-    .option('--analyze', 'analyzes and lints the code. Should be used in CI')
     .option('--watch', 'starts the file watcher')
     .option('--lint', 'lints all compiled files')
-    .option('--fix', 'automatically fixes the code style (as good as possible)')
-    .option('--verbose', 'show all errors in the runner / config file with stack trace')
-    .option('-V, --versions', 'output version info')
-    .parse(process.argv);
+    .action(opts =>
+    {
+        console.log(`  ${kleur.bgYellow.black(" Dev ")}`);
+        console.log("");
 
-
-if (program.versions)
-{
-    printPackageVersions({
-        kaba: "yellow",
-        "kaba-babel-preset": "yellow",
-        "kaba-scss": "yellow",
-        webpack: "cyan",
-        "babel-core": "blue",
-        "node-sass": "blue",
-        typescript: "blue",
-        eslint: "blue",
-        stylelint: "blue",
+        runKaba({
+            debug: !!opts.debug,
+            sourceMaps: !!opts["with-source-maps"],
+            watch: !!opts.watch,
+            lint: !!opts.lint,
+            openBundleAnalyzer: !!opts["analyze-bundles"],
+        }, !!opts.verbose);
     });
-    process.exit(0);
-}
 
 
-try
+program
+    .command("analyze")
+    .describe("Analyzes and lints the assets and exits with an appropriate exit code (use this for you CI)")
+    .action(opts =>
+    {
+        console.log(`  ${kleur.bgYellow.black(" Analyze ")}`);
+        console.log("");
+
+        runKaba({
+            analyze: true,
+            lint: true,
+        }, !!opts.verbose);
+    });
+
+
+program
+    .command("fix")
+    .describe("Automatically fixes all CS and lint errors (as good as possible)")
+    .action(opts =>
+    {
+        console.log(`  ${kleur.bgYellow.black(" Fix ")}`);
+        console.log("");
+
+        runKaba({
+            fix: true,
+        }, !!opts.verbose);
+    });
+
+// Command: Versions
+program
+    .command("versions")
+    .describe("Prints all relevant versions")
+    .action(() =>
+    {
+        console.log(`  ${kleur.bgYellow.black(" Versions ")}`);
+        console.log("");
+        printPackageVersions(kabaVersion, {
+            "kaba-babel-preset": "yellow",
+            "kaba-scss": "yellow",
+            webpack: "cyan",
+            "babel-core": "blue",
+            typescript: "blue",
+            eslint: "blue",
+            "node-sass": "magenta",
+            stylelint: "magenta",
+        });
+
+        process.exit(0);
+    });
+
+// set default command to "build"
+program.default = program.curr = "build";
+
+program.parse(process.argv);
+
+
+/**
+ * Main kaba function
+ *
+ * @param {CliConfigArguments} opts
+ * @param {boolean} isVerbose
+ */
+function runKaba (opts, isVerbose)
 {
-    const logger = new Logger(kleur.bgYellow.black(" kaba "));
-    logger.log("kaba started");
-    const start = process.hrtime();
-    const cliConfig = new CliConfig(program);
-    /** @type {Kaba} kaba */
-    const kaba = require(`${process.cwd()}/kaba.js`);
-    const buildConfig = kaba.getBuildConfig();
-
-    const scss = new SassRunner(buildConfig, cliConfig);
-    const webpack = new WebpackRunner(buildConfig, cliConfig);
-
-    Promise.all([scss.run(), webpack.run()])
-        .then(
-            ([scssOk, webpackOk]) =>
-            {
-                const failed = (false === scssOk || false === webpackOk);
-                const status = failed
-                    ? kleur.red("failed")
-                    : kleur.green("succeeded");
-
-                logger.logWithDuration(kleur`kaba ${status}`, process.hrtime(start));
-
-                process.exit(failed ? 1 : 0);
-            }
-        )
-        .catch(
-            (...args) => console.log("something broke", args)
-        );
-
-    if (cliConfig.isWatch())
+    try
     {
-        const exitCallback = () => {
-            scss.stop();
-            webpack.stop();
-        };
+        const logger = new Logger(kleur.bgYellow.black(" kaba "));
+        logger.log("kaba started");
+        const start = process.hrtime();
+        const cliConfig = new CliConfig(opts);
+        /** @type {Kaba} kaba */
+        const kaba = require(`${process.cwd()}/kaba.js`);
+        const buildConfig = kaba.getBuildConfig();
 
-        process.on("exit", exitCallback);
-        process.on("SIGINT", exitCallback);
-        process.on("SIGUSR1", exitCallback);
-        process.on("SIGUSR2", exitCallback);
-    }
-}
-catch (e)
-{
-    if (/cannot find module.*?kaba\.js/i.test(e.message))
-    {
-        console.log(`${kleur.red("Error")}: Could not find {yellow kaba.js}`);
-    }
-    else
-    {
-        console.log(kleur.red(`Run Error: ${e.message}`));
-    }
+        const scss = new SassRunner(buildConfig, cliConfig);
+        const webpack = new WebpackRunner(buildConfig, cliConfig);
 
-    if (program.verbose)
-    {
-        console.error(e);
-    }
+        Promise.all([scss.run(), webpack.run()])
+            .then(
+                ([scssOk, webpackOk]) =>
+                {
+                    const failed = (false === scssOk || false === webpackOk);
+                    const status = failed
+                        ? kleur.red("failed")
+                        : kleur.green("succeeded");
 
-    process.exit(1);
+                    logger.logWithDuration(`kaba ${status}`, process.hrtime(start));
+
+                    process.exit(failed ? 1 : 0);
+                }
+            )
+            .catch(
+                (...args) => console.log("something broke", args)
+            );
+
+        if (cliConfig.isWatch())
+        {
+            const exitCallback = () => {
+                scss.stop();
+                webpack.stop();
+            };
+
+            process.on("exit", exitCallback);
+            process.on("SIGINT", exitCallback);
+            process.on("SIGUSR1", exitCallback);
+            process.on("SIGUSR2", exitCallback);
+        }
+    }
+    catch (e)
+    {
+        if (/cannot find module.*?kaba\.js/i.test(e.message))
+        {
+            console.log(`${kleur.red("Error")}: Could not find {yellow kaba.js}`);
+        }
+        else
+        {
+            console.log(kleur.red(`Run Error: ${e.message}`));
+        }
+
+        if (isVerbose)
+        {
+            console.error(e);
+        }
+
+        process.exit(1);
+    }
 }
