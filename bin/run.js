@@ -11,7 +11,7 @@ const WebpackRunner = require("../lib/runner/WebpackRunner");
 
 console.log(``);
 console.log(`  ${kleur.black.bgYellow("  ~~~~~~~~~~  ")}`);
-console.log(`  ${kleur.black.bgYellow("   🍫  kaba    ")}`);
+console.log(`  ${kleur.black.bgYellow("   🍫  kaba   ")}`);
 console.log(`  ${kleur.black.bgYellow("  ~~~~~~~~~~  ")}`);
 console.log(``);
 
