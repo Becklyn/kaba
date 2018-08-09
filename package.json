@@ -13,7 +13,7 @@
     },
     "main": "lib/Kaba.js",
     "dependencies": {
-        "@becklyn/typescript-error-formatter": "^1.0.2",
+        "@becklyn/typescript-error-formatter": "^1.0.1",
         "babel-core": "^6.26.3",
         "babel-eslint": "^8.2.6",
         "babel-loader": "^7.1.5",
