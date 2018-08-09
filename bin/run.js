@@ -39,11 +39,11 @@ program
 program
     .command("build")
     .describe("Generates a production build. Use this for release / deployment.")
-    .option('--with-source-maps', 'outputs source maps')
-    .option('--debug', 'enables debug builds (non-minified and with env `development`)')
     .option('--analyze-bundles', 'opens the bundle analyzer')
-    .option('--watch', 'starts the file watcher')
+    .option('--debug', 'enables debug builds (non-minified and with env `development`)')
     .option('--lint', 'lints all compiled files')
+    .option('--watch', 'starts the file watcher')
+    .option('--with-source-maps', 'outputs source maps')
     .action(opts =>
     {
         console.log(`  ${kleur.bgYellow.black(" Dev ")}`);
