@@ -131,7 +131,7 @@ function runKaba (opts, isVerbose)
         const cliConfig = new CliConfig(opts);
         /** @type {Kaba} kaba */
         const kaba = require(`${process.cwd()}/kaba.js`);
-        const buildConfig = kaba.getBuildConfig();
+        const buildConfig = kaba.getBuildConfig(cliConfig);
 
         const scss = new SassRunner(buildConfig, cliConfig);
         const webpack = new WebpackRunner(buildConfig, cliConfig);
