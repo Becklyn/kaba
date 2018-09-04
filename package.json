@@ -23,7 +23,7 @@
         "fork-ts-checker-webpack-plugin": "^0.4.9",
         "fs-extra": "^7.0.0",
         "glob": "^7.1.2",
-        "kaba-babel-preset": "^1.1.1",
+        "kaba-babel-preset": "^2.0.0",
         "kaba-scss": "^1.1.10",
         "kleur": "^2.0.1",
         "pretty-hrtime": "^1.0.3",
