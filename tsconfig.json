@@ -3,6 +3,7 @@
         "jsx": "react",
         "jsxFactory": "h",
         "moduleResolution": "node",
+        "sourceMap": true,
         "target": "es2015"
     },
     "exclude": [
