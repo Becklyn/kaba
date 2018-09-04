@@ -171,7 +171,7 @@ function runKaba (opts, isVerbose)
     {
         if (/cannot find module.*?kaba\.js/i.test(e.message))
         {
-            console.log(`${kleur.red("Error")}: Could not find {yellow kaba.js}`);
+            console.log(`${kleur.red("Error")}: Could not find ${kleur.yellow("kaba.js")}`);
         }
         else
         {
