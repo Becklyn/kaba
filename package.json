@@ -1,17 +1,17 @@
 {
     "name": "kaba",
-    "version": "6.0.0",
     "description": "Build system which is used internally by Becklyn Studios.",
+    "license": "BSD-3-Clause",
+    "homepage": "https://github.com/Becklyn/kaba",
     "repository": {
         "type": "git",
         "url": "https://github.com/Becklyn/kaba.git"
     },
-    "homepage": "https://github.com/Becklyn/kaba",
-    "license": "BSD-3-Clause",
+    "version": "6.0.0",
+    "main": "lib/Kaba.js",
     "bin": {
         "kaba": "bin/run.js"
     },
-    "main": "lib/Kaba.js",
     "dependencies": {
         "@babel/core": "^7.0.0",
         "@becklyn/typescript-error-formatter": "^1.0.2",
