@@ -24,7 +24,7 @@
         "fs-extra": "^7.0.0",
         "glob": "^7.1.2",
         "kaba-babel-preset": "^2.0.3",
-        "kleur": "^2.0.1",
+        "kleur": "^3.0.0",
         "pretty-hrtime": "^1.0.3",
         "raw-loader": "^0.5.1",
         "sade": "^1.4.1",
