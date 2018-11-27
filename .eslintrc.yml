@@ -14,7 +14,7 @@ settings:
     react:
         createClass: "Component"
         pragma: "h"
-        version: 15.0
+        version: "15.0"
 
 env:
     browser: true
