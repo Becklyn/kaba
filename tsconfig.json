@@ -6,12 +6,10 @@
         "jsxFactory": "h",
         "declaration": true,
         "removeComments": true,
-        "strict": true,
-        "strictNullChecks": true,
         "noImplicitThis": true,
-        "noUnusedLocals": true,
         "moduleResolution": "node",
         "experimentalDecorators": true,
+        "esModuleInterop": true,
         "alwaysStrict": false,
         "sourceMap": true,
         "lib": [
