@@ -1,16 +1,18 @@
 {
     "compilerOptions": {
-        "target": "es2015",
+        "target": "es5",
         "module": "es2015",
         "jsx": "react",
         "jsxFactory": "h",
         "removeComments": true,
+        "strict": true,
         "noImplicitThis": true,
         "moduleResolution": "node",
         "experimentalDecorators": true,
         "esModuleInterop": true,
         "alwaysStrict": false,
         "sourceMap": true,
+        "allowSyntheticDefaultImports": true,
         "lib": [
             "dom",
             "es5",
