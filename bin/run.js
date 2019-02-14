@@ -129,12 +129,14 @@ function runKaba (opts, isVerbose)
         logger.log("kaba started");
         const start = process.hrtime();
         const cliConfig = new CliConfig(opts);
+        let workingDirectory = process.cwd();
+
         /** @type {Kaba} kaba */
-        const kaba = require(`${process.cwd()}/kaba.js`);
+        const kaba = require(`${workingDirectory}/kaba.js`);
         const buildConfig = kaba.getBuildConfig(cliConfig);
 
         const scss = new SassRunner(buildConfig, cliConfig);
-        const webpack = new WebpackRunner(buildConfig, cliConfig);
+        const webpack = new WebpackRunner(buildConfig, cliConfig, workingDirectory);
 
         Promise.all([scss.run(), webpack.run()])
             .then(
