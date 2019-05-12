@@ -29,7 +29,7 @@
         "raw-loader": "^1.0.0",
         "sade": "^1.4.1",
         "terser-webpack-plugin": "^1.0.2",
-        "ts-loader": "^5.0.0",
+        "ts-loader": "^6.0.0",
         "typescript": "^3.0.0",
         "webpack": "^4.16.1"
     },
