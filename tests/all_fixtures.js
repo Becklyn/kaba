@@ -5,6 +5,7 @@ import {runKaba} from "./lib/runner";
 /**
  * @typedef {{
  *      status: number,
+ *      dir?: string,
  *      args?: string[],
  *      match?: RegExp,
  *      noMatch?: RegExp,
@@ -23,6 +24,7 @@ let fixtureTests = {
     },
     scss_fail_on_error_lint: {
         status: 1,
+        dir: "scss_fail_on_error",
         args: ["--lint"],
         match: /Found \d+ Stylelint issues:/,
     },
@@ -40,7 +42,7 @@ Object.keys(fixtureTests).forEach(key =>
     test(`File: ${key}`, t =>
     {
         let expected = fixtureTests[key];
-        let result = runKaba(key, expected.args || []);
+        let result = runKaba(expected.dir || key, expected.args || []);
         let stdout = null !== result.stdout
             ? result.stdout.toString()
             : "";
