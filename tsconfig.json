@@ -1,23 +1,24 @@
 {
     "compilerOptions": {
-        "target": "es5",
-        "module": "es2015",
+        "allowSyntheticDefaultImports": true,
+        "alwaysStrict": false,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
         "jsx": "react",
         "jsxFactory": "h",
-        "removeComments": true,
-        "strict": true,
-        "noImplicitThis": true,
-        "moduleResolution": "node",
-        "experimentalDecorators": true,
-        "esModuleInterop": true,
-        "alwaysStrict": false,
-        "sourceMap": true,
-        "allowSyntheticDefaultImports": true,
         "lib": [
             "dom",
             "es5",
             "es2015"
-        ]
+        ],
+        "module": "es2015",
+        "moduleResolution": "node",
+        "noImplicitThis": true,
+        "removeComments": true,
+        "sourceMap": true,
+        "strict": true,
+        "target": "es5"
+
     },
     "exclude": [
         "node_modules",
