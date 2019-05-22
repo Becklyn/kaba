@@ -17,7 +17,7 @@
     },
     "dependencies": {
         "@babel/core": "^7.0.0",
-        "@becklyn/typescript-error-formatter": "^1.0.2",
+        "@becklyn/typescript-error-formatter": "^1.0.4",
         "babel-eslint": "^10.0.0",
         "babel-loader": "^8.0.2",
         "clean-webpack-plugin": "^2.0.2",
@@ -26,7 +26,6 @@
         "eslint-plugin-react": "^7.11.0",
         "fork-ts-checker-webpack-plugin": "^1.3.4",
         "fs-extra": "^8.0.0",
-        "glob": "^7.1.2",
         "kaba-babel-preset": "^2.0.3",
         "kleur": "^3.0.3",
         "pretty-hrtime": "^1.0.3",

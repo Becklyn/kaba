@@ -2,9 +2,8 @@ const path = require("path");
 const {spawnSync} = require("child_process");
 
 /**
- *
- * @param directory
- * @param args
+ * @param {string} directory
+ * @param {string[]} args
  * @returns {SpawnSyncReturns<Buffer> | SpawnSyncReturns<string>}
  */
 exports.runKaba = function (directory, args = [])

@@ -7,6 +7,7 @@ node_js:
 before_script:
 # Disabled for now, until kaba is ported to TypeScriot
 #    - npm run-script build
-    - npm audit
+# The endpoint is unreliable
+#     - npm audit
     - npx prettier-package-json package.json --list-different --tab-width 4
     - npm test
