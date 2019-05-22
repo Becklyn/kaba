@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const CliConfig = require("../lib/CliConfig");
-const kleur = require("kleur");
+const {bgYellow, black, green, red, yellow} = require("kleur");
 const Logger = require("../lib/Logger");
 const printPackageVersions = require("../lib/print-package-versions");
 const sade = require("sade");
@@ -10,9 +10,9 @@ const WebpackRunner = require("../lib/runner/WebpackRunner");
 
 
 console.log(``);
-console.log(`  ${kleur.black.bgYellow("  ~~~~~~~~~~  ")}`);
-console.log(`  ${kleur.black.bgYellow("   🍫  kaba   ")}`);
-console.log(`  ${kleur.black.bgYellow("  ~~~~~~~~~~  ")}`);
+console.log(`  ${black(bgYellow("  ~~~~~~~~~~  "))}`);
+console.log(`  ${black(bgYellow("   🍫  kaba   "))}`);
+console.log(`  ${black(bgYellow("  ~~~~~~~~~~  "))}`);
 console.log(``);
 
 const program = sade("kaba");
@@ -46,7 +46,7 @@ program
     .option('--with-source-maps', 'outputs source maps')
     .action(opts =>
     {
-        console.log(`  ${kleur.bgYellow.black(" Dev ")}`);
+        console.log(`  ${bgYellow(black(" Dev "))}`);
         console.log("");
 
         runKaba({
@@ -64,7 +64,7 @@ program
     .describe("Analyzes and lints the assets and exits with an appropriate exit code (use this for you CI)")
     .action(opts =>
     {
-        console.log(`  ${kleur.bgYellow.black(" Analyze ")}`);
+        console.log(`  ${bgYellow(black(" Analyze "))}`);
         console.log("");
 
         runKaba({
@@ -79,7 +79,7 @@ program
     .describe("Automatically fixes all CS and lint errors (as good as possible)")
     .action(opts =>
     {
-        console.log(`  ${kleur.bgYellow.black(" Fix ")}`);
+        console.log(`  ${bgYellow(black(" Fix "))}`);
         console.log("");
 
         runKaba({
@@ -93,7 +93,7 @@ program
     .describe("Prints all relevant versions")
     .action(() =>
     {
-        console.log(`  ${kleur.bgYellow.black(" Versions ")}`);
+        console.log(`  ${bgYellow(black(" Versions "))}`);
         console.log("");
         printPackageVersions(kabaVersion, {
             "kaba-babel-preset": "yellow",
@@ -125,7 +125,7 @@ function runKaba (opts, isVerbose)
 {
     try
     {
-        const logger = new Logger(kleur.bgYellow.black(" kaba "));
+        const logger = new Logger(bgYellow(black(" kaba ")));
         logger.log("kaba started");
         const start = process.hrtime();
         const cliConfig = new CliConfig(opts);
@@ -143,8 +143,8 @@ function runKaba (opts, isVerbose)
                 {
                     const failed = (false === scssOk || false === webpackOk);
                     const status = failed
-                        ? kleur.red("failed")
-                        : kleur.green("succeeded");
+                        ? red("failed")
+                        : green("succeeded");
 
                     logger.logWithDuration(`kaba ${status}`, process.hrtime(start));
 
@@ -172,11 +172,11 @@ function runKaba (opts, isVerbose)
     {
         if (/cannot find module.*?kaba\.js/i.test(e.message))
         {
-            console.log(`${kleur.red("Error")}: Could not find ${kleur.yellow("kaba.js")}`);
+            console.log(`${red("Error")}: Could not find ${yellow("kaba.js")}`);
         }
         else
         {
-            console.log(kleur.red(`Run Error: ${e.message}`));
+            console.log(red(`Run Error: ${e.message}`));
         }
 
         if (isVerbose)
