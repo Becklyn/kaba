@@ -42,9 +42,9 @@
         "webpack-bundle-analyzer": "^3.3.0"
     },
     "devDependencies": {
-        "ava": "^1.4.1",
-        "kaba-scss": "^2.0.2",
-        "webpack-bundle-analyzer": "^3.3.2"
+        "ava": "1.4.1",
+        "kaba-scss": "2.0.2",
+        "webpack-bundle-analyzer": "3.3.2"
     },
     "engines": {
         "node": ">=8.0"
