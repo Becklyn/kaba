@@ -12,6 +12,9 @@
     "bin": {
         "kaba": "bin/run.js"
     },
+    "scripts": {
+        "test": "ava"
+    },
     "dependencies": {
         "@babel/core": "^7.0.0",
         "@becklyn/typescript-error-formatter": "^1.0.2",
@@ -34,15 +37,24 @@
         "typescript": "^3.0.0",
         "webpack": "^4.16.1"
     },
-    "devDependencies": {
-        "kaba-scss": "^2.0.2",
-        "webpack-bundle-analyzer": "^3.3.2"
-    },
     "peerDependencies": {
         "kaba-scss": "^2.0.2",
         "webpack-bundle-analyzer": "^3.3.0"
     },
+    "devDependencies": {
+        "ava": "^1.4.1",
+        "kaba-scss": "^2.0.2",
+        "webpack-bundle-analyzer": "^3.3.2"
+    },
     "engines": {
         "node": ">=8.0"
+    },
+    "ava": {
+        "files": [
+            "tests/*.js"
+        ],
+        "require": [
+            "esm"
+        ]
     }
 }
