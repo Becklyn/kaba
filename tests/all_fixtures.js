@@ -14,7 +14,7 @@ import {runKaba} from "./lib/runner";
 /* eslint-disable camelcase */
 /** @var {Object<string,FixtureConfig>} fixtureTests */
 let fixtureTests = {
-    js_simple: {
+    js: {
         status: 0,
     },
     scss_fail_on_error: {
@@ -26,7 +26,10 @@ let fixtureTests = {
         args: ["--lint"],
         match: /Found \d+ Stylelint issues:/,
     },
-    scss_simple: {
+    scss: {
+        status: 0,
+    },
+    ts: {
         status: 0,
     },
 };
