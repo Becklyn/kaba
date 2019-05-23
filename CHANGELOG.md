@@ -1,3 +1,9 @@
+7.3
+===
+
+*   Always build source maps.
+
+
 7.2
 ===
 
