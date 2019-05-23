@@ -2,6 +2,9 @@
 ===
 
 *   Always build source maps.
+*   Always enable TypeScript for `.ts` / `.tsx` files.
+*   Remove option to build `.js` / `.jsx` files via TypeScript.
+*   Deprecated `enableTypeScript()`.
 
 
 7.2
