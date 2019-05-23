@@ -29,7 +29,6 @@ program
     {
         runKaba({
             debug: true,
-            sourceMaps: true,
             watch: true,
             lint: true,
             openBundleAnalyzer: !!opts["analyze-bundles"],
@@ -43,7 +42,6 @@ program
     .option('--debug', 'enables debug builds (non-minified and with env `development`)')
     .option('--lint', 'lints all compiled files')
     .option('--watch', 'starts the file watcher')
-    .option('--with-source-maps', 'outputs source maps')
     .action(opts =>
     {
         console.log(`  ${bgYellow(black(" Dev "))}`);
@@ -51,7 +49,6 @@ program
 
         runKaba({
             debug: !!opts.debug,
-            sourceMaps: !!opts["with-source-maps"],
             watch: !!opts.watch,
             lint: !!opts.lint,
             openBundleAnalyzer: !!opts["analyze-bundles"],
