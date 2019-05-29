@@ -42,7 +42,7 @@
     },
     "devDependencies": {
         "ava": "1.4.1",
-        "kaba-scss": "2.0.2",
+        "kaba-scss": "2.0.3",
         "webpack-bundle-analyzer": "3.3.2"
     },
     "engines": {
