@@ -24,7 +24,7 @@ program
 
 program
     .command("dev")
-    .describe("Starts a watcher, builds debug builds with source maps + lints. Use this for development.")
+    .describe("Starts a watcher, builds debug builds + lints. Use this for development.")
     .option('--analyze-bundles', 'opens the bundle analyzer')
     .action(opts =>
     {
