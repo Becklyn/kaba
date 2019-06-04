@@ -37,7 +37,7 @@
         "webpack": "^4.16.1"
     },
     "peerDependencies": {
-        "kaba-scss": "^2.0.2",
+        "kaba-scss": "^3.0.0",
         "webpack-bundle-analyzer": "^3.3.0"
     },
     "devDependencies": {
