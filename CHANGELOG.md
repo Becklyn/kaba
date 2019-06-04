@@ -5,6 +5,7 @@
 *   Always enable TypeScript for `.ts` / `.tsx` files.
 *   Remove option to build `.js` / `.jsx` files via TypeScript.
 *   Deprecated `enableTypeScript()`.
+*   Deprecated `setBrowserList()`.
 
 
 7.2
