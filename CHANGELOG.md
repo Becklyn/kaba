@@ -1,3 +1,10 @@
+8.0
+===
+
+*   Removed `enableTypeScript()`.
+*   Removed `setBrowserList()`.
+
+
 7.3
 ===
 
