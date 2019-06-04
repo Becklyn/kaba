@@ -1,3 +1,8 @@
+8.1
+===
+
+*   Changed the webpack include order, to avoid false-positive TypeScript errors. 
+
 8.0
 ===
 
