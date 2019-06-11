@@ -1,7 +1,9 @@
 8.1
 ===
 
-*   Changed the webpack include order, to avoid false-positive TypeScript errors. 
+*   Changed the webpack include order, to avoid false-positive TypeScript errors.
+*   Activated the `no-prototype-builtins` ESLint rule.
+ 
 
 8.0
 ===
