@@ -60,6 +60,7 @@ rules:
     'no-new-wrappers': error
     'no-octal-escape': error
     'no-proto': error
+    'no-prototype-builtins': error
     'no-redeclare': error
     'no-restricted-properties':
         - error
