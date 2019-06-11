@@ -3,7 +3,8 @@
 
 *   Changed the webpack include order, to avoid false-positive TypeScript errors.
 *   Activated the `no-prototype-builtins` ESLint rule.
- 
+*   Automatically add the import for the `h()` function from preact for all modules.
+
 
 8.0
 ===
