@@ -11,7 +11,11 @@ import {yellow} from "kleur";
 export function printPackageVersions (kabaVersion: string, packages: {[name: string]: kleur.Color}) : void
 {
     const maxLength = Object.keys(packages).reduce((max, name) => Math.max(max, name.length), 0);
-    console.log(yellow("kaba"), "kaba".padStart(maxLength), kabaVersion);
+    console.log(
+        yellow("kaba"),
+        " ".repeat(maxLength - 4),
+        kabaVersion
+    );
 
     for (const packageName in packages)
     {
@@ -24,7 +28,7 @@ export function printPackageVersions (kabaVersion: string, packages: {[name: str
 
         console.log(
             color(packageName),
-            packageName.padStart(maxLength),
+            " ".repeat( maxLength - packageName.length),
             require(`${packageName}/package.json`).version
         );
     }

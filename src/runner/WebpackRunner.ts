@@ -1,9 +1,10 @@
-import fs from "fs-extra";
+const fs = require("fs-extra");
 import {bgCyan, black, yellow} from "kleur";
 import * as webpack from "webpack";
 import {kaba} from "../@types/kaba";
 import {Logger} from "../Logger";
-import path from "path";
+const path = require("path");
+const deepExtend = require("deep-extend");
 
 
 export class WebpackRunner
@@ -49,13 +50,13 @@ export class WebpackRunner
                     this.resolveCallback = resolve;
                 }
 
-                let compilerLegacy = webpack(Object.assign(
+                let compilerLegacy = webpack(deepExtend(
                     {},
                     this.buildConfig.js.common,
                     this.buildConfig.js.legacy,
                 ));
 
-                let compilerModule = webpack(Object.assign(
+                let compilerModule = webpack(deepExtend(
                     {},
                     this.buildConfig.js.common,
                     this.buildConfig.js.module,

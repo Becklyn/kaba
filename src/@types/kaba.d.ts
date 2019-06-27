@@ -1,6 +1,5 @@
 import * as webpack from "webpack";
 
-
 declare namespace kaba
 {
     export interface CliConfig

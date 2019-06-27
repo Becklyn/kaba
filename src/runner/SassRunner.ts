@@ -1,6 +1,6 @@
 import {KabaScss} from "kaba-scss/src";
 import {kaba} from "../@types/kaba";
-import path from "path";
+const path = require("path");
 
 
 export class SassRunner

@@ -1,12 +1,12 @@
 import {CleanWebpackPlugin} from 'clean-webpack-plugin';
-import kabaBabelPreset from "kaba-babel-preset";
+const kabaBabelPreset = require("kaba-babel-preset");
 import {blue, red, yellow} from "kleur";
-import fs from "fs-extra";
-import path from "path";
+const fs = require("fs-extra");
+const path = require("path");
 import * as webpack from "webpack";
 import {ProvidePlugin} from "webpack";
-import TerserPlugin from 'terser-webpack-plugin';
-import typeScriptErrorFormatter from "@becklyn/typescript-error-formatter";
+const TerserPlugin = require('terser-webpack-plugin');
+const typeScriptErrorFormatter = require("@becklyn/typescript-error-formatter");
 import {kaba} from "./@types/kaba";
 import CliConfig = kaba.CliConfig;
 
@@ -32,7 +32,7 @@ interface Externals
 /**
  * Main Kaba class
  */
-export default class Kaba
+export class Kaba
 {
     private cwd: string;
     private libRoot: string;
@@ -40,9 +40,9 @@ export default class Kaba
     private sassEntries: Entries = {};
     private sassIncludePaths: string[] = [];
     private outputPaths: OutputPaths = {
-        base: "build",
-        css: "css",
-        js: "js",
+        base: "",
+        css: "",
+        js: "",
     };
     private publicPath: string = "/assets/";
     private externals: Externals = {};
@@ -66,6 +66,9 @@ export default class Kaba
                 h: ["preact", "h"],
             }),
         ];
+
+        // set defaults
+        this.setOutputPath("build");
     }
 
 
@@ -266,6 +269,13 @@ export default class Kaba
             // mode
             mode: cliConfig.debug ? "development" : "production",
 
+            // output
+            output: {
+                path: path.join(this.outputPaths.base, this.outputPaths.js),
+                publicPath: this.publicPath,
+                pathinfo: !cliConfig.debug,
+            },
+
             // resolve
             resolve: {
                 // TS is potentially added below
@@ -363,21 +373,6 @@ export default class Kaba
             }));
         }
 
-        if (cliConfig.lint || cliConfig.fix)
-        {
-            (config.module as any).rules.push({
-                test: /\.m?jsx?$/,
-                exclude: /node_modules|tests|vendor/,
-                loader: "eslint-loader",
-                options: {
-                    cache: true,
-                    configFile: path.join(this.libRoot, "configs/.eslintrc.yml"),
-                    fix: cliConfig.fix,
-                    parser: "babel-eslint",
-                },
-            });
-        }
-
         if (cliConfig.openBundleAnalyzer)
         {
             try
@@ -427,16 +422,13 @@ export default class Kaba
 
         if (!isModule)
         {
-            fileNamePattern = this.hashFileNames ? '[name].[chunkhash].legacy.js' : '[name].legacy.js';
+            fileNamePattern = fileNamePattern.replace(".js", ".legacy.js");
         }
 
-        return {
+        let config = {
             // output
             output: {
-                path: path.join(this.outputPaths.base, this.outputPaths.js),
                 filename: fileNamePattern,
-                publicPath: this.publicPath,
-                pathinfo: !cliConfig.debug,
             },
 
             // module
@@ -472,5 +464,25 @@ export default class Kaba
                 ],
             },
         };
+
+        if (cliConfig.lint || cliConfig.fix)
+        {
+            (config.module as any).rules.push({
+                test: /\.m?jsx?$/,
+                exclude: /node_modules|tests|vendor/,
+                loader: "eslint-loader",
+                options: {
+                    cache: true,
+                    configFile: path.join(this.libRoot, "configs/.eslintrc.yml"),
+                    fix: cliConfig.fix,
+                    parser: "babel-eslint",
+                },
+            });
+        }
+
+        return config;
     }
 }
+
+
+export default Kaba;

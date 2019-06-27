@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
 import {kaba} from "../src/@types/kaba";
+import Kaba from "../src/Kaba";
 import {Logger} from "../src/Logger";
-import sade from "sade";
+const sade = require("sade");
 import {bgYellow, black, blue, cyan, green, magenta, red, yellow} from "kleur";
 import {printPackageVersions} from "../src/print-package-versions";
 import {SassRunner} from "../src/runner/SassRunner";
@@ -96,7 +97,7 @@ program
             "kaba-babel-preset": yellow,
             "kaba-scss": yellow,
             webpack: cyan,
-            "babel-core": blue,
+            "@babel/core": blue,
             typescript: blue,
             eslint: blue,
             "node-sass": magenta,
@@ -123,8 +124,7 @@ function runKaba (cliConfig: kaba.CliConfig, isVerbose: boolean) : void
         logger.log("kaba started");
         const start = process.hrtime();
 
-        /** @type {Kaba} kaba */
-        const kaba = require(`${process.cwd()}/kaba.js`);
+        const kaba: Kaba = require(`${process.cwd()}/kaba.js`);
         const buildConfig = kaba.getBuildConfig(cliConfig);
 
         const scss = new SassRunner(buildConfig, cliConfig);

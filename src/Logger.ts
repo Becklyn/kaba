@@ -1,5 +1,5 @@
 import {gray, green, red, yellow} from "kleur";
-import prettyHrtime from "pretty-hrtime";
+const prettyHrtime = require("pretty-hrtime");
 
 interface FileError
 {
