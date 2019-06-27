@@ -1,102 +1,96 @@
-const fs = require("fs-extra");
-const {bgCyan, black, yellow} = require("kleur");
+import fs from "fs-extra";
+import {bgCyan, black, yellow} from "kleur";
+import * as webpack from "webpack";
+import {kaba} from "../@types/kaba";
 import {Logger} from "../Logger";
-const path = require("path");
-const webpack = require("webpack");
+import path from "path";
 
 
-class WebpackRunner
+export class WebpackRunner
 {
+    private buildConfig: kaba.BuildConfig;
+    private logger: Logger;
+    private watchers: webpack.Compiler.Watching[] = [];
+    private resolveCallback?: (success: boolean) => void;
+
     /**
      * Constructs a new runner
-     * @param {KabaBuildConfig} buildConfig
      */
-    constructor (buildConfig)
+    public constructor (buildConfig: kaba.BuildConfig)
     {
-        /**
-         * @private
-         * @type {KabaBuildConfig}
-         */
         this.buildConfig = buildConfig;
-
-        /**
-         * @private
-         * @type {ModularizedWebpackConfig[]}
-         */
-        this.webpackConfigs = buildConfig.js.webpack;
-
-        /**
-         * @private
-         * @type {Logger}
-         */
         this.logger = new Logger(bgCyan(black(" webpack ")));
-
-        /**
-         * @private
-         * @type {Compiler.Watching[]}
-         */
-        this.watchers = [];
-
-        /**
-         * @private
-         * @type {?function}
-         */
-        this.resolveCallback = null;
     }
 
 
     /**
      * Runs the actual runner
-     *
-     * @return {Promise<boolean>} whether the build was successful and error-free
      */
-    async run ()
+    public async run (): Promise<boolean>
     {
-        if (Object.keys(this.webpackConfigs).length === 0)
-        {
-            return true;
-        }
-
         return new Promise(
             (resolve) =>
             {
+                if (!this.buildConfig.js)
+                {
+                    return true;
+                }
+
                 this.logger.log("Launching webpack...");
                 const start = process.hrtime();
 
-                if (null != this.buildConfig.js.customTypeScriptConfig)
+                if (this.buildConfig.js.customTypeScriptConfig)
                 {
                     this.logger.log(`Using custom TypeScript config: ${yellow(path.relative(this.buildConfig.cwd, this.buildConfig.js.customTypeScriptConfig))}`);
                 }
 
-                if (this.webpackConfigs.some(entry => entry.config.watch))
+                if (this.buildConfig.js.common.watch)
                 {
                     this.resolveCallback = resolve;
                 }
 
-                this.webpackConfigs.forEach(entry => {
-                    const compiler = webpack(entry.config);
+                let compilerLegacy = webpack(Object.assign(
+                    {},
+                    this.buildConfig.js.common,
+                    this.buildConfig.js.legacy,
+                ));
 
-                    if (entry.config.watch)
-                    {
+                let compilerModule = webpack(Object.assign(
+                    {},
+                    this.buildConfig.js.common,
+                    this.buildConfig.js.module,
+                ));
 
-                    }
-                });
 
-
-                if (this.webpackConfigs.watch)
+                if (this.buildConfig.js.common.watch)
                 {
                     this.resolveCallback = resolve;
 
-                    this.watcher = compiler.watch(
-                        {},
-                        (error, stats) => this.onCompilationFinished(error, stats)
+                    this.watchers.push(
+                        compilerLegacy.watch(
+                            {},
+                            (error, stats) => this.onCompilationFinished(error, stats, false)
+                        )
+                    );
+                    this.watchers.push(
+                        compilerModule.watch(
+                            {},
+                            (error, stats) => this.onCompilationFinished(error, stats, true)
+                        )
                     );
                 }
                 else
                 {
-                    compiler.run(
+                    compilerLegacy.run(
                         (error, stats) => {
-                            resolve(this.onCompilationFinished(error, stats));
+                            resolve(this.onCompilationFinished(error, stats, false, start));
+                            this.logger.logBuildSuccess("(all files)", process.hrtime(start));
+                        }
+                    );
+
+                    compilerModule.run(
+                        (error, stats) => {
+                            resolve(this.onCompilationFinished(error, stats, true, start));
                             this.logger.logBuildSuccess("(all files)", process.hrtime(start));
                         }
                     );
@@ -108,13 +102,8 @@ class WebpackRunner
 
     /**
      * Callback on after the compilation has finished
-     *
-     * @param {Error|null} error
-     * @param {webpack.stats} stats
-     * @param {boolean} isModule
-     * @return {boolean} whether the compilation had no errors
      */
-    onCompilationFinished (error, stats, isModule)
+    private onCompilationFinished (error: Error|null, stats: webpack.Stats, isModule: boolean, start?: [number, number]) : boolean
     {
         if (error)
         {
@@ -139,16 +128,16 @@ class WebpackRunner
     /**
      * Stops the runner
      */
-    stop ()
+    public stop () : void
     {
-        if (null !== this.resolveCallback)
+        if (this.resolveCallback)
         {
             Promise.all(
                 this.watchers.map(watcher =>
                     new Promise(resolve => watcher.close(resolve))
                 )
             )
-                .then(() => this.resolveCallback(true));
+                .then(() => (this.resolveCallback as (success: boolean) => void)(true));
         }
     }
 
@@ -162,6 +151,11 @@ class WebpackRunner
      */
     writeDependenciesFile (stats, isModule)
     {
+        if (!this.buildConfig.js)
+        {
+            return;
+        }
+
         const entrypoints = {};
 
         for (const mapEntry of stats.compilation.entrypoints.entries())
@@ -175,17 +169,17 @@ class WebpackRunner
             );
         }
 
+        let outputPath = (this.buildConfig.js.common.output as webpack.Output).path as string;
+
         // ensure that output path exists
-        fs.ensureDirSync(this.webpackConfigs.output.path);
+        fs.ensureDirSync(outputPath);
 
         const fileName = `${this.buildConfig.js.javaScriptDependenciesFileName}${isModule ? ".module" : ""}.json`;
         fs.writeFileSync(
-            path.join(this.webpackConfigs.output.path, fileName),
+            path.join(outputPath, fileName),
             JSON.stringify(entrypoints),
             "utf-8"
         );
         this.logger.log(`Entrypoint dependencies written to ${yellow(fileName)}`);
     }
 }
-
-module.exports = WebpackRunner;

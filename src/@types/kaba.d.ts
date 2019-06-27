@@ -25,10 +25,12 @@ declare namespace kaba
     export interface BuildConfig
     {
         sass: SassBuildConfig;
-        js: {
-            _common: WebpackBuildConfig;
+        js?: {
+            common: WebpackBuildConfig;
             module: WebpackBuildConfig;
             legacy: WebpackBuildConfig;
+            javaScriptDependenciesFileName: string;
+            customTypeScriptConfig?: string;
         };
         cwd: string;
     }
