@@ -1,5 +1,4 @@
 import {blue, red, yellow} from "kleur";
-const fs = require("fs-extra");
 const path = require("path");
 import * as webpack from "webpack";
 import {DefinePlugin, ProvidePlugin} from "webpack";
@@ -7,7 +6,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const typeScriptErrorFormatter = require("@becklyn/typescript-error-formatter");
 import {kaba} from "./@types/kaba";
 import CliConfig = kaba.CliConfig;
-const browserslistConfig = require("@becklyn/browserslist-config/envs");
+const kabaBabelPreset = require("kaba-babel-preset");
 
 
 interface Entries
@@ -401,7 +400,7 @@ export class Kaba
             options: {
                 babelrc: false,
                 presets: [
-                    ["kaba-babel-preset"],
+                    [isModule ? kabaBabelPreset.modern : kabaBabelPreset.legacy],
                 ],
             },
         };
