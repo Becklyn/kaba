@@ -1,7 +1,5 @@
 import {KabaScss} from "kaba-scss/src";
-import {bgMagenta, black} from "kleur";
 import {kaba} from "../@types/kaba";
-import {Logger} from "../Logger";
 import path from "path";
 
 
@@ -9,7 +7,6 @@ export class SassRunner
 {
     private buildConfig: kaba.SassBuildConfig;
     private cliConfig: kaba.CliConfig;
-    private logger: Logger;
     private compiler?: KabaScss;
 
     /**
@@ -19,7 +16,6 @@ export class SassRunner
     {
         this.buildConfig = fullBuildConfig.sass;
         this.cliConfig = cliConfig;
-        this.logger = new Logger(bgMagenta(black(" Sass ")));
     }
 
 
