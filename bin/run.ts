@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 
-const CliConfig = require("../src/CliConfig");
-const Logger = require("../src/Logger");
-const printPackageVersions = require("../src/print-package-versions");
-const sade = require("sade");
-const SassRunner = require("../src/runner/SassRunner");
-const WebpackRunner = require("../src/runner/WebpackRunner");
+import {Logger} from "../src/Logger";
+import sade from "sade";
 import {bgYellow, black, blue, cyan, green, magenta, red, yellow} from "kleur";
+import {printPackageVersions} from "../src/print-package-versions";
+import {SassRunner} from "../src/runner/SassRunner";
+import {WebpackRunner} from "../src/runner/WebpackRunner";
 
 
 console.log(``);
@@ -17,6 +16,16 @@ console.log(``);
 
 const program = sade("kaba");
 const kabaVersion = require("../package").version;
+
+interface CliConfig
+{
+    debug?: boolean;
+    watch?: boolean;
+    lint?: boolean;
+    openBundleAnalyzer?: boolean;
+    fix?: boolean;
+}
+
 
 program
     .version(kabaVersion)
@@ -66,7 +75,6 @@ program
         console.log("");
 
         runKaba({
-            analyze: true,
             lint: true,
         }, !!opts.verbose);
     });
@@ -115,18 +123,14 @@ program.parse(process.argv);
 
 /**
  * Main kaba function
- *
- * @param {CliConfigArguments} opts
- * @param {boolean} isVerbose
  */
-function runKaba (opts, isVerbose)
+function runKaba (cliConfig: CliConfig, isVerbose: boolean) : void
 {
     try
     {
         const logger = new Logger(bgYellow(black(" kaba ")));
         logger.log("kaba started");
         const start = process.hrtime();
-        const cliConfig = new CliConfig(opts);
 
         /** @type {Kaba} kaba */
         const kaba = require(`${process.cwd()}/kaba.js`);
@@ -153,7 +157,7 @@ function runKaba (opts, isVerbose)
                 (...args) => console.log("something broke", args)
             );
 
-        if (cliConfig.isWatch())
+        if (cliConfig.watch)
         {
             const exitCallback = () => {
                 scss.stop();
