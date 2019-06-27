@@ -3,3 +3,9 @@
 /package-lock.json
 /tests/fixtures/*/build
 /tests/fixtures/*/.stylelintcache
+
+# ignore build files
+*.d.ts
+*.js
+!/src/@types/*.d.ts
+!/tests/**/*.js
