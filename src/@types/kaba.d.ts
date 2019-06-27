@@ -29,7 +29,6 @@ declare namespace kaba
             module: WebpackBuildConfig;
             legacy: WebpackBuildConfig;
             javaScriptDependenciesFileName: string;
-            customTypeScriptConfig?: string;
         };
         cwd: string;
     }

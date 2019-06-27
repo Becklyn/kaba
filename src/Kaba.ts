@@ -1,14 +1,13 @@
-import {CleanWebpackPlugin} from 'clean-webpack-plugin';
-const kabaBabelPreset = require("kaba-babel-preset");
 import {blue, red, yellow} from "kleur";
 const fs = require("fs-extra");
 const path = require("path");
 import * as webpack from "webpack";
-import {ProvidePlugin} from "webpack";
+import {DefinePlugin, ProvidePlugin} from "webpack";
 const TerserPlugin = require('terser-webpack-plugin');
 const typeScriptErrorFormatter = require("@becklyn/typescript-error-formatter");
 import {kaba} from "./@types/kaba";
 import CliConfig = kaba.CliConfig;
+const browserslistConfig = require("@becklyn/browserslist-config/envs");
 
 
 interface Entries
@@ -51,7 +50,6 @@ export class Kaba
     private javaScriptDependenciesFileName: string = "_dependencies";
     private splitChunks: boolean = true;
     private hashFileNames: boolean = true;
-    private customTypeScriptConfig?: string;
 
     /**
      *
@@ -61,7 +59,6 @@ export class Kaba
         this.cwd = process.cwd();
         this.libRoot = path.dirname(__dirname);
         this.plugins = [
-            new CleanWebpackPlugin(),
             new ProvidePlugin({
                 h: ["preact", "h"],
             }),
@@ -232,12 +229,6 @@ export class Kaba
      */
     public getBuildConfig (cliConfig: CliConfig): kaba.BuildConfig
     {
-        let customTypeScriptConfig = path.join(this.cwd, "tsconfig.json");
-        if (fs.pathExistsSync(customTypeScriptConfig))
-        {
-            this.customTypeScriptConfig = customTypeScriptConfig;
-        }
-
         return {
             sass: {
                 entries: this.sassEntries,
@@ -250,7 +241,6 @@ export class Kaba
                 module: this.buildWebpackConfig(cliConfig, true),
                 legacy: this.buildWebpackConfig(cliConfig, false),
                 javaScriptDependenciesFileName: this.javaScriptDependenciesFileName,
-                customTypeScriptConfig: this.customTypeScriptConfig,
             },
             cwd: this.cwd,
         };
@@ -263,17 +253,15 @@ export class Kaba
     private buildWebpackCommon (cliConfig: kaba.CliConfig): Partial<webpack.Configuration>
     {
         const config: Partial<webpack.Configuration> = {
-            // entry
-            entry: this.jsEntries,
-
             // mode
             mode: cliConfig.debug ? "development" : "production",
 
             // output
             output: {
                 path: path.join(this.outputPaths.base, this.outputPaths.js),
+                filename: this.hashFileNames ? '[name].[chunkhash].js' : '[name].js',
                 publicPath: this.publicPath,
-                pathinfo: !cliConfig.debug,
+                pathinfo: cliConfig.debug,
             },
 
             // resolve
@@ -305,7 +293,7 @@ export class Kaba
 
             // devtool (source maps)
             devtool: cliConfig.debug
-                ? "eval"
+                ? "inline-cheap-source-map"
                 : "hidden-source-map",
 
             // context
@@ -413,23 +401,39 @@ export class Kaba
             options: {
                 babelrc: false,
                 presets: [
-                    isModule ? kabaBabelPreset.module : kabaBabelPreset.legacy,
+                    ["@babel/preset-env", {
+                        useBuiltIns: "entry",
+                        corejs: 3,
+                        targets: isModule ? browserslistConfig.modern : browserslistConfig.legacy,
+                    }],
                 ],
             },
         };
 
-        let fileNamePattern = this.hashFileNames ? '[name].[chunkhash].js' : '[name].js';
+        let entries = this.jsEntries;
 
         if (!isModule)
         {
-            fileNamePattern = fileNamePattern.replace(".js", ".legacy.js");
+            entries = {};
+            Object.keys(this.jsEntries).forEach(
+                entry =>
+                {
+                    entries[`_legacy.${entry}`] = this.jsEntries[entry];
+                }
+            );
         }
 
+        let typeScriptConfig = path.join(
+            this.libRoot,
+            "configs",
+            isModule
+                ? "tsconfig.modern.json"
+                : "tsconfig.legacy.json"
+        );
+
         let config = {
-            // output
-            output: {
-                filename: fileNamePattern,
-            },
+            // entry
+            entry: entries,
 
             // module
             module: {
@@ -443,7 +447,7 @@ export class Kaba
                                 loader: "ts-loader",
                                 options: {
                                     context: this.cwd,
-                                    configFile: this.customTypeScriptConfig || path.join(this.libRoot, "configs/tsconfig.json"),
+                                    configFile: typeScriptConfig,
                                     errorFormatter: (message, colors) => typeScriptErrorFormatter(message, colors, this.cwd),
                                 },
                             },
@@ -463,6 +467,13 @@ export class Kaba
                     },
                 ],
             },
+
+            // plugins
+            plugins: [
+                new DefinePlugin({
+                    'process.env.MODERN_BUILD': isModule,
+                }),
+            ],
         };
 
         if (cliConfig.lint || cliConfig.fix)

@@ -1,10 +1,10 @@
+import MultiStats = webpack.compilation.MultiStats;
 const fs = require("fs-extra");
-import {bgCyan, black, yellow} from "kleur";
+import {bgCyan, black, yellow, cyan} from "kleur";
 import * as webpack from "webpack";
 import {kaba} from "../@types/kaba";
 import {Logger} from "../Logger";
 const path = require("path");
-const deepExtend = require("deep-extend");
 
 
 export class WebpackRunner
@@ -40,58 +40,50 @@ export class WebpackRunner
                 this.logger.log("Launching webpack...");
                 const start = process.hrtime();
 
-                if (this.buildConfig.js.customTypeScriptConfig)
-                {
-                    this.logger.log(`Using custom TypeScript config: ${yellow(path.relative(this.buildConfig.cwd, this.buildConfig.js.customTypeScriptConfig))}`);
-                }
-
                 if (this.buildConfig.js.common.watch)
                 {
                     this.resolveCallback = resolve;
                 }
 
-                let compilerLegacy = webpack(deepExtend(
+
+                let configLegacy = Object.assign(
                     {},
                     this.buildConfig.js.common,
                     this.buildConfig.js.legacy,
-                ));
+                    {
+                        plugins: (this.buildConfig.js.common.plugins as any[]).concat(this.buildConfig.js.legacy.plugins),
+                        name: "legacy",
+                    }
+                );
 
-                let compilerModule = webpack(deepExtend(
+                let configModule = Object.assign(
                     {},
                     this.buildConfig.js.common,
                     this.buildConfig.js.module,
-                ));
+                    {
+                        plugins: (this.buildConfig.js.common.plugins as any[]).concat(this.buildConfig.js.module.plugins),
+                        name: "module",
+                    }
+                );
 
+                let compiler = webpack([configLegacy, configModule]) as webpack.MultiCompiler;
 
                 if (this.buildConfig.js.common.watch)
                 {
                     this.resolveCallback = resolve;
 
                     this.watchers.push(
-                        compilerLegacy.watch(
+                        compiler.watch(
                             {},
-                            (error, stats) => this.onCompilationFinished(error, stats, false)
-                        )
-                    );
-                    this.watchers.push(
-                        compilerModule.watch(
-                            {},
-                            (error, stats) => this.onCompilationFinished(error, stats, true)
+                            (error, stats) => this.onCompilationFinished(error, (stats as unknown) as MultiStats)
                         )
                     );
                 }
                 else
                 {
-                    compilerLegacy.run(
+                    compiler.run(
                         (error, stats) => {
-                            resolve(this.onCompilationFinished(error, stats, false, start));
-                            this.logger.logBuildSuccess("(all files)", process.hrtime(start));
-                        }
-                    );
-
-                    compilerModule.run(
-                        (error, stats) => {
-                            resolve(this.onCompilationFinished(error, stats, true, start));
+                            resolve(this.onCompilationFinished(error, (stats as unknown) as MultiStats, start));
                             this.logger.logBuildSuccess("(all files)", process.hrtime(start));
                         }
                     );
@@ -104,7 +96,7 @@ export class WebpackRunner
     /**
      * Callback on after the compilation has finished
      */
-    private onCompilationFinished (error: Error|null, stats: webpack.Stats, isModule: boolean, start?: [number, number]) : boolean
+    private onCompilationFinished (error: Error|null, stats: MultiStats, start?: [number, number]) : boolean
     {
         if (error)
         {
@@ -114,15 +106,23 @@ export class WebpackRunner
         }
 
         // log webpack output
-        console.log(stats.toString({
-            colors: true,
-        }));
+        stats.stats.forEach(
+            singleStats =>
+            {
+                console.log("");
+                let type = singleStats.compilation.compiler.options.name as string;
+                console.log(`${bgCyan(black(" webpack "))} ${cyan(type)}`);
+                console.log(singleStats.toString({
+                    colors: true,
+                }));
+            }
+        );
+
         console.log("");
-
         // write dependencies file
-        this.writeDependenciesFile(stats, isModule);
+        this.writeDependenciesFile(stats);
 
-        return !stats.hasErrors();
+        return !stats.stats.some(single => single.hasErrors());
     }
 
 
@@ -145,12 +145,8 @@ export class WebpackRunner
 
     /**
      * Writes the entry dependencies file
-     *
-     * @private
-     * @param {Stats} stats
-     * @param {boolean} isModule
      */
-    writeDependenciesFile (stats, isModule)
+    private writeDependenciesFile (stats: MultiStats) : void
     {
         if (!this.buildConfig.js)
         {
@@ -159,23 +155,29 @@ export class WebpackRunner
 
         const entrypoints = {};
 
-        for (const mapEntry of stats.compilation.entrypoints.entries())
-        {
-            const entry = mapEntry[1];
-            entrypoints[entry.name] = entry.chunks.reduce(
-                (files, chunk) => {
-                    return files.concat(chunk.files);
-                },
-                []
-            );
-        }
+        stats.stats.forEach(
+            singleStats =>
+            {
+                for (const mapEntry of singleStats.compilation.entrypoints.entries())
+                {
+                    const entry = mapEntry[1];
+                    entrypoints[entry.name] = entry.chunks.reduce(
+                        (files, chunk) => {
+                            return files.concat(chunk.files);
+                        },
+                        []
+                    );
+                }
+            }
+        );
+
 
         let outputPath = (this.buildConfig.js.common.output as webpack.Output).path as string;
 
         // ensure that output path exists
         fs.ensureDirSync(outputPath);
 
-        const fileName = `${this.buildConfig.js.javaScriptDependenciesFileName}${isModule ? ".module" : ""}.json`;
+        const fileName = `${this.buildConfig.js.javaScriptDependenciesFileName}.json`;
         fs.writeFileSync(
             path.join(outputPath, fileName),
             JSON.stringify(entrypoints),
