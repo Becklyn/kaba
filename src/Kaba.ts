@@ -1,0 +1,476 @@
+import {CleanWebpackPlugin} from 'clean-webpack-plugin';
+import kabaBabelPreset from "kaba-babel-preset";
+import {blue, red, yellow} from "kleur";
+import fs from "fs-extra";
+import path from "path";
+import * as webpack from "webpack";
+import {ProvidePlugin} from "webpack";
+import TerserPlugin from 'terser-webpack-plugin';
+import typeScriptErrorFormatter from "@becklyn/typescript-error-formatter";
+import {kaba} from "./@types/kaba";
+import CliConfig = kaba.CliConfig;
+
+
+interface Entries
+{
+    [name: string]: string;
+}
+
+interface OutputPaths
+{
+    base: string;
+    css: string;
+    js: string;
+}
+
+interface Externals
+{
+    [name: string]: string;
+}
+
+
+/**
+ * Main Kaba class
+ */
+export default class Kaba
+{
+    private cwd: string;
+    private libRoot: string;
+    private jsEntries: Entries = {};
+    private sassEntries: Entries = {};
+    private sassIncludePaths: string[] = [];
+    private outputPaths: OutputPaths = {
+        base: "build",
+        css: "css",
+        js: "js",
+    };
+    private publicPath: string = "/assets/";
+    private externals: Externals = {};
+    private moduleConcatenationEnabled: boolean = false;
+    private plugins: webpack.Plugin[] = [];
+    private javaScriptDependenciesFileName: string = "_dependencies";
+    private splitChunks: boolean = true;
+    private hashFileNames: boolean = true;
+    private customTypeScriptConfig?: string;
+
+    /**
+     *
+     */
+    public constructor ()
+    {
+        this.cwd = process.cwd();
+        this.libRoot = path.dirname(__dirname);
+        this.plugins = [
+            new CleanWebpackPlugin(),
+            new ProvidePlugin({
+                h: ["preact", "h"],
+            }),
+        ];
+    }
+
+
+    /**
+     * Adds JS entries
+     */
+    public addJavaScriptEntries (mapping: Entries): this
+    {
+        this.addEntriesToList(mapping, this.jsEntries, "js");
+        return this;
+    }
+
+
+    /**
+     * Adds Sass entries
+     */
+    public addSassEntries (mapping: Entries): this
+    {
+        try
+        {
+            require("kaba-scss");
+        }
+        catch (e)
+        {
+            console.log(`${red("ERROR")} It seems that ${yellow("kaba-scss")} is not installed. Install it with ${blue(
+                "npm install -D kaba-scss")}`);
+            process.exit(1);
+        }
+
+        this.addEntriesToList(mapping, this.sassEntries, "sass");
+        return this;
+    }
+
+
+    /**
+     * Adds items from a mapping to list
+     */
+    private addEntriesToList (mapping: Entries, list: Entries, type: string): void
+    {
+        Object.keys(mapping).forEach(
+            name =>
+            {
+                let source = mapping[name];
+
+                if (!/^[./]/.test(source))
+                {
+                    source = `./${source}`;
+                }
+
+                if (list[name] !== undefined)
+                {
+                    throw new Error(`Can't add ${type} entry named ${name}: an entry with this name already exists.`);
+                }
+
+                list[name] = source;
+            },
+        );
+    }
+
+
+    /**
+     * Sets the output path
+     */
+    public setOutputPath (base: string, cssSubDir: string = "css", jsSubDir: string = "js"): this
+    {
+        this.outputPaths = {
+            base: path.join(this.cwd, base),
+            css: cssSubDir,
+            js: jsSubDir,
+        };
+        return this;
+    }
+
+
+    /**
+     * Sets the relative public path (for automatic imports)
+     */
+    public setPublicPath (publicPath: string): this
+    {
+        this.publicPath = publicPath;
+        return this;
+    }
+
+
+    /**
+     * Sets the externally available instances
+     */
+    public setExternals (externals: Externals): this
+    {
+        this.externals = externals;
+        return this;
+    }
+
+
+    /**
+     * Disables module concatenation
+     */
+    public disableModuleConcatenation (): this
+    {
+        this.moduleConcatenationEnabled = false;
+        return this;
+    }
+
+
+    /**
+     * Enables module concatenation
+     */
+    public enableModuleConcatenation (): this
+    {
+        this.moduleConcatenationEnabled = true;
+        return this;
+    }
+
+
+    /**
+     * Adds `node_modules` to the include dir of sass.
+     */
+    public enableSassNodeModulesIncludePaths (): this
+    {
+        this.sassIncludePaths = [
+            path.join(this.cwd, "node_modules"),
+        ];
+        return this;
+    }
+
+
+    /**
+     * Sets the file name of the javascript dependencies file
+     */
+    public setJavaScriptDependenciesName (name: string): this
+    {
+        this.javaScriptDependenciesFileName = name;
+        return this;
+    }
+
+
+    /**
+     * Disables chunk splitting
+     */
+    public disableChunkSplitting (): this
+    {
+        this.splitChunks = false;
+        return this;
+    }
+
+
+    /**
+     * Disables chunk hashes in file names
+     */
+    public disableFileNameHashing (): this
+    {
+        this.hashFileNames = false;
+        return this;
+    }
+
+
+    /**
+     * Returns the kaba config
+     *
+     * @internal
+     */
+    public getBuildConfig (cliConfig: CliConfig): kaba.BuildConfig
+    {
+        let customTypeScriptConfig = path.join(this.cwd, "tsconfig.json");
+        if (fs.pathExistsSync(customTypeScriptConfig))
+        {
+            this.customTypeScriptConfig = customTypeScriptConfig;
+        }
+
+        return {
+            sass: {
+                entries: this.sassEntries,
+                includePaths: this.sassIncludePaths,
+                outputPath: path.join(this.outputPaths.base, this.outputPaths.css),
+                cwd: this.cwd,
+            },
+            js: {
+                common: this.buildWebpackCommon(cliConfig),
+                module: this.buildWebpackConfig(cliConfig, true),
+                legacy: this.buildWebpackConfig(cliConfig, false),
+                javaScriptDependenciesFileName: this.javaScriptDependenciesFileName,
+                customTypeScriptConfig: this.customTypeScriptConfig,
+            },
+            cwd: this.cwd,
+        };
+    }
+
+
+    /**
+     * Builds the common webpack config, that is common between legacy & module
+     */
+    private buildWebpackCommon (cliConfig: kaba.CliConfig): Partial<webpack.Configuration>
+    {
+        const config: Partial<webpack.Configuration> = {
+            // entry
+            entry: this.jsEntries,
+
+            // mode
+            mode: cliConfig.debug ? "development" : "production",
+
+            // resolve
+            resolve: {
+                // TS is potentially added below
+                extensions: [
+                    ".mjs",
+                    ".mjsx",
+                    ".js",
+                    ".jsx",
+                    ".ts",
+                    ".tsx",
+                    ".json",
+                ],
+            },
+
+            // module
+            module: {
+                rules: [],
+            },
+
+            // optimization
+            optimization: {
+                concatenateModules: this.moduleConcatenationEnabled,
+                minimizer: [],
+            },
+
+            // performance
+
+            // devtool (source maps)
+            devtool: cliConfig.debug
+                ? "eval"
+                : "hidden-source-map",
+
+            // context
+            context: this.cwd,
+
+            // target
+            target: "web",
+
+            // externals
+            externals: this.externals,
+
+            // stats
+            stats: {
+                // hide children information (like from the ExtractTextPlugin)
+                children: false,
+            },
+
+            // devServer
+
+            // plugins
+            plugins: this.plugins,
+
+            // watch
+            watch: cliConfig.watch,
+
+            // node
+            // don't automatically polyfill certain node libraries
+            // as we don't care about these implementations and they just add weight
+            node: false,
+        };
+
+        if (this.splitChunks)
+        {
+            (config.optimization as any).splitChunks = {
+                chunks: "all",
+                minChunks: 1,
+                maxAsyncRequests: 5,
+                maxInitialRequests: 3,
+                name: true,
+                cacheGroups: {
+                    default: {
+                        minChunks: 2,
+                        priority: -20,
+                        reuseExistingChunk: true,
+                    },
+                    vendors: {
+                        test: /[\\/]node_modules[\\/]/,
+                        priority: -10,
+                    },
+                },
+            };
+
+            (config.optimization as any).runtimeChunk = "single";
+        }
+
+        if (!cliConfig.debug)
+        {
+            (config.optimization as any).minimizer.push(new TerserPlugin({
+                cache: true,
+                parallel: true,
+                sourceMap: true,
+                terserOptions: {
+                    ecma: 5,
+                },
+            }));
+        }
+
+        if (cliConfig.lint || cliConfig.fix)
+        {
+            (config.module as any).rules.push({
+                test: /\.m?jsx?$/,
+                exclude: /node_modules|tests|vendor/,
+                loader: "eslint-loader",
+                options: {
+                    cache: true,
+                    configFile: path.join(this.libRoot, "configs/.eslintrc.yml"),
+                    fix: cliConfig.fix,
+                    parser: "babel-eslint",
+                },
+            });
+        }
+
+        if (cliConfig.openBundleAnalyzer)
+        {
+            try
+            {
+                const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+                (config.plugins as any[]).push(new BundleAnalyzerPlugin());
+            }
+            catch (e)
+            {
+                console.log("");
+
+                if (/Cannot find module 'webpack-bundle-analyzer'/.test(e.message))
+                {
+                    console.log(red("You need to manually install the analyzer plugin:"));
+                    console.log(red("    npm i webpack-bundle-analyzer"));
+                }
+                else
+                {
+                    console.log(red(e.message));
+                }
+
+                process.exit(1);
+            }
+
+        }
+
+        return config;
+    }
+
+
+    /**
+     * Builds the specialized webpack config for a legacy / module build
+     */
+    private buildWebpackConfig (cliConfig: kaba.CliConfig, isModule: boolean): Partial<webpack.Configuration>
+    {
+        const babelLoader = {
+            loader: "babel-loader?cacheDirectory",
+            options: {
+                babelrc: false,
+                presets: [
+                    isModule ? kabaBabelPreset.module : kabaBabelPreset.legacy,
+                ],
+            },
+        };
+
+        let fileNamePattern = this.hashFileNames ? '[name].[chunkhash].js' : '[name].js';
+
+        if (!isModule)
+        {
+            fileNamePattern = this.hashFileNames ? '[name].[chunkhash].legacy.js' : '[name].legacy.js';
+        }
+
+        return {
+            // output
+            output: {
+                path: path.join(this.outputPaths.base, this.outputPaths.js),
+                filename: fileNamePattern,
+                publicPath: this.publicPath,
+                pathinfo: !cliConfig.debug,
+            },
+
+            // module
+            module: {
+                rules: [
+                    // TypeScript
+                    {
+                        test: /\.tsx?$/,
+                        use: [
+                            babelLoader,
+                            {
+                                loader: "ts-loader",
+                                options: {
+                                    context: this.cwd,
+                                    configFile: this.customTypeScriptConfig || path.join(this.libRoot, "configs/tsconfig.json"),
+                                    errorFormatter: (message, colors) => typeScriptErrorFormatter(message, colors, this.cwd),
+                                },
+                            },
+                        ],
+                    },
+
+                    // Babel
+                    {
+                        test: /\.m?jsx?$/,
+                        use: [babelLoader],
+                    },
+
+                    // content files
+                    {
+                        test: /\.(svg|txt)$/,
+                        loader: "raw-loader",
+                    },
+                ],
+            },
+        };
+    }
+}
