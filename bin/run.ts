@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import {kaba} from "../src/@types/kaba";
 import {Logger} from "../src/Logger";
 import sade from "sade";
 import {bgYellow, black, blue, cyan, green, magenta, red, yellow} from "kleur";
