@@ -1,6 +1,6 @@
 const fs = require("fs-extra");
 const {bgCyan, black, yellow} = require("kleur");
-const Logger = require("../Logger");
+import {Logger} from "../Logger";
 const path = require("path");
 const webpack = require("webpack");
 

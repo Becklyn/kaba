@@ -1,5 +1,5 @@
 const {bgMagenta, black} = require("kleur");
-const Logger = require("../Logger");
+import {Logger} from "../Logger";
 const path = require("path");
 
 
