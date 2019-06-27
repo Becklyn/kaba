@@ -17,16 +17,6 @@ console.log(``);
 const program = sade("kaba");
 const kabaVersion = require("../package").version;
 
-interface CliConfig
-{
-    debug?: boolean;
-    watch?: boolean;
-    lint?: boolean;
-    openBundleAnalyzer?: boolean;
-    fix?: boolean;
-}
-
-
 program
     .version(kabaVersion)
     .option('--verbose', 'show all errors in the runner / config file with stack trace');
@@ -124,7 +114,7 @@ program.parse(process.argv);
 /**
  * Main kaba function
  */
-function runKaba (cliConfig: CliConfig, isVerbose: boolean) : void
+function runKaba (cliConfig: kaba.CliConfig, isVerbose: boolean) : void
 {
     try
     {
