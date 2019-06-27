@@ -1,40 +1,25 @@
-const {bgMagenta, black} = require("kleur");
+import {KabaScss} from "kaba-scss/src";
+import {bgMagenta, black} from "kleur";
+import {kaba} from "../@types/kaba";
 import {Logger} from "../Logger";
-const path = require("path");
+import path from "path";
 
 
-class SassRunner
+export class SassRunner
 {
+    private buildConfig: kaba.SassBuildConfig;
+    private cliConfig: kaba.CliConfig;
+    private logger: Logger;
+    private compiler?: KabaScss;
+
     /**
      * Constructs a new runner
-     * @param {KabaBuildConfig} fullBuildConfig
-     * @param {CliConfig} cliConfig
      */
-    constructor (fullBuildConfig, cliConfig)
+    constructor (fullBuildConfig: kaba.BuildConfig, cliConfig: kaba.CliConfig)
     {
-        /**
-         * @private
-         * @type {SassBuildConfig}
-         */
         this.buildConfig = fullBuildConfig.sass;
-
-        /**
-         * @private
-         * @type {CliConfig}
-         */
         this.cliConfig = cliConfig;
-
-        /**
-         * @private
-         * @type {Logger}
-         */
         this.logger = new Logger(bgMagenta(black(" Sass ")));
-
-        /**
-         * @private
-         * @type {?KabaScss}
-         */
-        this.compiler = null;
     }
 
 
@@ -57,13 +42,7 @@ class SassRunner
 
         const {KabaScss} = require("kaba-scss");
 
-        this.compiler = new KabaScss({
-            debug: this.cliConfig.isDebug(),
-            watch: this.cliConfig.isWatch(),
-            lint: this.cliConfig.isLint(),
-            fix: this.cliConfig.isFix(),
-            cwd: this.buildConfig.cwd,
-        });
+        this.compiler = new KabaScss(Object.assign({}, this.cliConfig, {cwd: this.buildConfig.cwd}));
 
         entries.forEach(
             name =>
@@ -71,11 +50,11 @@ class SassRunner
                 const src = this.buildConfig.entries[name];
                 const outputPath = `${this.buildConfig.outputPath}/${name}.css`;
 
-                this.compiler.addEntry(src, path.dirname(outputPath), path.basename(outputPath));
+                (this.compiler as KabaScss).addEntry(src, path.dirname(outputPath), path.basename(outputPath));
             }
         );
 
-        return this.compiler.run();
+        return (this.compiler as KabaScss).run();
     }
 
 
@@ -84,11 +63,9 @@ class SassRunner
      */
     stop ()
     {
-        if (this.compiler !== null)
+        if (this.compiler)
         {
             this.compiler.stop();
         }
     }
 }
-
-module.exports = SassRunner;
