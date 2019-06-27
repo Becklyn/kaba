@@ -8,12 +8,15 @@
         "url": "https://github.com/Becklyn/kaba.git"
     },
     "version": "8.1.0",
-    "main": "lib/Kaba.js",
+    "main": "src/Kaba.js",
     "bin": {
         "kaba": "bin/run.js"
     },
     "scripts": {
-        "test": "ava"
+        "build": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty --noUnusedLocals",
+        "dev": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty",
+        "prepublishOnly": "npm run-script build",
+        "test": "npm run-script build && ava"
     },
     "dependencies": {
         "@babel/core": "^7.0.0",
@@ -33,7 +36,7 @@
         "sade": "^1.4.1",
         "terser-webpack-plugin": "^1.0.2",
         "ts-loader": "^6.0.0",
-        "typescript": "^3.0.0",
+        "typescript": "^3.5.2",
         "webpack": "^4.16.1"
     },
     "peerDependencies": {

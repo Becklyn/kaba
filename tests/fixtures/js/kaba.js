@@ -1,4 +1,4 @@
-const Kaba = require("../../../lib/Kaba");
+const Kaba = require("../../../src/Kaba");
 
 
 module.exports = (new Kaba())

@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-const CliConfig = require("../lib/CliConfig");
-const {bgYellow, black, green, red, yellow} = require("kleur");
-const Logger = require("../lib/Logger");
-const printPackageVersions = require("../lib/print-package-versions");
+const CliConfig = require("../src/CliConfig");
+const Logger = require("../src/Logger");
+const printPackageVersions = require("../src/print-package-versions");
 const sade = require("sade");
-const SassRunner = require("../lib/runner/SassRunner");
-const WebpackRunner = require("../lib/runner/WebpackRunner");
+const SassRunner = require("../src/runner/SassRunner");
+const WebpackRunner = require("../src/runner/WebpackRunner");
+import {bgYellow, black, blue, cyan, green, magenta, red, yellow} from "kleur";
 
 
 console.log(``);
@@ -94,14 +94,14 @@ program
         console.log(`  ${bgYellow(black(" Versions "))}`);
         console.log("");
         printPackageVersions(kabaVersion, {
-            "kaba-babel-preset": "yellow",
-            "kaba-scss": "yellow",
-            webpack: "cyan",
-            "babel-core": "blue",
-            typescript: "blue",
-            eslint: "blue",
-            "node-sass": "magenta",
-            stylelint: "magenta",
+            "kaba-babel-preset": yellow,
+            "kaba-scss": yellow,
+            webpack: cyan,
+            "babel-core": blue,
+            typescript: blue,
+            eslint: blue,
+            "node-sass": magenta,
+            stylelint: magenta,
         });
 
         process.exit(0);

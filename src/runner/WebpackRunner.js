@@ -21,9 +21,9 @@ class WebpackRunner
 
         /**
          * @private
-         * @type {webpack.Configuration}
+         * @type {ModularizedWebpackConfig[]}
          */
-        this.webpackConfig = buildConfig.js.webpack;
+        this.webpackConfigs = buildConfig.js.webpack;
 
         /**
          * @private
@@ -33,9 +33,9 @@ class WebpackRunner
 
         /**
          * @private
-         * @type {?*}
+         * @type {Compiler.Watching[]}
          */
-        this.watcher = null;
+        this.watchers = [];
 
         /**
          * @private
@@ -52,7 +52,7 @@ class WebpackRunner
      */
     async run ()
     {
-        if (Object.keys(this.webpackConfig.entry).length === 0)
+        if (Object.keys(this.webpackConfigs).length === 0)
         {
             return true;
         }
@@ -63,14 +63,27 @@ class WebpackRunner
                 this.logger.log("Launching webpack...");
                 const start = process.hrtime();
 
-                const compiler = webpack(this.webpackConfig);
-
                 if (null != this.buildConfig.js.customTypeScriptConfig)
                 {
                     this.logger.log(`Using custom TypeScript config: ${yellow(path.relative(this.buildConfig.cwd, this.buildConfig.js.customTypeScriptConfig))}`);
                 }
 
-                if (this.webpackConfig.watch)
+                if (this.webpackConfigs.some(entry => entry.config.watch))
+                {
+                    this.resolveCallback = resolve;
+                }
+
+                this.webpackConfigs.forEach(entry => {
+                    const compiler = webpack(entry.config);
+
+                    if (entry.config.watch)
+                    {
+
+                    }
+                });
+
+
+                if (this.webpackConfigs.watch)
                 {
                     this.resolveCallback = resolve;
 
@@ -98,9 +111,10 @@ class WebpackRunner
      *
      * @param {Error|null} error
      * @param {webpack.stats} stats
+     * @param {boolean} isModule
      * @return {boolean} whether the compilation had no errors
      */
-    onCompilationFinished (error, stats)
+    onCompilationFinished (error, stats, isModule)
     {
         if (error)
         {
@@ -116,7 +130,7 @@ class WebpackRunner
         console.log("");
 
         // write dependencies file
-        this.writeDependenciesFile(stats);
+        this.writeDependenciesFile(stats, isModule);
 
         return !stats.hasErrors();
     }
@@ -129,11 +143,12 @@ class WebpackRunner
     {
         if (null !== this.resolveCallback)
         {
-            this.watcher.close(
-                () => {
-                    this.resolveCallback(true);
-                }
-            );
+            Promise.all(
+                this.watchers.map(watcher =>
+                    new Promise(resolve => watcher.close(resolve))
+                )
+            )
+                .then(() => this.resolveCallback(true));
         }
     }
 
@@ -143,8 +158,9 @@ class WebpackRunner
      *
      * @private
      * @param {Stats} stats
+     * @param {boolean} isModule
      */
-    writeDependenciesFile (stats)
+    writeDependenciesFile (stats, isModule)
     {
         const entrypoints = {};
 
@@ -160,11 +176,11 @@ class WebpackRunner
         }
 
         // ensure that output path exists
-        fs.ensureDirSync(this.webpackConfig.output.path);
+        fs.ensureDirSync(this.webpackConfigs.output.path);
 
-        const fileName = `${this.buildConfig.js.javaScriptDependenciesFileName}.json`;
+        const fileName = `${this.buildConfig.js.javaScriptDependenciesFileName}${isModule ? ".module" : ""}.json`;
         fs.writeFileSync(
-            path.join(this.webpackConfig.output.path, fileName),
+            path.join(this.webpackConfigs.output.path, fileName),
             JSON.stringify(entrypoints),
             "utf-8"
         );

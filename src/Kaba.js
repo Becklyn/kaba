@@ -16,10 +16,15 @@ const typeScriptErrorFormatter = require("@becklyn/typescript-error-formatter");
  * }} SassBuildConfig
  *
  * @typedef {{
+ *     config: webpack.Configuration,
+ *     module: true,
+ * }} ModularizedWebpackConfig
+ *
+ * @typedef {{
  *      sass: SassBuildConfig,
  *      js: {
  *          javaScriptDependenciesFileName: string,
- *          webpack: webpack.Configuration,
+ *          webpack: ModularizedWebpackConfig[],
  *          customTypeScriptConfig: string|null,
  *      },
  *      cwd: string,
@@ -368,7 +373,16 @@ class Kaba
             sass: this.buildSassConfig(),
             js: {
                 javaScriptDependenciesFileName: this.javaScriptDependenciesFileName,
-                webpack: this.buildWebpackConfig(cliConfig),
+                webpack: [
+                    {
+                        config: this.buildWebpackConfig(cliConfig, false),
+                        module: false,
+                    },
+                    {
+                        config: this.buildWebpackConfig(cliConfig, true),
+                        module: true,
+                    },
+                ],
                 customTypeScriptConfig: this.customTypeScriptConfig,
             },
             cwd: this.cwd,

@@ -1,19 +1,5 @@
-const kleur = require("kleur");
-
-
-/**
- * Returns the max package name length
- *
- * @private
- * @param {Object.<string,string>} packages
- * @return {number}
- */
-function getMaxPackageNameLength (packages)
-{
-    return Object
-        .keys(packages)
-        .reduce((max, name) => Math.max(max, name.length), 0);
-}
+import * as kleur from "kleur";
+import {yellow} from "kleur";
 
 
 /**
@@ -25,7 +11,7 @@ function getMaxPackageNameLength (packages)
  * @param {number} maxLength
  * @return {string}
  */
-function padding (packageName, maxLength)
+function padding (packageName: string, maxLength: number) : string
 {
     const length = packageName.length;
 
@@ -41,11 +27,10 @@ function padding (packageName, maxLength)
  * @param {string} kabaVersion
  * @param {Object.<string,string>} packages
  */
-module.exports = function (kabaVersion, packages)
+module.exports = function (kabaVersion: string, packages: {[name: string]: kleur.Color}) : void
 {
-    const maxLength = getMaxPackageNameLength(packages);
-
-    console.log(kleur.yellow("kaba"), padding("kaba", maxLength), kabaVersion);
+    const maxLength = Object.keys(packages).reduce((max, name) => Math.max(max, name.length), 0);
+    console.log(yellow("kaba"), padding("kaba", maxLength), kabaVersion);
 
     for (const packageName in packages)
     {
@@ -57,7 +42,7 @@ module.exports = function (kabaVersion, packages)
         const color = packages[packageName];
 
         console.log(
-            kleur[color](packageName),
+            color(packageName),
             padding(packageName, maxLength),
             require(`${packageName}/package.json`).version
         );
