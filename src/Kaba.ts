@@ -401,11 +401,7 @@ export class Kaba
             options: {
                 babelrc: false,
                 presets: [
-                    ["@babel/preset-env", {
-                        useBuiltIns: "entry",
-                        corejs: 3,
-                        targets: isModule ? browserslistConfig.modern : browserslistConfig.legacy,
-                    }],
+                    ["kaba-babel-preset"],
                 ],
             },
         };
