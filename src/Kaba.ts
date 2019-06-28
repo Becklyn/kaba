@@ -228,6 +228,18 @@ export class Kaba
      */
     public getBuildConfig (cliConfig: CliConfig): kaba.BuildConfig
     {
+        let jsConfig: any = null;
+
+        if (Object.keys(this.jsEntries).length)
+        {
+            jsConfig = {
+                common: this.buildWebpackCommon(cliConfig),
+                module: this.buildWebpackConfig(cliConfig, true),
+                legacy: this.buildWebpackConfig(cliConfig, false),
+                javaScriptDependenciesFileName: this.javaScriptDependenciesFileName,
+            };
+        }
+
         return {
             sass: {
                 entries: this.sassEntries,
@@ -235,12 +247,7 @@ export class Kaba
                 outputPath: path.join(this.outputPaths.base, this.outputPaths.css),
                 cwd: this.cwd,
             },
-            js: {
-                common: this.buildWebpackCommon(cliConfig),
-                module: this.buildWebpackConfig(cliConfig, true),
-                legacy: this.buildWebpackConfig(cliConfig, false),
-                javaScriptDependenciesFileName: this.javaScriptDependenciesFileName,
-            },
+            js: jsConfig,
             cwd: this.cwd,
         };
     }
