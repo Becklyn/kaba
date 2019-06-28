@@ -4,7 +4,7 @@ language: node_js
 node_js:
     - node
 
-before_script:
+script:
 # Disabled for now, until kaba is ported to TypeScriot
 #    - npm run-script build
 # The endpoint is unreliable
