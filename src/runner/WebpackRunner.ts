@@ -27,7 +27,7 @@ export class WebpackRunner
     /**
      * Runs the actual runner
      */
-    async public run (): Promise<boolean>
+    public async run (): Promise<boolean>
     {
         return new Promise(
             (resolve) =>
