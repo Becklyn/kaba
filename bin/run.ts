@@ -134,7 +134,7 @@ function runKaba (cliConfig: kaba.CliConfig, isVerbose: boolean) : void
             .then(
                 ([scssOk, webpackOk]) =>
                 {
-                    const failed = (false === scssOk || false === webpackOk);
+                    const failed = !scssOk || !webpackOk;
                     const status = failed
                         ? red("failed")
                         : green("succeeded");
