@@ -47,9 +47,13 @@ Object.keys(fixtureTests).forEach(key =>
             ? result.stdout.toString()
             : "";
 
-        if (null === result.status && result.stdout)
+        if (null === result.status)
         {
-            console.log("Broke failed, details:", result.stdout.toString());
+            console.log("Broke failed, details:",
+                result.output.map(
+                    out => out.toString ? out.toString() : out
+                )
+            );
         }
 
         t.is(result.status, expected.status);
