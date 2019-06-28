@@ -13,7 +13,7 @@
         "kaba": "bin/run.js"
     },
     "scripts": {
-        "build": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty --noUnusedLocals",
+        "build": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty --noUnusedLocals && chmod +x bin/run.js",
         "dev": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty",
         "prepublishOnly": "npm run-script build",
         "test": "npm run-script build && ava"
