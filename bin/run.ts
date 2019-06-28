@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import {kaba} from "../src/@types/kaba";
-import Kaba from "../src/Kaba";
+import {Kaba} from "../src/Kaba";
 import {Logger} from "../src/Logger";
 const sade = require("sade");
 import {bgYellow, black, blue, cyan, green, magenta, red, yellow} from "kleur";

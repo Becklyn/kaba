@@ -490,5 +490,5 @@ export class Kaba
     }
 }
 
-
 export default Kaba;
+module.exports = Kaba;
