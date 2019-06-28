@@ -34,7 +34,7 @@ export class WebpackRunner
             {
                 if (!this.buildConfig.js)
                 {
-                    return true;
+                    return resolve(true);
                 }
 
                 this.logger.log("Launching webpack...");
