@@ -37,13 +37,18 @@ export class SassRunner
         // lazy load it as it is optional
 
         const {KabaScss} = require("kaba-scss");
-
-        this.compiler = new KabaScss(Object.assign({}, this.cliConfig, {cwd: this.buildConfig.cwd}));
+        this.compiler = new KabaScss({
+            debug: this.cliConfig.debug,
+            watch: this.cliConfig.watch,
+            lint: this.cliConfig.lint,
+            fix: this.cliConfig.fix,
+            cwd: this.buildConfig.cwd,
+        });
 
         entries.forEach(
             name =>
             {
-                const src = this.buildConfig.entries[name];
+                const src = path.join(this.buildConfig.cwd, this.buildConfig.entries[name]);
                 const outputPath = `${this.buildConfig.outputPath}/${name}.css`;
 
                 (this.compiler as KabaScss).addEntry(src, path.dirname(outputPath), path.basename(outputPath));
