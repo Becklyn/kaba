@@ -12,7 +12,7 @@ export class SassRunner
     /**
      * Constructs a new runner
      */
-    constructor (fullBuildConfig: kaba.BuildConfig, cliConfig: kaba.CliConfig)
+    public constructor (fullBuildConfig: kaba.BuildConfig, cliConfig: kaba.CliConfig)
     {
         this.buildConfig = fullBuildConfig.sass;
         this.cliConfig = cliConfig;
@@ -24,7 +24,7 @@ export class SassRunner
      *
      * @return {Promise<boolean>} whether the build was successful and error-free
      */
-    async run () : Promise<boolean|null>
+    async public run () : Promise<boolean|null>
     {
         const entries = Object.keys(this.buildConfig.entries);
 
@@ -62,7 +62,7 @@ export class SassRunner
     /**
      * Stops the runner
      */
-    stop ()
+    public stop () : void
     {
         if (this.compiler)
         {
