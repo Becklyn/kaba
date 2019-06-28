@@ -1,27 +1,35 @@
-const {gray, green, red, yellow} = require("kleur");
+import {gray, green, red, yellow} from "kleur";
 const prettyHrtime = require("pretty-hrtime");
+
+interface FileError
+{
+    file: string;
+    line: number;
+    message: string;
+    formatted: string;
+}
 
 /**
  * Logger for all kinds of messages
  */
-class Logger
+export class Logger
 {
+    private prefix: string;
+
+
     /**
-     * @param {string} prefix
+     *
      */
-    constructor (prefix)
+    constructor (prefix: string)
     {
-        /**
-         * @private
-         * @type {string}
-         */
         this.prefix = prefix;
     }
+
 
     /**
      * Logs the start of a build
      */
-    logBuildStart ()
+    public logBuildStart (): void
     {
         this.log(green(`Build started`));
     }
@@ -29,11 +37,8 @@ class Logger
 
     /**
      * Logs a build success
-     *
-     * @param {string} fileName
-     * @param {array} duration  the duration as provided by hrtime()
      */
-    logBuildSuccess (fileName, duration)
+    public logBuildSuccess (fileName: string, duration: [number, number]): void
     {
         this.logWithDuration(`${green("Build finished")}: ${yellow(fileName)}`, duration);
     }
@@ -41,21 +46,17 @@ class Logger
 
     /**
      * Logs a message with a duration
-     *
-     * @param {string} message
-     * @param {array} duration  the duration as provided by hrtime()
      */
-    logWithDuration (message, duration)
+    public logWithDuration (message: string, duration: [number, number])
     {
         this.log(`${message} after ${prettyHrtime(duration)}`);
     }
 
 
     /**
-     * @param {string} message
-     * @param {Error|{message: string}} error
+     *
      */
-    logError (message, error)
+    public logError (message: string, error: Error | { message: string })
     {
         this.log(`${red(message)}: ${error.message}`);
     }
@@ -63,10 +64,8 @@ class Logger
 
     /**
      * Logs a compilation error
-     *
-     * @param {{file: string, line: number, message: string, formatted: string}} error
      */
-    logCompileError (error)
+    public logCompileError (error: FileError): void
     {
         this.log(`${red("Compilation Error")} in file ${yellow(error.file)} on line ${yellow(error.line)}:`);
         console.log(`    ${error.message}`);
@@ -88,10 +87,8 @@ class Logger
 
     /**
      * Writes a log message
-     *
-     * @param {string} message
      */
-    log (message)
+    public log (message: string): void
     {
         console.log(`${gray(this.getCurrentTime())} ${this.prefix} ${message}`);
     }
@@ -99,11 +96,8 @@ class Logger
 
     /**
      * Returns the current time
-     *
-     * @private
-     * @return {string}
      */
-    getCurrentTime ()
+    private getCurrentTime (): string
     {
         const now = new Date();
         return `${this.padTime(now.getHours())}:${this.padTime(now.getMinutes())}:${this.padTime(now.getSeconds())}`;
@@ -112,15 +106,9 @@ class Logger
 
     /**
      * Pads the time
-     *
-     * @private
-     * @param {number} time
-     * @return {string}
      */
-    padTime (time)
+    private padTime (time: number): string
     {
         return ("" + time).padStart(2, "0");
     }
 }
-
-module.exports = Logger;

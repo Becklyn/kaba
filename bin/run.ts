@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
-const CliConfig = require("../lib/CliConfig");
-const {bgYellow, black, green, red, yellow} = require("kleur");
-const Logger = require("../lib/Logger");
-const printPackageVersions = require("../lib/print-package-versions");
+import {kaba} from "../src/@types/kaba";
+import {Kaba} from "../src/Kaba";
+import {Logger} from "../src/Logger";
 const sade = require("sade");
-const SassRunner = require("../lib/runner/SassRunner");
-const WebpackRunner = require("../lib/runner/WebpackRunner");
+import {bgYellow, black, blue, cyan, green, magenta, red, yellow} from "kleur";
+import {printPackageVersions} from "../src/print-package-versions";
+import {SassRunner} from "../src/runner/SassRunner";
+import {WebpackRunner} from "../src/runner/WebpackRunner";
 
 
 console.log(``);
@@ -66,7 +67,6 @@ program
         console.log("");
 
         runKaba({
-            analyze: true,
             lint: true,
         }, !!opts.verbose);
     });
@@ -94,14 +94,14 @@ program
         console.log(`  ${bgYellow(black(" Versions "))}`);
         console.log("");
         printPackageVersions(kabaVersion, {
-            "kaba-babel-preset": "yellow",
-            "kaba-scss": "yellow",
-            webpack: "cyan",
-            "babel-core": "blue",
-            typescript: "blue",
-            eslint: "blue",
-            "node-sass": "magenta",
-            stylelint: "magenta",
+            "kaba-babel-preset": yellow,
+            "kaba-scss": yellow,
+            webpack: cyan,
+            "@babel/core": blue,
+            typescript: blue,
+            eslint: blue,
+            "node-sass": magenta,
+            stylelint: magenta,
         });
 
         process.exit(0);
@@ -115,21 +115,16 @@ program.parse(process.argv);
 
 /**
  * Main kaba function
- *
- * @param {CliConfigArguments} opts
- * @param {boolean} isVerbose
  */
-function runKaba (opts, isVerbose)
+function runKaba (cliConfig: kaba.CliConfig, isVerbose: boolean) : void
 {
     try
     {
         const logger = new Logger(bgYellow(black(" kaba ")));
         logger.log("kaba started");
         const start = process.hrtime();
-        const cliConfig = new CliConfig(opts);
 
-        /** @type {Kaba} kaba */
-        const kaba = require(`${process.cwd()}/kaba.js`);
+        const kaba: Kaba = require(`${process.cwd()}/kaba.js`);
         const buildConfig = kaba.getBuildConfig(cliConfig);
 
         const scss = new SassRunner(buildConfig, cliConfig);
@@ -139,7 +134,7 @@ function runKaba (opts, isVerbose)
             .then(
                 ([scssOk, webpackOk]) =>
                 {
-                    const failed = (false === scssOk || false === webpackOk);
+                    const failed = !scssOk || !webpackOk;
                     const status = failed
                         ? red("failed")
                         : green("succeeded");
@@ -153,7 +148,7 @@ function runKaba (opts, isVerbose)
                 (...args) => console.log("something broke", args)
             );
 
-        if (cliConfig.isWatch())
+        if (cliConfig.watch)
         {
             const exitCallback = () => {
                 scss.stop();
