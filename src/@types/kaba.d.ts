@@ -9,6 +9,7 @@ declare namespace kaba
         lint?: boolean;
         openBundleAnalyzer?: boolean;
         fix?: boolean;
+        verbose?: boolean;
     }
 
     export interface SassBuildConfig
