@@ -2,6 +2,8 @@
 =====
 
 *   Always build a legacy and a modern JS build.
+*   Added `verbose` to the CLI config.
+*   Improved error handling of `node-sass` loading errors.
 
 
 8.1.0
