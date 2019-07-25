@@ -42,7 +42,7 @@ export class Kaba
         css: "",
         js: "",
     };
-    private publicPath: string = "/assets/";
+    private publicPath: string = "/assets/app/js/";
     private externals: Externals = {};
     private moduleConcatenationEnabled: boolean = false;
     private plugins: webpack.Plugin[] = [];
