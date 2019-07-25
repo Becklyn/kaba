@@ -34,7 +34,8 @@ program
             watch: true,
             lint: true,
             openBundleAnalyzer: !!opts["analyze-bundles"],
-        }, !!opts.verbose);
+            verbose: !!opts.verbose,
+        });
     });
 
 program
@@ -54,7 +55,8 @@ program
             watch: !!opts.watch,
             lint: !!opts.lint,
             openBundleAnalyzer: !!opts["analyze-bundles"],
-        }, !!opts.verbose);
+            verbose: !!opts.verbose,
+        });
     });
 
 
@@ -68,7 +70,8 @@ program
 
         runKaba({
             lint: true,
-        }, !!opts.verbose);
+            verbose: !!opts.verbose,
+        });
     });
 
 
@@ -82,7 +85,8 @@ program
 
         runKaba({
             fix: true,
-        }, !!opts.verbose);
+            verbose: !!opts.verbose,
+        });
     });
 
 // Command: Versions
@@ -116,7 +120,7 @@ program.parse(process.argv);
 /**
  * Main kaba function
  */
-function runKaba (cliConfig: kaba.CliConfig, isVerbose: boolean) : void
+function runKaba (cliConfig: kaba.CliConfig) : void
 {
     try
     {
@@ -172,7 +176,7 @@ function runKaba (cliConfig: kaba.CliConfig, isVerbose: boolean) : void
             console.log(red(`Run Error: ${e.message}`));
         }
 
-        if (isVerbose)
+        if (cliConfig.verbose)
         {
             console.error(e);
         }
