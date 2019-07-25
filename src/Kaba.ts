@@ -83,17 +83,6 @@ export class Kaba
      */
     public addSassEntries (mapping: Entries): this
     {
-        try
-        {
-            require("kaba-scss");
-        }
-        catch (e)
-        {
-            console.log(`${red("ERROR")} It seems that ${yellow("kaba-scss")} is not installed. Install it with ${blue(
-                "npm install -D kaba-scss")}`);
-            process.exit(1);
-        }
-
         this.addEntriesToList(mapping, this.sassEntries, "sass");
         return this;
     }
@@ -229,6 +218,33 @@ export class Kaba
     public getBuildConfig (cliConfig: CliConfig): kaba.BuildConfig
     {
         let jsConfig: any = null;
+
+        if (Object.keys(this.sassEntries).length)
+        {
+            try
+            {
+                require("kaba-scss");
+            }
+            catch (e)
+            {
+                if (-1 !== e.message.indexOf("Cannot find module 'node-sass'"))
+                {
+                    console.log(`${red("ERROR")} It seems that ${yellow("kaba-scss")} is not installed. Install it with ${blue("npm install -D kaba-scss")}`);
+                }
+                else
+                {
+                    console.log(`${red("ERROR")} while loading ${yellow("kaba-scss")}: ${e.message}`);
+
+                    if (cliConfig.verbose)
+                    {
+                        console.error(e);
+                    }
+                }
+
+                process.exit(1);
+            }
+        }
+
 
         if (Object.keys(this.jsEntries).length)
         {
