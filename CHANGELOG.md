@@ -4,6 +4,7 @@
 *   Always build a legacy and a modern JS build.
 *   Added `verbose` to the CLI config.
 *   Improved error handling of `node-sass` loading errors.
+*   Use better default `publicPath` to match the default structure of the BecklynAssetsBundle.
 
 
 8.1.0
