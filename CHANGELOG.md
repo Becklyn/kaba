@@ -1,10 +1,23 @@
 9.0.0
 =====
 
+*   Updated internal dependencies.
 *   Always build a legacy and a modern JS build.
 *   Added `verbose` to the CLI config.
 *   Improved error handling of `node-sass` loading errors.
 *   Use better default `publicPath` to match the default structure of the BecklynAssetsBundle.
+*   Allow to disable the modern build
+*   Don't prefix legacy build with `_legacy.`, but instead prefix modern build with `_modern.`. That enhances 
+    compatability for simple builds.
+*   Use `eslint-plugin-react-hooks` plugin
+*   Always extract comments.
+*   Display build progress in webpack
+*   Display linting errors by default.
+    *   Removed the `--lint` parameter and added an inverse `--silent` instead.
+*   Added `duplicate-package-checker-webpack-plugin` that detects duplicate packages in a build in webpack.
+*   Always run ESLint
+*   Use faster sourcemap for production build
+*   Added `eslint-plugin-jsdoc` and activated multiple rules for checking JSDoc issues.
 
 
 8.1.0
