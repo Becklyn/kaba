@@ -444,14 +444,14 @@ export class Kaba
 
         let entries = this.jsEntries;
 
-        if (!isModule)
+        if (isModule)
         {
             entries = {};
             Object.keys(this.jsEntries).forEach(
                 entry =>
                 {
-                    entries[`_legacy.${entry}`] = this.jsEntries[entry];
-                }
+                    entries[`_modern.${entry}`] = this.jsEntries[entry];
+                },
             );
         }
 
