@@ -342,7 +342,9 @@ export class Kaba
             // devtool (source maps)
             devtool: cliConfig.debug
                 ? "inline-cheap-source-map"
-                : "hidden-source-map",
+                // We need to cast to `any` here, as this specific config value isn't listed in webpack's typescript
+                // types.
+                : ("hidden-cheap-module-source-map" as any),
 
             // context
             context: this.cwd,
