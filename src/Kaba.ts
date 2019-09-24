@@ -460,7 +460,7 @@ export class Kaba
             "configs",
             isModule
                 ? "tsconfig.modern.json"
-                : "tsconfig.legacy.json"
+                : "tsconfig.legacy.json",
         );
 
         let config = {
