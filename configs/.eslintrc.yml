@@ -9,6 +9,7 @@ parserOptions:
 
 plugins:
     - react
+    - react-hooks
 
 settings:
     react:
