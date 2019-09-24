@@ -49,6 +49,8 @@ export class Kaba
     private javaScriptDependenciesFileName: string = "_dependencies";
     private splitChunks: boolean = true;
     private hashFileNames: boolean = true;
+    private buildModern: boolean = true;
+
 
     /**
      *
@@ -211,6 +213,16 @@ export class Kaba
 
 
     /**
+     * Disables the modern build
+     */
+    public disableModernBuild (): this
+    {
+        this.buildModern = false;
+        return this;
+    }
+
+
+    /**
      * Returns the kaba config
      *
      * @internal
@@ -250,7 +262,9 @@ export class Kaba
         {
             jsConfig = {
                 common: this.buildWebpackCommon(cliConfig),
-                module: this.buildWebpackConfig(cliConfig, true),
+                module: this.buildModern
+                    ? this.buildWebpackConfig(cliConfig, true)
+                    : null,
                 legacy: this.buildWebpackConfig(cliConfig, false),
                 javaScriptDependenciesFileName: this.javaScriptDependenciesFileName,
             };
