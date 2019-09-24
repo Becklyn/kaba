@@ -60,6 +60,7 @@ export class Kaba
         this.cwd = process.cwd();
         this.libRoot = path.dirname(__dirname);
         this.plugins = [
+            new webpack.ProgressPlugin(),
             new ProvidePlugin({
                 h: ["preact", "h"],
             }),
