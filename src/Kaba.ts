@@ -66,7 +66,7 @@ export class Kaba
                 complete: green("─"),
                 incomplete: gray("─"),
                 width: 50,
-                format: ` ${cyan("build")} :bar ${green(":percent")} ${gray(":msg")}`,
+                format: ` ${cyan("build")} :bar ${green(":percent")} ${gray(":msg")} `,
             }),
             new DuplicatePackageCheckerPlugin({
                 emitError: true,
