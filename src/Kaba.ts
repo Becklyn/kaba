@@ -521,8 +521,6 @@ export class Kaba
                             configFile: path.join(this.libRoot, "configs/.eslintrc.yml"),
                             fix: cliConfig.fix,
                             parser: "babel-eslint",
-                            emitError: true,
-                            emitWarning: true,
                         },
                     },
                 ],
