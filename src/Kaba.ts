@@ -391,6 +391,7 @@ export class Kaba
                 cache: true,
                 parallel: true,
                 sourceMap: true,
+                extractComments: true,
                 terserOptions: {
                     ecma: 5,
                 },
