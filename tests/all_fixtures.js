@@ -20,12 +20,12 @@ let fixtureTests = {
     },
     scss_fail_on_error: {
         status: 1,
+        args: ["--silent"],
         noMatch: /Found \d+ Stylelint issues:/,
     },
     scss_fail_on_error_lint: {
         status: 1,
         dir: "scss_fail_on_error",
-        args: ["--lint"],
         match: /Found \d+ Stylelint issues:/,
     },
     scss: {

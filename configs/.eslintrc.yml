@@ -8,7 +8,9 @@ parserOptions:
         experimentalObjectRestSpread: true
 
 plugins:
+    - jsdoc
     - react
+    - react-hooks
 
 settings:
     react:
@@ -247,3 +249,35 @@ rules:
     'react/jsx-pascal-case': error
     'react/jsx-uses-react': error
     'react/jsx-uses-vars': error
+
+    # React Hooks
+    # (defaults are fine)
+
+    # JSDoc
+    'jsdoc/check-alignment': warn
+    'jsdoc/check-param-names': error
+    'jsdoc/check-syntax': warn
+    'jsdoc/check-tag-names':
+        - warn
+        - definedTags: ["inheritDoc"]
+    'jsdoc/check-types': warn
+    'jsdoc/newline-after-description': warn
+    'jsdoc/no-types': warn
+    'jsdoc/require-jsdoc':
+        - warn
+        - publicOnly: true
+          require:
+              ArrowFunctionExpression: false
+              ClassDeclaration: false
+              ClassExpression: false
+              FunctionDeclaration: true
+              FunctionExpression: false
+              MethodDefinition: true
+          exemptEmptyFunctions: true
+    'jsdoc/require-param-name': warn
+    'jsdoc/require-param-type': warn
+    'jsdoc/require-param': warn
+    'jsdoc/require-returns-check': warn
+    'jsdoc/require-returns-type': warn
+    'jsdoc/require-returns': warn
+    'jsdoc/valid-types': warn

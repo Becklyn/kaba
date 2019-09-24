@@ -45,28 +45,36 @@ export class WebpackRunner
                     this.resolveCallback = resolve;
                 }
 
+                let configs: webpack.Configuration[] = [];
 
-                let configLegacy = Object.assign(
-                    {},
-                    this.buildConfig.js.common,
-                    this.buildConfig.js.legacy,
-                    {
-                        plugins: (this.buildConfig.js.common.plugins as any[]).concat(this.buildConfig.js.legacy.plugins),
-                        name: "legacy",
-                    }
+                configs.push(
+                    Object.assign(
+                        {},
+                        this.buildConfig.js.common,
+                        this.buildConfig.js.legacy,
+                        {
+                            plugins: (this.buildConfig.js.common.plugins as any[]).concat(this.buildConfig.js.legacy.plugins),
+                            name: "legacy",
+                        }
+                    )
                 );
 
-                let configModule = Object.assign(
-                    {},
-                    this.buildConfig.js.common,
-                    this.buildConfig.js.module,
-                    {
-                        plugins: (this.buildConfig.js.common.plugins as any[]).concat(this.buildConfig.js.module.plugins),
-                        name: "module",
-                    }
-                );
+                if (this.buildConfig.js.module)
+                {
+                    configs.push(
+                        Object.assign(
+                            {},
+                            this.buildConfig.js.common,
+                            this.buildConfig.js.module,
+                            {
+                                plugins: (this.buildConfig.js.common.plugins as any[]).concat(this.buildConfig.js.module.plugins),
+                                name: "module",
+                            }
+                        )
+                    );
+                }
 
-                let compiler = webpack([configLegacy, configModule]) as webpack.MultiCompiler;
+                let compiler = webpack(configs) as webpack.MultiCompiler;
 
                 if (this.buildConfig.js.common.watch)
                 {

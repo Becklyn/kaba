@@ -1,4 +1,4 @@
-import {blue, red, yellow} from "kleur";
+import {blue, red, yellow, cyan, green, gray} from "kleur";
 const path = require("path");
 import * as webpack from "webpack";
 import {DefinePlugin, ProvidePlugin} from "webpack";
@@ -7,6 +7,8 @@ const typeScriptErrorFormatter = require("@becklyn/typescript-error-formatter");
 import {kaba} from "./@types/kaba";
 import CliConfig = kaba.CliConfig;
 const kabaBabelPreset = require("kaba-babel-preset");
+const DuplicatePackageCheckerPlugin = require("duplicate-package-checker-webpack-plugin");
+const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 
 
 interface Entries
@@ -49,6 +51,8 @@ export class Kaba
     private javaScriptDependenciesFileName: string = "_dependencies";
     private splitChunks: boolean = true;
     private hashFileNames: boolean = true;
+    private buildModern: boolean = true;
+
 
     /**
      *
@@ -58,6 +62,16 @@ export class Kaba
         this.cwd = process.cwd();
         this.libRoot = path.dirname(__dirname);
         this.plugins = [
+            new ProgressBarPlugin({
+                complete: green("─"),
+                incomplete: gray("─"),
+                width: 50,
+                format: ` ${cyan("build")} :bar ${green(":percent")} ${gray(":msg")} `,
+            }),
+            new DuplicatePackageCheckerPlugin({
+                emitError: true,
+                strict: true,
+            }),
             new ProvidePlugin({
                 h: ["preact", "h"],
             }),
@@ -211,6 +225,16 @@ export class Kaba
 
 
     /**
+     * Disables the modern build
+     */
+    public disableModernBuild (): this
+    {
+        this.buildModern = false;
+        return this;
+    }
+
+
+    /**
      * Returns the kaba config
      *
      * @internal
@@ -250,7 +274,9 @@ export class Kaba
         {
             jsConfig = {
                 common: this.buildWebpackCommon(cliConfig),
-                module: this.buildWebpackConfig(cliConfig, true),
+                module: this.buildModern
+                    ? this.buildWebpackConfig(cliConfig, true)
+                    : null,
                 legacy: this.buildWebpackConfig(cliConfig, false),
                 javaScriptDependenciesFileName: this.javaScriptDependenciesFileName,
             };
@@ -316,7 +342,9 @@ export class Kaba
             // devtool (source maps)
             devtool: cliConfig.debug
                 ? "inline-cheap-source-map"
-                : "hidden-source-map",
+                // We need to cast to `any` here, as this specific config value isn't listed in webpack's typescript
+                // types.
+                : ("hidden-cheap-module-source-map" as any),
 
             // context
             context: this.cwd,
@@ -377,6 +405,7 @@ export class Kaba
                 cache: true,
                 parallel: true,
                 sourceMap: true,
+                extractComments: true,
                 terserOptions: {
                     ecma: 5,
                 },
@@ -430,23 +459,21 @@ export class Kaba
 
         let entries = this.jsEntries;
 
-        if (!isModule)
+        if (isModule)
         {
             entries = {};
             Object.keys(this.jsEntries).forEach(
                 entry =>
                 {
-                    entries[`_legacy.${entry}`] = this.jsEntries[entry];
-                }
+                    entries[`_modern.${entry}`] = this.jsEntries[entry];
+                },
             );
         }
 
         let typeScriptConfig = path.join(
             this.libRoot,
             "configs",
-            isModule
-                ? "tsconfig.modern.json"
-                : "tsconfig.legacy.json"
+            isModule ? "tsconfig.modern.json" : "tsconfig.legacy.json",
         );
 
         let config = {
@@ -483,6 +510,19 @@ export class Kaba
                         test: /\.(svg|txt)$/,
                         loader: "raw-loader",
                     },
+
+                    // ESLint
+                    {
+                        test: /\.m?jsx?$/,
+                        exclude: /node_modules|tests|vendor/,
+                        loader: "eslint-loader",
+                        options: {
+                            cache: true,
+                            configFile: path.join(this.libRoot, "configs/.eslintrc.yml"),
+                            fix: cliConfig.fix,
+                            parser: "babel-eslint",
+                        },
+                    },
                 ],
             },
 
@@ -493,21 +533,6 @@ export class Kaba
                 }),
             ],
         };
-
-        if (cliConfig.lint || cliConfig.fix)
-        {
-            (config.module as any).rules.push({
-                test: /\.m?jsx?$/,
-                exclude: /node_modules|tests|vendor/,
-                loader: "eslint-loader",
-                options: {
-                    cache: true,
-                    configFile: path.join(this.libRoot, "configs/.eslintrc.yml"),
-                    fix: cliConfig.fix,
-                    parser: "babel-eslint",
-                },
-            });
-        }
 
         return config;
     }
