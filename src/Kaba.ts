@@ -508,6 +508,21 @@ export class Kaba
                         test: /\.(svg|txt)$/,
                         loader: "raw-loader",
                     },
+
+                    // ESLint
+                    {
+                        test: /\.m?jsx?$/,
+                        exclude: /node_modules|tests|vendor/,
+                        loader: "eslint-loader",
+                        options: {
+                            cache: true,
+                            configFile: path.join(this.libRoot, "configs/.eslintrc.yml"),
+                            fix: cliConfig.fix,
+                            parser: "babel-eslint",
+                            emitError: true,
+                            emitWarning: true,
+                        },
+                    },
                 ],
             },
 
@@ -518,21 +533,6 @@ export class Kaba
                 }),
             ],
         };
-
-        if (cliConfig.lint || cliConfig.fix)
-        {
-            (config.module as any).rules.push({
-                test: /\.m?jsx?$/,
-                exclude: /node_modules|tests|vendor/,
-                loader: "eslint-loader",
-                options: {
-                    cache: true,
-                    configFile: path.join(this.libRoot, "configs/.eslintrc.yml"),
-                    fix: cliConfig.fix,
-                    parser: "babel-eslint",
-                },
-            });
-        }
 
         return config;
     }
