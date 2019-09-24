@@ -43,7 +43,7 @@ program
     .describe("Generates a production build. Use this for release / deployment.")
     .option('--analyze-bundles', 'opens the bundle analyzer')
     .option('--debug', 'enables debug builds (non-minified and with env `development`)')
-    .option('--lint', 'lints all compiled files')
+    .option('--silent', 'hides the lint results (won\'t affect the exit code)')
     .option('--watch', 'starts the file watcher')
     .action(opts =>
     {
@@ -53,7 +53,7 @@ program
         runKaba({
             debug: !!opts.debug,
             watch: !!opts.watch,
-            lint: !!opts.lint,
+            lint: !opts.silent,
             openBundleAnalyzer: !!opts["analyze-bundles"],
             verbose: !!opts.verbose,
         });
