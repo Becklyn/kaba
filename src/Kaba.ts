@@ -1,4 +1,4 @@
-import {blue, red, yellow} from "kleur";
+import {blue, red, yellow, cyan, green, gray} from "kleur";
 const path = require("path");
 import * as webpack from "webpack";
 import {DefinePlugin, ProvidePlugin} from "webpack";
@@ -7,6 +7,8 @@ const typeScriptErrorFormatter = require("@becklyn/typescript-error-formatter");
 import {kaba} from "./@types/kaba";
 import CliConfig = kaba.CliConfig;
 const kabaBabelPreset = require("kaba-babel-preset");
+const DuplicatePackageCheckerPlugin = require("duplicate-package-checker-webpack-plugin");
+const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 
 
 interface Entries
@@ -60,7 +62,16 @@ export class Kaba
         this.cwd = process.cwd();
         this.libRoot = path.dirname(__dirname);
         this.plugins = [
-            new webpack.ProgressPlugin(),
+            new ProgressBarPlugin({
+                complete: green("─"),
+                incomplete: gray("─"),
+                width: 50,
+                format: ` ${cyan("build")} :bar ${green(":percent")} ${gray(":msg")}`,
+            }),
+            new DuplicatePackageCheckerPlugin({
+                emitError: true,
+                strict: true,
+            }),
             new ProvidePlugin({
                 h: ["preact", "h"],
             }),
