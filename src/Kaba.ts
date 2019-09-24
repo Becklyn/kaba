@@ -458,9 +458,7 @@ export class Kaba
         let typeScriptConfig = path.join(
             this.libRoot,
             "configs",
-            isModule
-                ? "tsconfig.modern.json"
-                : "tsconfig.legacy.json",
+            isModule ? "tsconfig.modern.json" : "tsconfig.legacy.json",
         );
 
         let config = {
