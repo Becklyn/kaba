@@ -18,6 +18,10 @@
         "prepublishOnly": "npm run-script build",
         "test": "npm run-script build && ava"
     },
+    "optionalDependencies": {
+        "kaba-scss": "^3.1.0",
+        "webpack-bundle-analyzer": "^3.5.2"
+    },
     "dependencies": {
         "@babel/core": "^7.6.2",
         "@becklyn/typescript-error-formatter": "^1.0.4",
@@ -41,10 +45,6 @@
         "ts-loader": "^6.1.2",
         "typescript": "^3.6.3",
         "webpack": "^4.40.2"
-    },
-    "peerDependencies": {
-        "kaba-scss": "^3.0.0",
-        "webpack-bundle-analyzer": "^3.3.0"
     },
     "devDependencies": {
         "@types/terser-webpack-plugin": "^1.2.1",
