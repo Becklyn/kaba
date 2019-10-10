@@ -237,7 +237,9 @@ rules:
     'react/jsx-equals-spacing':
         - warn
         - "never"
-    'react/jsx-filename-extension': error
+    'react/jsx-filename-extension':
+        - error
+        - extensions: [".jsx", ".tsx"]
     'react/jsx-indent':
         - warn
         - 4
