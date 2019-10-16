@@ -161,8 +161,19 @@ export class WebpackRunner
             return;
         }
 
-        const entrypoints = {};
         let baseDir = this.buildConfig.js.basePath;
+        const dependenciesFileName = `${this.buildConfig.js.javaScriptDependenciesFileName}.json`;
+        const dependenciesFilePath =  path.join(baseDir, dependenciesFileName);
+        let entrypoints;
+
+        try
+        {
+            entrypoints = require(dependenciesFilePath);
+        }
+        catch (e)
+        {
+            entrypoints = {};
+        }
 
         stats.stats.forEach(
             singleStats =>
@@ -193,12 +204,11 @@ export class WebpackRunner
         // ensure that output path exists
         fs.ensureDirSync(baseDir);
 
-        const fileName = `${this.buildConfig.js.javaScriptDependenciesFileName}.json`;
         fs.writeFileSync(
-            path.join(baseDir, fileName),
+            dependenciesFilePath,
             JSON.stringify(entrypoints),
             "utf-8"
         );
-        this.logger.log(`Entrypoint dependencies written to ${yellow(fileName)}`);
+        this.logger.log(`Entrypoint dependencies written to ${yellow(dependenciesFilePath)}`);
     }
 }
