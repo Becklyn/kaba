@@ -68,7 +68,7 @@ export class WebpackRunner
                             this.buildConfig.js.module,
                             {
                                 plugins: (this.buildConfig.js.common.plugins as any[]).concat(this.buildConfig.js.module.plugins),
-                                name: "module",
+                                name: "modern",
                             }
                         )
                     );
@@ -162,16 +162,25 @@ export class WebpackRunner
         }
 
         const entrypoints = {};
+        let baseDir = this.buildConfig.js.basePath;
 
         stats.stats.forEach(
             singleStats =>
             {
                 for (const mapEntry of singleStats.compilation.entrypoints.entries())
                 {
+                    let outputPath = path.relative(
+                        baseDir,
+                        singleStats.compilation.outputOptions.path
+                    );
                     const entry = mapEntry[1];
                     entrypoints[entry.name] = entry.chunks.reduce(
                         (files, chunk) => {
-                            return files.concat(chunk.files);
+                            return files.concat(
+                                chunk.files.map(
+                                    file => path.join(outputPath, file)
+                                )
+                            );
                         },
                         []
                     );
@@ -180,14 +189,13 @@ export class WebpackRunner
         );
 
 
-        let outputPath = (this.buildConfig.js.common.output as webpack.Output).path as string;
 
         // ensure that output path exists
-        fs.ensureDirSync(outputPath);
+        fs.ensureDirSync(baseDir);
 
         const fileName = `${this.buildConfig.js.javaScriptDependenciesFileName}.json`;
         fs.writeFileSync(
-            path.join(outputPath, fileName),
+            path.join(baseDir, fileName),
             JSON.stringify(entrypoints),
             "utf-8"
         );

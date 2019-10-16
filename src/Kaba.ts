@@ -9,6 +9,7 @@ import CliConfig = kaba.CliConfig;
 const kabaBabelPreset = require("kaba-babel-preset");
 const DuplicatePackageCheckerPlugin = require("duplicate-package-checker-webpack-plugin");
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 
 interface Entries
@@ -279,6 +280,7 @@ export class Kaba
                     : null,
                 legacy: this.buildWebpackConfig(cliConfig, false),
                 javaScriptDependenciesFileName: this.javaScriptDependenciesFileName,
+                basePath: path.join(this.outputPaths.base, this.outputPaths.js),
             };
         }
 
@@ -303,14 +305,6 @@ export class Kaba
         const config: Partial<webpack.Configuration> = {
             // mode
             mode: cliConfig.debug ? "development" : "production",
-
-            // output
-            output: {
-                path: path.join(this.outputPaths.base, this.outputPaths.js),
-                filename: this.hashFileNames ? '[name].[chunkhash].js' : '[name].js',
-                publicPath: this.publicPath,
-                pathinfo: cliConfig.debug,
-            },
 
             // resolve
             resolve: {
@@ -480,6 +474,14 @@ export class Kaba
             // entry
             entry: entries,
 
+            // output
+            output: {
+                path: path.join(this.outputPaths.base, this.outputPaths.js, isModule ? "modern" : "legacy"),
+                filename: this.hashFileNames ? '[name].[chunkhash].js' : '[name].js',
+                publicPath: path.join(this.publicPath, isModule ? "modern" : "legacy"),
+                pathinfo: cliConfig.debug,
+            },
+
             // module
             module: {
                 rules: [
@@ -528,6 +530,7 @@ export class Kaba
 
             // plugins
             plugins: [
+                new CleanWebpackPlugin(),
                 new DefinePlugin({
                     'process.env.MODERN_BUILD': isModule,
                 }),

@@ -30,6 +30,7 @@ declare namespace kaba
             module: WebpackBuildConfig|null;
             legacy: WebpackBuildConfig;
             javaScriptDependenciesFileName: string;
+            basePath: string;
         };
         cwd: string;
     }
