@@ -18,6 +18,7 @@
 *   Always run ESLint
 *   Use faster sourcemap for production build
 *   Added `eslint-plugin-jsdoc` and activated multiple rules for checking JSDoc issues.
+*   Enable `es6` env in ESLint.
 
 
 8.1.0
