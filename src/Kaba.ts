@@ -523,6 +523,9 @@ export class Kaba
                             configFile: path.join(this.libRoot, "configs/.eslintrc.yml"),
                             fix: cliConfig.fix,
                             parser: "babel-eslint",
+                            quiet: !cliConfig.lint,
+                            // always only emit a warning, so to actually never fail the webpack build
+                            emitWarning: true,
                         },
                     },
                 ],
