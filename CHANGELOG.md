@@ -19,6 +19,8 @@
 *   Use faster sourcemap for production build
 *   Added `eslint-plugin-jsdoc` and activated multiple rules for checking JSDoc issues.
 *   Enable `es6` env in ESLint.
+*   Fix issues with symlinked projects.
+*   Also replace `process.env.DEBUG`, and `MODERN_BUILD` + `DEBUG` (without `process.env.` prefix).
 
 
 8.1.0

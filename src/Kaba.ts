@@ -308,6 +308,13 @@ export class Kaba
 
             // resolve
             resolve: {
+                modules: [
+                    // first try from the root project (as otherwise symlinked projects will fail)
+                    path.resolve(this.cwd, "node_modules"),
+                    // default search algorithm
+                    "node_modules",
+                ],
+
                 // TS is potentially added below
                 extensions: [
                     ".mjs",
@@ -536,6 +543,9 @@ export class Kaba
                 new CleanWebpackPlugin(),
                 new DefinePlugin({
                     'process.env.MODERN_BUILD': isModule,
+                    'MODERN_BUILD': isModule,
+                    'process.env.DEBUG': cliConfig.debug,
+                    'DEBUG': cliConfig.debug,
                 }),
             ],
         };
