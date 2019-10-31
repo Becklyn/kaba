@@ -40,6 +40,7 @@ export class Logger
      */
     public logBuildSuccess (fileName: string, duration: [number, number]): void
     {
+        this.newLine();
         this.logWithDuration(`${green("Build finished")}: ${yellow(fileName)}`, duration);
     }
 
@@ -67,6 +68,7 @@ export class Logger
      */
     public logCompileError (error: FileError): void
     {
+        this.newLine();
         this.log(`${red("Compilation Error")} in file ${yellow(error.file)} on line ${yellow(error.line)}:`);
         console.log(`    ${error.message}`);
 
@@ -110,5 +112,17 @@ export class Logger
     private padTime (time: number): string
     {
         return ("" + time).padStart(2, "0");
+    }
+
+
+    /**
+     * Adds new lines
+     */
+    private newLine (lines: number = 1): void
+    {
+        for (let i = 0; i < lines; i++)
+        {
+            console.log("");
+        }
     }
 }
