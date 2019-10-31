@@ -21,6 +21,7 @@
 *   Enable `es6` env in ESLint.
 *   Fix issues with symlinked projects.
 *   Also replace `process.env.DEBUG`, and `MODERN_BUILD` + `DEBUG` (without `process.env.` prefix).
+*   Added some newlines to the log to improve formatting.
 
 
 8.1.0
