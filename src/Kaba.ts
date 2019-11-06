@@ -75,6 +75,7 @@ export class Kaba
             }),
             new ProvidePlugin({
                 h: ["preact", "h"],
+                Fragment: ["preact", "Fragment"],
             }),
         ];
 

@@ -22,6 +22,8 @@
 *   Fix issues with symlinked projects.
 *   Also replace `process.env.DEBUG`, and `MODERN_BUILD` + `DEBUG` (without `process.env.` prefix).
 *   Added some newlines to the log to improve formatting.
+*   Automatically add the import for the `Fragment` component from preact for all modules.
+*   Set `mode` for ESLint JSDoc linter to `typescript`.
 
 
 8.1.0
