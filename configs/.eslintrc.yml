@@ -13,6 +13,8 @@ plugins:
     - react-hooks
 
 settings:
+    jsdoc:
+        mode: typescript
     react:
         createClass: "Component"
         pragma: "h"
