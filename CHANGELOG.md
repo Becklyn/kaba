@@ -24,6 +24,8 @@
 *   Added some newlines to the log to improve formatting.
 *   Automatically add the import for the `Fragment` component from preact for all modules.
 *   Set `mode` for ESLint JSDoc linter to `typescript`.
+*   Improved ESLint linting: now only files in the project dir are linted. This ensures that symlinked dev packages are
+    not linted. (`/node_modules/` etc are still excluded, of course.)
 
 
 8.1.0
