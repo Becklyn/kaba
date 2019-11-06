@@ -525,7 +525,8 @@ export class Kaba
                     // ESLint
                     {
                         test: /\.m?jsx?$/,
-                        exclude: /node_modules|tests|vendor/,
+                        // only lint files that are in the project dir & exclude tests, vendor and node_modules
+                        include: (path) => path.startsWith(this.cwd) && !/node_modules|tests|vendor/.test(path),
                         loader: "eslint-loader",
                         options: {
                             cache: true,
