@@ -53,6 +53,7 @@ export class Kaba
     private splitChunks: boolean = true;
     private hashFileNames: boolean = true;
     private buildModern: boolean = true;
+    private nodeSettings: webpack.Node|false = false;
 
 
     /**
@@ -237,6 +238,16 @@ export class Kaba
 
 
     /**
+     * Setting for polyfilling core node packages
+     */
+    public polyfillNode (setting: webpack.Node|false) : this
+    {
+        this.nodeSettings = setting;
+        return this;
+    }
+
+
+    /**
      * Returns the kaba config
      *
      * @internal
@@ -374,7 +385,7 @@ export class Kaba
             // node
             // don't automatically polyfill certain node libraries
             // as we don't care about these implementations and they just add weight
-            node: false,
+            node: this.nodeSettings,
         };
 
         if (this.splitChunks)
