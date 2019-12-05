@@ -1,31 +1,32 @@
 9.0.0
 =====
 
-*   Updated internal dependencies.
-*   Always build a legacy and a modern JS build.
-*   Added `verbose` to the CLI config.
-*   Improved error handling of `node-sass` loading errors.
-*   Use better default `publicPath` to match the default structure of the BecklynAssetsBundle.
-*   Allow to disable the modern build
-*   Don't prefix legacy build with `_legacy.`, but instead prefix modern build with `_modern.`. That enhances 
+*   (internal) Updated internal dependencies.
+*   (bc) Always build a legacy and a modern JS build.
+*   (feature) Added `verbose` to the CLI config.
+*   (improvement) Improved error handling of `node-sass` loading errors.
+*   (improvement) Use better default `publicPath` to match the default structure of the BecklynAssetsBundle.
+*   (feature) Allow to disable the modern build
+*   (improvement) Don't prefix legacy build with `_legacy.`, but instead prefix modern build with `_modern.`. That enhances 
     compatability for simple builds.
-*   Use `eslint-plugin-react-hooks` plugin
-*   Always extract comments.
-*   Display build progress in webpack
-*   Display linting errors by default.
+*   (feature) Use `eslint-plugin-react-hooks` plugin
+*   (improvement) Always extract comments.
+*   (improvement) Display build progress in webpack
+*   (improvement) Display linting errors by default.
     *   Removed the `--lint` parameter and added an inverse `--silent` instead.
-*   Added `duplicate-package-checker-webpack-plugin` that detects duplicate packages in a build in webpack.
-*   Always run ESLint
-*   Use faster sourcemap for production build
-*   Added `eslint-plugin-jsdoc` and activated multiple rules for checking JSDoc issues.
-*   Enable `es6` env in ESLint.
-*   Fix issues with symlinked projects.
-*   Also replace `process.env.DEBUG`, and `MODERN_BUILD` + `DEBUG` (without `process.env.` prefix).
-*   Added some newlines to the log to improve formatting.
-*   Automatically add the import for the `Fragment` component from preact for all modules.
-*   Set `mode` for ESLint JSDoc linter to `typescript`.
-*   Improved ESLint linting: now only files in the project dir are linted. This ensures that symlinked dev packages are
+*   (improvement) Added `duplicate-package-checker-webpack-plugin` that detects duplicate packages in a build in webpack.
+*   (improvement) Always run ESLint
+*   (improvement) Use faster sourcemap for production build
+*   (improvement) Added `eslint-plugin-jsdoc` and activated multiple rules for checking JSDoc issues.
+*   (improvement) Enable `es6` env in ESLint.
+*   (bug) Fix issues with symlinked projects.
+*   (improvement) Also replace `process.env.DEBUG`, and `MODERN_BUILD` + `DEBUG` (without `process.env.` prefix).
+*   (improvement) Added some newlines to the log to improve formatting.
+*   (improvement) Automatically add the import for the `Fragment` component from preact for all modules.
+*   (improvement) Set `mode` for ESLint JSDoc linter to `typescript`.
+*   (improvement) Improved ESLint linting: now only files in the project dir are linted. This ensures that symlinked dev packages are
     not linted. (`/node_modules/` etc are still excluded, of course.)
+*   (feature) Add option to polyfill core node packages in webpack.
 
 
 8.1.0
