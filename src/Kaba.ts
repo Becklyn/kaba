@@ -277,9 +277,9 @@ export class Kaba
             jsConfig = {
                 common: this.buildWebpackCommon(cliConfig),
                 module: this.buildModern
-                    ? this.buildWebpackConfig(cliConfig, true)
+                    ? this.buildWebpackConfigs(cliConfig, true)
                     : null,
-                legacy: this.buildWebpackConfig(cliConfig, false),
+                legacy: this.buildWebpackConfigs(cliConfig, false),
                 javaScriptDependenciesFileName: this.javaScriptDependenciesFileName,
                 basePath: path.join(this.outputPaths.base, this.outputPaths.js),
             };
@@ -423,7 +423,7 @@ export class Kaba
     /**
      * Builds the specialized webpack config for a legacy / module build
      */
-    private buildWebpackConfig (cliConfig: kaba.CliConfig, isModule: boolean): Partial<webpack.Configuration>
+    private buildWebpackConfigs (cliConfig: kaba.CliConfig, isModule: boolean): Partial<webpack.Configuration>[]
     {
         const babelLoader = {
             loader: "babel-loader?cacheDirectory",
@@ -454,10 +454,7 @@ export class Kaba
             isModule ? "tsconfig.modern.json" : "tsconfig.legacy.json",
         );
 
-        return {
-            // entry
-            entry: entries,
-
+        let configTemplate = {
             // output
             output: {
                 path: path.join(this.outputPaths.base, this.outputPaths.js, isModule ? "modern" : "legacy"),
@@ -498,23 +495,6 @@ export class Kaba
                         test: /\.(svg|txt)$/,
                         loader: "raw-loader",
                     },
-
-                    // ESLint
-                    {
-                        test: /\.m?jsx?$/,
-                        // only lint files that are in the project dir & exclude tests, vendor and node_modules
-                        include: (path) => path.startsWith(this.cwd) && !/node_modules|tests|vendor/.test(path),
-                        loader: "eslint-loader",
-                        options: {
-                            cache: true,
-                            configFile: path.join(this.libRoot, "configs/.eslintrc.yml"),
-                            fix: cliConfig.fix,
-                            parser: "babel-eslint",
-                            quiet: !cliConfig.lint,
-                            // always only emit a warning, so to actually never fail the webpack build
-                            emitWarning: true,
-                        },
-                    },
                 ],
             },
 
@@ -529,6 +509,37 @@ export class Kaba
                 }),
             ],
         };
+
+        return Object.keys(entries).map((entryFile, index) =>
+        {
+            let config = Object.assign({}, configTemplate, {
+                entry: {
+                    [entryFile]: entries[entryFile],
+                },
+            }) as Partial<webpack.Configuration>;
+
+            if (isModule && undefined !== config.module)
+            {
+                (config.module.rules as any).push({
+                    // ESLint
+                    test: /\.m?jsx?$/,
+                    // only lint files that are in the project dir & exclude tests, vendor and node_modules
+                    include: (path) => path.startsWith(this.cwd) && !/node_modules|tests|vendor/.test(path),
+                    loader: "eslint-loader",
+                    options: {
+                        cache: true,
+                        configFile: path.join(this.libRoot, "configs/.eslintrc.yml"),
+                        fix: cliConfig.fix,
+                        parser: "babel-eslint",
+                        quiet: !cliConfig.lint,
+                        // always only emit a warning, so to actually never fail the webpack build
+                        emitWarning: true,
+                    },
+                });
+            }
+
+            return config;
+        });
     }
 }
 

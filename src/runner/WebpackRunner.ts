@@ -47,31 +47,52 @@ export class WebpackRunner
 
                 let configs: webpack.Configuration[] = [];
 
-                configs.push(
-                    Object.assign(
-                        {},
-                        this.buildConfig.js.common,
-                        this.buildConfig.js.legacy,
-                        {
-                            plugins: (this.buildConfig.js.common.plugins as any[]).concat(this.buildConfig.js.legacy.plugins),
-                            name: "legacy",
-                        }
-                    )
-                );
-
-                if (this.buildConfig.js.module)
+                if (Array.isArray(this.buildConfig.js.legacy))
                 {
-                    configs.push(
-                        Object.assign(
-                            {},
-                            this.buildConfig.js.common,
-                            this.buildConfig.js.module,
-                            {
-                                plugins: (this.buildConfig.js.common.plugins as any[]).concat(this.buildConfig.js.module.plugins),
-                                name: "modern",
-                            }
-                        )
-                    );
+                    this.buildConfig.js.legacy.forEach(legacyConfig =>
+                    {
+                        // For some reason TypeScript thinks that `this.buildConfig.js` might become `undefined`, even though we have this check already in line 34
+                        if (!this.buildConfig.js)
+                        {
+                            return;
+                        }
+
+                        configs.push(
+                            Object.assign(
+                                {},
+                                this.buildConfig.js.common,
+                                legacyConfig,
+                                {
+                                    plugins: (this.buildConfig.js.common.plugins as any[]).concat(legacyConfig.plugins),
+                                    name: "legacy",
+                                }
+                            )
+                        );
+                    });
+                }
+
+                if (Array.isArray(this.buildConfig.js.module))
+                {
+                    this.buildConfig.js.module.forEach(moduleConfig =>
+                    {
+                        // For some reason TypeScript thinks that `this.buildConfig.js` might become `undefined`, even though we have this check already in line 34
+                        if (!this.buildConfig.js)
+                        {
+                            return;
+                        }
+
+                        configs.push(
+                            Object.assign(
+                                {},
+                                this.buildConfig.js.common,
+                                moduleConfig,
+                                {
+                                    plugins: (this.buildConfig.js.common.plugins as any[]).concat(moduleConfig.plugins),
+                                    name: "modern",
+                                }
+                            )
+                        );
+                    });
                 }
 
                 let compiler = webpack(configs) as webpack.MultiCompiler;

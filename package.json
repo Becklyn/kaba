@@ -14,7 +14,7 @@
     },
     "scripts": {
         "build": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty --noUnusedLocals && chmod +x bin/run.js",
-        "dev": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty",
+        "dev": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty --watch",
         "prepublishOnly": "npm run-script build",
         "test": "npm run-script build && ava"
     },
