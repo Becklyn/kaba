@@ -27,6 +27,7 @@
 *   (improvement) Improved ESLint linting: now only files in the project dir are linted. This ensures that symlinked dev packages are
     not linted. (`/node_modules/` etc are still excluded, of course.)
 *   (feature) Add option to polyfill core node packages in webpack.
+*   (bc) Remove `disableChunkSplitting()`, chunk splitting is now always disabled. Use code splitting instead.
 
 
 8.1.0
