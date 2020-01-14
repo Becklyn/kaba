@@ -173,9 +173,6 @@ rules:
     'no-multiple-empty-lines': warn
     'no-nested-ternary': error
     'no-new-object': error
-    'no-plusplus':
-        - error
-        - allowForLoopAfterthoughts: true
     'no-spaced-func': error
     'no-tabs': error
     'no-underscore-dangle': error

@@ -30,6 +30,8 @@
 *   (bc) Remove `disableChunkSplitting()`, chunk splitting is now always disabled. Use code splitting instead.
 *   (improvement) Enable `cache-loader`, which might speed up the webpack build.
 *   (improvement) Bump required node version to 12.
+*   (internal) Bumped all dependencies.
+*   (improvement) Allow `++` in JS/TS code.
 
 
 8.1.0
