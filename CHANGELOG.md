@@ -29,6 +29,7 @@
 *   (feature) Add option to polyfill core node packages in webpack.
 *   (bc) Remove `disableChunkSplitting()`, chunk splitting is now always disabled. Use code splitting instead.
 *   (improvement) Enable `cache-loader`, which might speed up the webpack build.
+*   (improvement) Bump required node version to 12.
 
 
 8.1.0

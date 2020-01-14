@@ -1,13 +1,11 @@
-dist: trusty
+dist: bionic
 language: node_js
 
 node_js:
-    - node
+    - 12
 
 script:
-# Disabled for now, until kaba is ported to TypeScriot
-#    - npm run-script build
-# The endpoint is unreliable
-#     - npm audit
+    - npm run-script build
+    - npm audit
     - npx prettier-package-json package.json --list-different --tab-width 4
     - npm test
