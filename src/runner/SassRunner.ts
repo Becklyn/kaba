@@ -24,7 +24,7 @@ export class SassRunner
      *
      * @return {Promise<boolean>} whether the build was successful and error-free
      */
-    public async run () : Promise<boolean|null>
+    public async run () : Promise<boolean|void>
     {
         const entries = Object.keys(this.buildConfig.entries);
 
