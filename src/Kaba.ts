@@ -454,7 +454,7 @@ export class Kaba
             isModule ? "tsconfig.modern.json" : "tsconfig.legacy.json",
         );
 
-        let config = {
+        return {
             // entry
             entry: entries,
 
@@ -474,6 +474,7 @@ export class Kaba
                     {
                         test: /\.tsx?$/,
                         use: [
+                            'cache-loader',
                             babelLoader,
                             {
                                 loader: "ts-loader",
@@ -489,7 +490,7 @@ export class Kaba
                     // Babel
                     {
                         test: /\.m?jsx?$/,
-                        use: [babelLoader],
+                        use: ['cache-loader', babelLoader],
                     },
 
                     // content files
@@ -528,8 +529,6 @@ export class Kaba
                 }),
             ],
         };
-
-        return config;
     }
 }
 
