@@ -50,7 +50,6 @@ export class Kaba
     private moduleConcatenationEnabled: boolean = false;
     private plugins: webpack.Plugin[] = [];
     private javaScriptDependenciesFileName: string = "_dependencies";
-    private splitChunks: boolean = true;
     private hashFileNames: boolean = true;
     private buildModern: boolean = true;
     private nodeSettings: webpack.Node|false = false;
@@ -203,16 +202,6 @@ export class Kaba
     public setJavaScriptDependenciesName (name: string): this
     {
         this.javaScriptDependenciesFileName = name;
-        return this;
-    }
-
-
-    /**
-     * Disables chunk splitting
-     */
-    public disableChunkSplitting (): this
-    {
-        this.splitChunks = false;
         return this;
     }
 
@@ -387,30 +376,6 @@ export class Kaba
             // as we don't care about these implementations and they just add weight
             node: this.nodeSettings,
         };
-
-        if (this.splitChunks)
-        {
-            (config.optimization as any).splitChunks = {
-                chunks: "all",
-                minChunks: 1,
-                maxAsyncRequests: 5,
-                maxInitialRequests: 3,
-                name: true,
-                cacheGroups: {
-                    default: {
-                        minChunks: 2,
-                        priority: -20,
-                        reuseExistingChunk: true,
-                    },
-                    vendors: {
-                        test: /[\\/]node_modules[\\/]/,
-                        priority: -10,
-                    },
-                },
-            };
-
-            (config.optimization as any).runtimeChunk = "single";
-        }
 
         if (!cliConfig.debug)
         {
