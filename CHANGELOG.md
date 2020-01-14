@@ -28,6 +28,7 @@
     not linted. (`/node_modules/` etc are still excluded, of course.)
 *   (feature) Add option to polyfill core node packages in webpack.
 *   (bc) Remove `disableChunkSplitting()`, chunk splitting is now always disabled. Use code splitting instead.
+*   (improvement) Enable `cache-loader`, which might speed up the webpack build.
 
 
 8.1.0
