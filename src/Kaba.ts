@@ -13,6 +13,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const PACKAGE_MATCHER = /\/node_modules\/(?<package>[^\/]+)\//;
 interface CompiledNpmPackagesMapping {[name: string]: true}
+interface PostCssLoaderOptions {[key: string]: any}
 
 interface Entries
 {
@@ -75,6 +76,7 @@ export class Kaba
         mojave: true,
         '@mayd': true,
     };
+    private postCssLoaderOptions: PostCssLoaderOptions = {};
 
 
     /**
@@ -248,6 +250,16 @@ export class Kaba
     public polyfillNode (setting: webpack.Node|false) : this
     {
         this.nodeSettings = setting;
+        return this;
+    }
+
+
+    /**
+     * Sets the loader options for the postcss loader
+     */
+    public setPostCssLoaderOptions (options: PostCssLoaderOptions): this
+    {
+        this.postCssLoaderOptions = options;
         return this;
     }
 
