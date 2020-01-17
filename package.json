@@ -37,6 +37,7 @@
         "eslint-plugin-react": "^7.17.0",
         "eslint-plugin-react-hooks": "^2.3.0",
         "fs-extra": "^8.1.0",
+        "ignore-loader": "^0.1.2",
         "kaba-babel-preset": "^4.1.1",
         "kleur": "^3.0.3",
         "pretty-hrtime": "^1.0.3",
