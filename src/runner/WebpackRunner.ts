@@ -40,43 +40,14 @@ export class WebpackRunner
                 this.logger.log("Launching webpack...");
                 const start = process.hrtime();
 
-                if (this.buildConfig.js.common.watch)
+                if (this.buildConfig.js.watch)
                 {
                     this.resolveCallback = resolve;
                 }
 
-                let configs: webpack.Configuration[] = [];
+                let compiler = webpack(this.buildConfig.js.configs) as webpack.MultiCompiler;
 
-                configs.push(
-                    Object.assign(
-                        {},
-                        this.buildConfig.js.common,
-                        this.buildConfig.js.legacy,
-                        {
-                            plugins: (this.buildConfig.js.common.plugins as any[]).concat(this.buildConfig.js.legacy.plugins),
-                            name: "legacy",
-                        }
-                    )
-                );
-
-                if (this.buildConfig.js.module)
-                {
-                    configs.push(
-                        Object.assign(
-                            {},
-                            this.buildConfig.js.common,
-                            this.buildConfig.js.module,
-                            {
-                                plugins: (this.buildConfig.js.common.plugins as any[]).concat(this.buildConfig.js.module.plugins),
-                                name: "modern",
-                            }
-                        )
-                    );
-                }
-
-                let compiler = webpack(configs) as webpack.MultiCompiler;
-
-                if (this.buildConfig.js.common.watch)
+                if (this.buildConfig.js.watch)
                 {
                     this.resolveCallback = resolve;
 
@@ -117,12 +88,13 @@ export class WebpackRunner
         stats.stats.forEach(
             singleStats =>
             {
-                console.log("");
                 let type = singleStats.compilation.compiler.options.name as string;
+                let statConfig = singleStats.compilation.compiler.options.stats as any;
+                statConfig.colors = true;
+
+                console.log("");
                 console.log(`${bgCyan(black(" webpack "))} ${cyan(type)}`);
-                console.log(singleStats.toString({
-                    colors: true,
-                }));
+                console.log(singleStats.toString(statConfig));
             }
         );
 

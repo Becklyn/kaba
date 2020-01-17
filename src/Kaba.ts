@@ -48,7 +48,6 @@ export class Kaba
     private publicPath: string = "/assets/app/js/";
     private externals: Externals = {};
     private moduleConcatenationEnabled: boolean = false;
-    private plugins: webpack.Plugin[] = [];
     private javaScriptDependenciesFileName: string = "_dependencies";
     private hashFileNames: boolean = true;
     private buildModern: boolean = true;
@@ -62,22 +61,6 @@ export class Kaba
     {
         this.cwd = process.cwd();
         this.libRoot = path.dirname(__dirname);
-        this.plugins = [
-            new ProgressBarPlugin({
-                complete: green("─"),
-                incomplete: gray("─"),
-                width: 50,
-                format: ` ${cyan("build")} :bar ${green(":percent")} ${gray(":msg")} `,
-            }),
-            new DuplicatePackageCheckerPlugin({
-                emitError: true,
-                strict: true,
-            }),
-            new ProvidePlugin({
-                h: ["preact", "h"],
-                Fragment: ["preact", "Fragment"],
-            }),
-        ];
 
         // set defaults
         this.setOutputPath("build");
@@ -274,12 +257,20 @@ export class Kaba
 
         if (Object.keys(this.jsEntries).length)
         {
+            const compilerConfigs: kaba.WebpackBuildConfig[] = [];
+
+            Object.keys(this.jsEntries).forEach((entry: string) => {
+                compilerConfigs.push(this.buildWebpackConfig(entry, this.jsEntries[entry], cliConfig, false));
+
+                if (this.buildModern)
+                {
+                    compilerConfigs.push(this.buildWebpackConfig(entry, this.jsEntries[entry], cliConfig, true));
+                }
+            });
+
             jsConfig = {
-                common: this.buildWebpackCommon(cliConfig),
-                module: this.buildModern
-                    ? this.buildWebpackConfig(cliConfig, true)
-                    : null,
-                legacy: this.buildWebpackConfig(cliConfig, false),
+                watch: cliConfig.watch,
+                configs: compilerConfigs,
                 javaScriptDependenciesFileName: this.javaScriptDependenciesFileName,
                 basePath: path.join(this.outputPaths.base, this.outputPaths.js),
             };
@@ -299,11 +290,34 @@ export class Kaba
 
 
     /**
-     * Builds the common webpack config, that is common between legacy & module
+     * Builds the specialized webpack config for a legacy / module build
      */
-    private buildWebpackCommon (cliConfig: kaba.CliConfig): Partial<webpack.Configuration>
+    private buildWebpackConfig (entry: string, entryFile: string, cliConfig: kaba.CliConfig, isModule: boolean): Partial<webpack.Configuration>
     {
-        const config: Partial<webpack.Configuration> = {
+        const babelLoader = {
+            loader: "babel-loader?cacheDirectory",
+            options: {
+                babelrc: false,
+                presets: [
+                    [isModule ? kabaBabelPreset.modern : kabaBabelPreset.legacy],
+                ],
+            },
+        };
+
+        let typeScriptConfig = path.join(
+            this.libRoot,
+            "configs",
+            isModule ? "tsconfig.modern.json" : "tsconfig.legacy.json",
+        );
+
+        const entryName = isModule ? `_modern.${entry}` : entry;
+
+        let configTemplate = {
+            name: isModule ? "modern" : "legacy",
+            entry: {
+                [entryName]: entryFile,
+            },
+
             // mode
             mode: cliConfig.debug ? "development" : "production",
 
@@ -327,136 +341,6 @@ export class Kaba
                     ".json",
                 ],
             },
-
-            // module
-            module: {
-                rules: [],
-            },
-
-            // optimization
-            optimization: {
-                concatenateModules: this.moduleConcatenationEnabled,
-                minimizer: [],
-            },
-
-            // performance
-
-            // devtool (source maps)
-            devtool: cliConfig.debug
-                ? "inline-cheap-source-map"
-                // We need to cast to `any` here, as this specific config value isn't listed in webpack's typescript
-                // types.
-                : ("hidden-cheap-module-source-map" as any),
-
-            // context
-            context: this.cwd,
-
-            // target
-            target: "web",
-
-            // externals
-            externals: this.externals,
-
-            // stats
-            stats: {
-                // hide children information (like from the ExtractTextPlugin)
-                children: false,
-            },
-
-            // devServer
-
-            // plugins
-            plugins: this.plugins,
-
-            // watch
-            watch: cliConfig.watch,
-
-            // node
-            // don't automatically polyfill certain node libraries
-            // as we don't care about these implementations and they just add weight
-            node: this.nodeSettings,
-        };
-
-        if (!cliConfig.debug)
-        {
-            (config.optimization as any).minimizer.push(new TerserPlugin({
-                cache: true,
-                parallel: true,
-                sourceMap: true,
-                extractComments: true,
-                terserOptions: {
-                    ecma: 5,
-                },
-            }));
-        }
-
-        if (cliConfig.openBundleAnalyzer)
-        {
-            try
-            {
-                const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-                (config.plugins as any[]).push(new BundleAnalyzerPlugin());
-            }
-            catch (e)
-            {
-                console.log("");
-
-                if (/Cannot find module 'webpack-bundle-analyzer'/.test(e.message))
-                {
-                    console.log(red("You need to manually install the analyzer plugin:"));
-                    console.log(red("    npm i webpack-bundle-analyzer"));
-                }
-                else
-                {
-                    console.log(red(e.message));
-                }
-
-                process.exit(1);
-            }
-
-        }
-
-        return config;
-    }
-
-
-    /**
-     * Builds the specialized webpack config for a legacy / module build
-     */
-    private buildWebpackConfig (cliConfig: kaba.CliConfig, isModule: boolean): Partial<webpack.Configuration>
-    {
-        const babelLoader = {
-            loader: "babel-loader?cacheDirectory",
-            options: {
-                babelrc: false,
-                presets: [
-                    [isModule ? kabaBabelPreset.modern : kabaBabelPreset.legacy],
-                ],
-            },
-        };
-
-        let entries = this.jsEntries;
-
-        if (isModule)
-        {
-            entries = {};
-            Object.keys(this.jsEntries).forEach(
-                entry =>
-                {
-                    entries[`_modern.${entry}`] = this.jsEntries[entry];
-                },
-            );
-        }
-
-        let typeScriptConfig = path.join(
-            this.libRoot,
-            "configs",
-            isModule ? "tsconfig.modern.json" : "tsconfig.legacy.json",
-        );
-
-        return {
-            // entry
-            entry: entries,
 
             // output
             output: {
@@ -498,28 +382,56 @@ export class Kaba
                         test: /\.(svg|txt)$/,
                         loader: "raw-loader",
                     },
+                ] as webpack.RuleSetRule[],
+            },
 
-                    // ESLint
-                    {
-                        test: /\.m?jsx?$/,
-                        // only lint files that are in the project dir & exclude tests, vendor and node_modules
-                        include: (path) => path.startsWith(this.cwd) && !/node_modules|tests|vendor/.test(path),
-                        loader: "eslint-loader",
-                        options: {
-                            cache: true,
-                            configFile: path.join(this.libRoot, "configs/.eslintrc.yml"),
-                            fix: cliConfig.fix,
-                            parser: "babel-eslint",
-                            quiet: !cliConfig.lint,
-                            // always only emit a warning, so to actually never fail the webpack build
-                            emitWarning: true,
-                        },
-                    },
-                ],
+            // optimization
+            optimization: {
+                concatenateModules: this.moduleConcatenationEnabled,
+                minimizer: [],
+            },
+
+            // devtool (source maps)
+            devtool: cliConfig.debug
+                ? "inline-cheap-source-map"
+                // We need to cast to `any` here, as this specific config value isn't listed in webpack's typescript
+                // types.
+                : ("hidden-cheap-module-source-map" as any),
+
+            // context
+            context: this.cwd,
+
+            // target
+            target: "web",
+
+            // externals
+            externals: this.externals,
+
+            // stats
+            stats: {
+                // hide children information (like from the ExtractTextPlugin)
+                children: false,
+                hash: !isModule,
+                version: !isModule,
+                modules: !isModule,
             },
 
             // plugins
             plugins: [
+                new ProgressBarPlugin({
+                    complete: green("─"),
+                    incomplete: gray("─"),
+                    width: 50,
+                    format: ` ${cyan("build")} :bar ${green(":percent")} ${gray(":msg")} `,
+                }),
+                new DuplicatePackageCheckerPlugin({
+                    emitError: true,
+                    strict: true,
+                }),
+                new ProvidePlugin({
+                    h: ["preact", "h"],
+                    Fragment: ["preact", "Fragment"],
+                }),
                 new CleanWebpackPlugin(),
                 new DefinePlugin({
                     'process.env.MODERN_BUILD': isModule,
@@ -528,7 +440,76 @@ export class Kaba
                     'DEBUG': cliConfig.debug,
                 }),
             ],
-        };
+
+            // watch
+            watch: cliConfig.watch,
+
+            // node
+            // don't automatically polyfill certain node libraries
+            // as we don't care about these implementations and they just add weight
+            node: this.nodeSettings,
+        } as Partial<webpack.Configuration>;
+
+        if (!cliConfig.debug)
+        {
+            (configTemplate.optimization as any).minimizer.push(new TerserPlugin({
+                cache: true,
+                parallel: true,
+                sourceMap: true,
+                extractComments: true,
+                terserOptions: {
+                    ecma: 5,
+                },
+            }));
+        }
+
+        if (cliConfig.openBundleAnalyzer)
+        {
+            try
+            {
+                const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+                (configTemplate.plugins as any[]).push(new BundleAnalyzerPlugin());
+            }
+            catch (e)
+            {
+                console.log("");
+
+                if (/Cannot find module 'webpack-bundle-analyzer'/.test(e.message))
+                {
+                    console.log(red("You need to manually install the analyzer plugin:"));
+                    console.log(red("    npm i webpack-bundle-analyzer"));
+                }
+                else
+                {
+                    console.log(red(e.message));
+                }
+
+                process.exit(1);
+            }
+
+        }
+
+        if (!isModule)
+        {
+            (configTemplate.module as webpack.Module).rules.push({
+                // ESLint
+                test: /\.m?jsx?$/,
+                // only lint files that are in the project dir & exclude tests, vendor and node_modules
+                include: (path) => path.startsWith(this.cwd) && !/node_modules|tests|vendor/.test(path),
+                loader: "eslint-loader",
+                options: {
+                    cache: true,
+                    configFile: path.join(this.libRoot, "configs/.eslintrc.yml"),
+                    fix: cliConfig.fix,
+                    parser: "babel-eslint",
+                    quiet: !cliConfig.lint,
+                    // always only emit a warning, so to actually never fail the webpack build
+                    emitWarning: true,
+                },
+            });
+        }
+
+        return configTemplate;
     }
 }
 

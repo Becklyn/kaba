@@ -26,9 +26,8 @@ declare namespace kaba
     {
         sass: SassBuildConfig;
         js?: {
-            common: WebpackBuildConfig;
-            module: WebpackBuildConfig|null;
-            legacy: WebpackBuildConfig;
+            watch: boolean,
+            configs: WebpackBuildConfig[];
             javaScriptDependenciesFileName: string;
             basePath: string;
         };
