@@ -294,7 +294,7 @@ export class Kaba
      */
     private buildWebpackConfig (entry: string, entryFile: string, cliConfig: kaba.CliConfig, isModule: boolean): Partial<webpack.Configuration>
     {
-        const babelLoader = {
+        const babelLoader: webpack.RuleSetUseItem = {
             loader: "babel-loader?cacheDirectory",
             options: {
                 babelrc: false,
@@ -312,8 +312,8 @@ export class Kaba
 
         const entryName = isModule ? `_modern.${entry}` : entry;
 
-        let configTemplate = {
             name: isModule ? "modern" : "legacy",
+        let configTemplate: webpack.Configuration = {
             entry: {
                 [entryName]: entryFile,
             },
@@ -388,7 +388,7 @@ export class Kaba
                         test: /\.css$/,
                         loader: "ignore-loader",
                     }
-                ] as webpack.RuleSetRule[],
+                ],
             },
 
             // optimization
