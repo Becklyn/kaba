@@ -274,12 +274,24 @@ export class Kaba
 
         if (Object.keys(this.jsEntries).length)
         {
+            const compilerConfigs: kaba.WebpackBuildConfig[] = [];
+
+            Object.keys(this.jsEntries).forEach((entry: string) => {
+                if (this.buildModern)
+                {
+                    compilerConfigs.push(this.buildWebpackConfig(entry, this.jsEntries[entry], cliConfig, true));
+                }
+            });
+
+            // The log output gets really big with multiple entry files.
+            // Therefore the linted (legacy) entries are added after the modern ones.
+            Object.keys(this.jsEntries).forEach((entry: string) => {
+                compilerConfigs.push(this.buildWebpackConfig(entry, this.jsEntries[entry], cliConfig, false));
+            });
+
             jsConfig = {
                 common: this.buildWebpackCommon(cliConfig),
-                module: this.buildModern
-                    ? this.buildWebpackConfigs(cliConfig, true)
-                    : null,
-                legacy: this.buildWebpackConfigs(cliConfig, false),
+                configs: compilerConfigs,
                 javaScriptDependenciesFileName: this.javaScriptDependenciesFileName,
                 basePath: path.join(this.outputPaths.base, this.outputPaths.js),
             };
@@ -423,7 +435,7 @@ export class Kaba
     /**
      * Builds the specialized webpack config for a legacy / module build
      */
-    private buildWebpackConfigs (cliConfig: kaba.CliConfig, isModule: boolean): Partial<webpack.Configuration>[]
+    private buildWebpackConfig (entry: string, entryFile: string, cliConfig: kaba.CliConfig, isModule: boolean): Partial<webpack.Configuration>
     {
         const babelLoader = {
             loader: "babel-loader?cacheDirectory",
@@ -435,26 +447,20 @@ export class Kaba
             },
         };
 
-        let entries = this.jsEntries;
-
-        if (isModule)
-        {
-            entries = {};
-            Object.keys(this.jsEntries).forEach(
-                entry =>
-                {
-                    entries[`_modern.${entry}`] = this.jsEntries[entry];
-                },
-            );
-        }
-
         let typeScriptConfig = path.join(
             this.libRoot,
             "configs",
             isModule ? "tsconfig.modern.json" : "tsconfig.legacy.json",
         );
 
+        const entryObjKey = isModule ? `_modern.${entry}` : entry;
+
         let configTemplate = {
+            name: isModule ? "modern" : "legacy",
+            entry: {
+                [entryObjKey]: entryFile,
+            },
+
             // output
             output: {
                 path: path.join(this.outputPaths.base, this.outputPaths.js, isModule ? "modern" : "legacy"),
@@ -495,7 +501,7 @@ export class Kaba
                         test: /\.(svg|txt)$/,
                         loader: "raw-loader",
                     },
-                ],
+                ] as webpack.RuleSetRule[],
             },
 
             // plugins
@@ -510,45 +516,26 @@ export class Kaba
             ],
         };
 
-        return Object.keys(entries).map(entryFile =>
-        {
-            let config = Object.assign({}, configTemplate, {
-                entry: {
-                    [entryFile]: entries[entryFile],
+        if (!isModule) {
+            configTemplate.module.rules.push({
+                // ESLint
+                test: /\.m?jsx?$/,
+                // only lint files that are in the project dir & exclude tests, vendor and node_modules
+                include: (path) => path.startsWith(this.cwd) && !/node_modules|tests|vendor/.test(path),
+                loader: "eslint-loader",
+                options: {
+                    cache: true,
+                    configFile: path.join(this.libRoot, "configs/.eslintrc.yml"),
+                    fix: cliConfig.fix,
+                    parser: "babel-eslint",
+                    quiet: !cliConfig.lint,
+                    // always only emit a warning, so to actually never fail the webpack build
+                    emitWarning: true,
                 },
-            }) as Partial<webpack.Configuration>;
+            });
+        }
 
-            if (!isModule && undefined !== config.module)
-            {
-                config.module = Object.assign({}, config.module);
-                let rules: webpack.RuleSetRule[] = [];
-
-                config.module.rules.forEach(rule => {
-                    rules.push(rule);
-                });
-
-                rules.push({
-                    // ESLint
-                    test: /\.m?jsx?$/,
-                    // only lint files that are in the project dir & exclude tests, vendor and node_modules
-                    include: (path) => path.startsWith(this.cwd) && !/node_modules|tests|vendor/.test(path),
-                    loader: "eslint-loader",
-                    options: {
-                        cache: true,
-                        configFile: path.join(this.libRoot, "configs/.eslintrc.yml"),
-                        fix: cliConfig.fix,
-                        parser: "babel-eslint",
-                        quiet: !cliConfig.lint,
-                        // always only emit a warning, so to actually never fail the webpack build
-                        emitWarning: true,
-                    },
-                });
-
-                config.module.rules = rules;
-            }
-
-            return config;
-        });
+        return configTemplate;
     }
 }
 

@@ -47,53 +47,28 @@ export class WebpackRunner
 
                 let configs: webpack.Configuration[] = [];
 
-                if (Array.isArray(this.buildConfig.js.legacy))
+
+                this.buildConfig.js.configs.forEach(config =>
                 {
-                    this.buildConfig.js.legacy.forEach(legacyConfig =>
+                    // For some reason TypeScript thinks that `this.buildConfig.js` might become `undefined`, even though we have this check already in line 34
+                    if (!this.buildConfig.js)
                     {
-                        // For some reason TypeScript thinks that `this.buildConfig.js` might become `undefined`, even though we have this check already in line 34
-                        if (!this.buildConfig.js)
-                        {
-                            return;
-                        }
+                        return;
+                    }
 
-                        configs.push(
-                            Object.assign(
-                                {},
-                                this.buildConfig.js.common,
-                                legacyConfig,
-                                {
-                                    plugins: (this.buildConfig.js.common.plugins as any[]).concat(legacyConfig.plugins),
-                                    name: "legacy",
-                                }
-                            )
-                        );
-                    });
-                }
-
-                if (Array.isArray(this.buildConfig.js.module))
-                {
-                    this.buildConfig.js.module.forEach(moduleConfig =>
+                    if (undefined !== config.plugins && this.buildConfig.js.common.plugins)
                     {
-                        // For some reason TypeScript thinks that `this.buildConfig.js` might become `undefined`, even though we have this check already in line 34
-                        if (!this.buildConfig.js)
-                        {
-                            return;
-                        }
+                        config.plugins.push(...this.buildConfig.js.common.plugins)
+                    }
 
-                        configs.push(
-                            Object.assign(
-                                {},
-                                this.buildConfig.js.common,
-                                moduleConfig,
-                                {
-                                    plugins: (this.buildConfig.js.common.plugins as any[]).concat(moduleConfig.plugins),
-                                    name: "modern",
-                                }
-                            )
-                        );
-                    });
-                }
+                    configs.push(
+                        Object.assign(
+                            {},
+                            this.buildConfig.js.common,
+                            config
+                        )
+                    );
+                });
 
                 let compiler = webpack(configs) as webpack.MultiCompiler;
 
