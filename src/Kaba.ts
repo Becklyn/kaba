@@ -382,6 +382,12 @@ export class Kaba
                         test: /\.(svg|txt)$/,
                         loader: "raw-loader",
                     },
+
+                    // ignore CSS files
+                    {
+                        test: /\.css$/,
+                        loader: "ignore-loader",
+                    }
                 ] as webpack.RuleSetRule[],
             },
 
