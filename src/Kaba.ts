@@ -52,7 +52,6 @@ export class Kaba
     private javaScriptDependenciesFileName: string = "_dependencies";
     private hashFileNames: boolean = true;
     private buildModern: boolean = true;
-    private hasPerEntryCompilation: boolean = false;
     private nodeSettings: webpack.Node|false = false;
 
 
@@ -223,16 +222,6 @@ export class Kaba
     public disableModernBuild (): this
     {
         this.buildModern = false;
-        return this;
-    }
-
-
-    /**
-     * Disables the per entry file compilation.
-     */
-    public enablePerEntryCompilation (): this
-    {
-        this.hasPerEntryCompilation = true;
         return this;
     }
 
@@ -520,36 +509,6 @@ export class Kaba
                 }),
             ],
         };
-
-        if (!this.hasPerEntryCompilation) {
-            let config = Object.assign({}, configTemplate, {
-                entry: {
-                    entry: entries,
-                },
-            }) as Partial<webpack.Configuration>;
-
-            if (!isModule && undefined !== config.module)
-            {
-                config.module.rules.push({
-                    // ESLint
-                    test: /\.m?jsx?$/,
-                    // only lint files that are in the project dir & exclude tests, vendor and node_modules
-                    include: (path) => path.startsWith(this.cwd) && !/node_modules|tests|vendor/.test(path),
-                    loader: "eslint-loader",
-                    options: {
-                        cache: true,
-                        configFile: path.join(this.libRoot, "configs/.eslintrc.yml"),
-                        fix: cliConfig.fix,
-                        parser: "babel-eslint",
-                        quiet: !cliConfig.lint,
-                        // always only emit a warning, so to actually never fail the webpack build
-                        emitWarning: true,
-                    },
-                })
-            }
-
-            return [config]
-        }
 
         return Object.keys(entries).map(entryFile =>
         {

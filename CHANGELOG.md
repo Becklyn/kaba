@@ -32,7 +32,7 @@
 *   (improvement) Bump required node version to 12.
 *   (internal) Bumped all dependencies.
 *   (improvement) Allow `++` in JS/TS code.
-*   (feature) Enable separate compiler instances for each entry file by using `enablePerEntryCompilation()`
+*   (improvement) The code is now always compiled per entry file
 
 
 8.1.0
