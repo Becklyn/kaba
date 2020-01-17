@@ -344,10 +344,10 @@ export class Kaba
 
             // output
             output: {
-                path: path.join(this.outputPaths.base, this.outputPaths.js, isModule ? "modern" : "legacy"),
+                path: path.join(this.outputPaths.base, this.outputPaths.js, entry, isModule ? "modern" : "legacy"),
                 filename: this.hashFileNames ? '[name].[chunkhash].js' : '[name].js',
                 // the slash at the end is required of the public path entries
-                publicPath: path.join(this.publicPath, isModule ? "modern/" : "legacy/"),
+                publicPath: path.join(this.publicPath, entry, isModule ? "modern/" : "legacy/"),
                 pathinfo: cliConfig.debug,
             },
 

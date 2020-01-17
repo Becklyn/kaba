@@ -35,6 +35,7 @@
 *   (improvement) The code is now always compiled per entry file
 *   (improvement) Ignore `.css` files when compiling webpack. You need to import them manually in your SCSS.
 *   (improvement) Build TypeScript for the `esnext` module system, that (amongst other things) allows to use `import()`.
+*   (bug) Compile every entry into a separate directory, to avoid issues with the clean plugin.
 
 
 8.1.0
