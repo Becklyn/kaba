@@ -510,7 +510,7 @@ export class Kaba
             ],
         };
 
-        return Object.keys(entries).map((entryFile, index) =>
+        return Object.keys(entries).map(entryFile =>
         {
             let config = Object.assign({}, configTemplate, {
                 entry: {
@@ -518,9 +518,16 @@ export class Kaba
                 },
             }) as Partial<webpack.Configuration>;
 
-            if (isModule && undefined !== config.module)
+            if (!isModule && undefined !== config.module)
             {
-                (config.module.rules as any).push({
+                config.module = Object.assign({}, config.module);
+                let rules: webpack.RuleSetRule[] = [];
+
+                config.module.rules.forEach(rule => {
+                    rules.push(rule);
+                });
+
+                rules.push({
                     // ESLint
                     test: /\.m?jsx?$/,
                     // only lint files that are in the project dir & exclude tests, vendor and node_modules
@@ -536,6 +543,8 @@ export class Kaba
                         emitWarning: true,
                     },
                 });
+
+                config.module.rules = rules;
             }
 
             return config;
