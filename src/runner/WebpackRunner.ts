@@ -40,39 +40,14 @@ export class WebpackRunner
                 this.logger.log("Launching webpack...");
                 const start = process.hrtime();
 
-                if (this.buildConfig.js.common.watch)
+                if (this.buildConfig.js.watch)
                 {
                     this.resolveCallback = resolve;
                 }
 
-                let configs: webpack.Configuration[] = [];
+                let compiler = webpack(this.buildConfig.js.configs) as webpack.MultiCompiler;
 
-
-                this.buildConfig.js.configs.forEach(config =>
-                {
-                    // For some reason TypeScript thinks that `this.buildConfig.js` might become `undefined`, even though we have this check already in line 34
-                    if (!this.buildConfig.js)
-                    {
-                        return;
-                    }
-
-                    if (undefined !== config.plugins && this.buildConfig.js.common.plugins)
-                    {
-                        config.plugins.push(...this.buildConfig.js.common.plugins)
-                    }
-
-                    configs.push(
-                        Object.assign(
-                            {},
-                            this.buildConfig.js.common,
-                            config
-                        )
-                    );
-                });
-
-                let compiler = webpack(configs) as webpack.MultiCompiler;
-
-                if (this.buildConfig.js.common.watch)
+                if (this.buildConfig.js.watch)
                 {
                     this.resolveCallback = resolve;
 
@@ -113,12 +88,13 @@ export class WebpackRunner
         stats.stats.forEach(
             singleStats =>
             {
-                console.log("");
                 let type = singleStats.compilation.compiler.options.name as string;
+                let statConfig = singleStats.compilation.compiler.options.stats as any;
+                statConfig.colors = true;
+
+                console.log("");
                 console.log(`${bgCyan(black(" webpack "))} ${cyan(type)}`);
-                console.log(singleStats.toString({
-                    colors: true,
-                }));
+                console.log(singleStats.toString(statConfig));
             }
         );
 

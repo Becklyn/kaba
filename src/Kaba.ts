@@ -77,6 +77,7 @@ export class Kaba
                 h: ["preact", "h"],
                 Fragment: ["preact", "Fragment"],
             }),
+            new CleanWebpackPlugin(),
         ];
 
         // set defaults
@@ -277,20 +278,16 @@ export class Kaba
             const compilerConfigs: kaba.WebpackBuildConfig[] = [];
 
             Object.keys(this.jsEntries).forEach((entry: string) => {
+                compilerConfigs.push(this.buildWebpackConfig(entry, this.jsEntries[entry], cliConfig, false));
+
                 if (this.buildModern)
                 {
                     compilerConfigs.push(this.buildWebpackConfig(entry, this.jsEntries[entry], cliConfig, true));
                 }
             });
 
-            // The log output gets really big with multiple entry files.
-            // Therefore the linted (legacy) entries are added after the modern ones.
-            Object.keys(this.jsEntries).forEach((entry: string) => {
-                compilerConfigs.push(this.buildWebpackConfig(entry, this.jsEntries[entry], cliConfig, false));
-            });
-
             jsConfig = {
-                common: this.buildWebpackCommon(cliConfig),
+                watch: cliConfig.watch,
                 configs: compilerConfigs,
                 javaScriptDependenciesFileName: this.javaScriptDependenciesFileName,
                 basePath: path.join(this.outputPaths.base, this.outputPaths.js),
@@ -307,128 +304,6 @@ export class Kaba
             js: jsConfig,
             cwd: this.cwd,
         };
-    }
-
-
-    /**
-     * Builds the common webpack config, that is common between legacy & module
-     */
-    private buildWebpackCommon (cliConfig: kaba.CliConfig): Partial<webpack.Configuration>
-    {
-        const config: Partial<webpack.Configuration> = {
-            // mode
-            mode: cliConfig.debug ? "development" : "production",
-
-            // resolve
-            resolve: {
-                modules: [
-                    // first try from the root project (as otherwise symlinked projects will fail)
-                    path.resolve(this.cwd, "node_modules"),
-                    // default search algorithm
-                    "node_modules",
-                ],
-
-                // TS is potentially added below
-                extensions: [
-                    ".mjs",
-                    ".mjsx",
-                    ".js",
-                    ".jsx",
-                    ".ts",
-                    ".tsx",
-                    ".json",
-                ],
-            },
-
-            // module
-            module: {
-                rules: [],
-            },
-
-            // optimization
-            optimization: {
-                concatenateModules: this.moduleConcatenationEnabled,
-                minimizer: [],
-            },
-
-            // performance
-
-            // devtool (source maps)
-            devtool: cliConfig.debug
-                ? "inline-cheap-source-map"
-                // We need to cast to `any` here, as this specific config value isn't listed in webpack's typescript
-                // types.
-                : ("hidden-cheap-module-source-map" as any),
-
-            // context
-            context: this.cwd,
-
-            // target
-            target: "web",
-
-            // externals
-            externals: this.externals,
-
-            // stats
-            stats: {
-                // hide children information (like from the ExtractTextPlugin)
-                children: false,
-            },
-
-            // devServer
-
-            // plugins
-            plugins: this.plugins,
-
-            // watch
-            watch: cliConfig.watch,
-
-            // node
-            // don't automatically polyfill certain node libraries
-            // as we don't care about these implementations and they just add weight
-            node: this.nodeSettings,
-        };
-
-        if (!cliConfig.debug)
-        {
-            (config.optimization as any).minimizer.push(new TerserPlugin({
-                cache: true,
-                parallel: true,
-                sourceMap: true,
-                extractComments: true,
-                terserOptions: {
-                    ecma: 5,
-                },
-            }));
-        }
-
-        if (cliConfig.openBundleAnalyzer)
-        {
-            try
-            {
-                const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-                (config.plugins as any[]).push(new BundleAnalyzerPlugin());
-            }
-            catch (e)
-            {
-                console.log("");
-
-                if (/Cannot find module 'webpack-bundle-analyzer'/.test(e.message))
-                {
-                    console.log(red("You need to manually install the analyzer plugin:"));
-                    console.log(red("    npm i webpack-bundle-analyzer"));
-                }
-                else
-                {
-                    console.log(red(e.message));
-                }
-
-                process.exit(1);
-            }
-
-        }
-
-        return config;
     }
 
 
@@ -453,12 +328,36 @@ export class Kaba
             isModule ? "tsconfig.modern.json" : "tsconfig.legacy.json",
         );
 
-        const entryObjKey = isModule ? `_modern.${entry}` : entry;
+        const entryName = isModule ? `_modern.${entry}` : entry;
 
         let configTemplate = {
             name: isModule ? "modern" : "legacy",
             entry: {
-                [entryObjKey]: entryFile,
+                [entryName]: entryFile,
+            },
+
+            // mode
+            mode: cliConfig.debug ? "development" : "production",
+
+            // resolve
+            resolve: {
+                modules: [
+                    // first try from the root project (as otherwise symlinked projects will fail)
+                    path.resolve(this.cwd, "node_modules"),
+                    // default search algorithm
+                    "node_modules",
+                ],
+
+                // TS is potentially added below
+                extensions: [
+                    ".mjs",
+                    ".mjsx",
+                    ".js",
+                    ".jsx",
+                    ".ts",
+                    ".tsx",
+                    ".json",
+                ],
             },
 
             // output
@@ -504,20 +403,100 @@ export class Kaba
                 ] as webpack.RuleSetRule[],
             },
 
-            // plugins
-            plugins: [
-                new CleanWebpackPlugin(),
-                new DefinePlugin({
-                    'process.env.MODERN_BUILD': isModule,
-                    'MODERN_BUILD': isModule,
-                    'process.env.DEBUG': cliConfig.debug,
-                    'DEBUG': cliConfig.debug,
-                }),
-            ],
-        };
+            // optimization
+            optimization: {
+                concatenateModules: this.moduleConcatenationEnabled,
+                minimizer: [],
+            },
 
-        if (!isModule) {
-            configTemplate.module.rules.push({
+            // devtool (source maps)
+            devtool: cliConfig.debug
+                ? "inline-cheap-source-map"
+                // We need to cast to `any` here, as this specific config value isn't listed in webpack's typescript
+                // types.
+                : ("hidden-cheap-module-source-map" as any),
+
+            // context
+            context: this.cwd,
+
+            // target
+            target: "web",
+
+            // externals
+            externals: this.externals,
+
+            // stats
+            stats: {
+                // hide children information (like from the ExtractTextPlugin)
+                children: false,
+                hash: !isModule,
+                version: !isModule,
+                modules: !isModule,
+            },
+
+            // plugins
+            plugins: this.plugins,
+
+            // watch
+            watch: cliConfig.watch,
+
+            // node
+            // don't automatically polyfill certain node libraries
+            // as we don't care about these implementations and they just add weight
+            node: this.nodeSettings,
+        } as Partial<webpack.Configuration>;
+
+        (configTemplate.plugins as webpack.Plugin[]).push(
+            new DefinePlugin({
+                'process.env.MODERN_BUILD': isModule,
+                'MODERN_BUILD': isModule,
+                'process.env.DEBUG': cliConfig.debug,
+                'DEBUG': cliConfig.debug,
+            })
+        );
+
+        if (!cliConfig.debug)
+        {
+            (configTemplate.optimization as any).minimizer.push(new TerserPlugin({
+                cache: true,
+                parallel: true,
+                sourceMap: true,
+                extractComments: true,
+                terserOptions: {
+                    ecma: 5,
+                },
+            }));
+        }
+
+        if (cliConfig.openBundleAnalyzer)
+        {
+            try
+            {
+                const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+                (configTemplate.plugins as any[]).push(new BundleAnalyzerPlugin());
+            }
+            catch (e)
+            {
+                console.log("");
+
+                if (/Cannot find module 'webpack-bundle-analyzer'/.test(e.message))
+                {
+                    console.log(red("You need to manually install the analyzer plugin:"));
+                    console.log(red("    npm i webpack-bundle-analyzer"));
+                }
+                else
+                {
+                    console.log(red(e.message));
+                }
+
+                process.exit(1);
+            }
+
+        }
+
+        if (!isModule)
+        {
+            (configTemplate.module as webpack.Module).rules.push({
                 // ESLint
                 test: /\.m?jsx?$/,
                 // only lint files that are in the project dir & exclude tests, vendor and node_modules
