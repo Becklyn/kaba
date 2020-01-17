@@ -312,8 +312,8 @@ export class Kaba
 
         const entryName = isModule ? `_modern.${entry}` : entry;
 
-            name: isModule ? "modern" : "legacy",
         let configTemplate: webpack.Configuration = {
+            name: `${entry}: ${isModule ? "modern" : "legacy"}`,
             entry: {
                 [entryName]: entryFile,
             },
