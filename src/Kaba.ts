@@ -11,6 +11,8 @@ const DuplicatePackageCheckerPlugin = require("duplicate-package-checker-webpack
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
+const PACKAGE_MATCHER = /\/node_modules\/(?<package>[^\/]+)\//;
+interface CompiledNpmPackagesMapping {[name: string]: true}
 
 interface Entries
 {
@@ -29,6 +31,22 @@ interface Externals
     [name: string]: string;
 }
 
+/**
+ * Determines whether a file should processed by the asset pipeline.
+ */
+function isAllowedPath (path: string, allowedPaths: CompiledNpmPackagesMapping) : boolean
+{
+    const match = PACKAGE_MATCHER.exec(path);
+
+    // not in node_modules, so always process
+    if (!match)
+    {
+        return true;
+    }
+
+    // only allow the allowed package names
+    return true === allowedPaths[(match.groups as any).package];
+}
 
 /**
  * Main Kaba class
@@ -52,6 +70,11 @@ export class Kaba
     private hashFileNames: boolean = true;
     private buildModern: boolean = true;
     private nodeSettings: webpack.Node|false = false;
+    private compiledNpmPackages: CompiledNpmPackagesMapping = {
+        preact: true,
+        mojave: true,
+        '@mayd': true,
+    };
 
 
     /**
@@ -73,6 +96,16 @@ export class Kaba
     public addJavaScriptEntries (mapping: Entries): this
     {
         this.addEntriesToList(mapping, this.jsEntries, "js");
+        return this;
+    }
+
+
+    /**
+     * Defines which npm packages are compiled
+     */
+    public compileNpmPackages (modules: string[]): this
+    {
+        modules.forEach(module => this.compiledNpmPackages[module] = true);
         return this;
     }
 
@@ -369,12 +402,14 @@ export class Kaba
                                 },
                             },
                         ],
+                        include: (path: string) => isAllowedPath(path, this.compiledNpmPackages),
                     },
 
                     // Babel
                     {
                         test: /\.m?jsx?$/,
                         use: ['cache-loader', babelLoader],
+                        include: (path: string) => isAllowedPath(path, this.compiledNpmPackages),
                     },
 
                     // content files
@@ -383,11 +418,22 @@ export class Kaba
                         loader: "raw-loader",
                     },
 
-                    // ignore CSS files
+                    // Try to avoid compiling CSS, but if there is CSS then inject it into the head
                     {
                         test: /\.css$/,
-                        loader: "ignore-loader",
-                    }
+                        use: [
+                            {
+                                loader: 'style-loader',
+                                options: {
+                                    injectType: 'singletonStyleTag',
+                                },
+                            },
+                            {
+                                loader: 'postcss-loader',
+                                options: this.postCssLoaderOptions,
+                            },
+                        ],
+                    },
                 ],
             },
 
