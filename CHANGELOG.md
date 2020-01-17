@@ -33,10 +33,9 @@
 *   (internal) Bumped all dependencies.
 *   (improvement) Allow `++` in JS/TS code.
 *   (improvement) The code is now always compiled per entry file
-*   (improvement) Ignore `.css` files when compiling webpack. You need to import them manually in your SCSS.
 *   (improvement) Build TypeScript for the `esnext` module system, that (amongst other things) allows to use `import()`.
 *   (bug) Compile every entry into a separate directory, to avoid issues with the clean plugin.
-*   (bc) Now only specific modules in `node_modules` are transformed. You need to set your packages explicity via `.compileNpmPackages()`.
+*   (bc) Now only specific modules in `node_modules` are transformed. You need to set your packages explicity via `.compileNpmPackages(...)`.
 *   (feature) Even if not recommended (use SCSS!), we now support compiling CSS via webpack (not as entry point though). The CSS will be injected into the head dynamically.
 
 

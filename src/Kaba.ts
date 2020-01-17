@@ -72,9 +72,10 @@ export class Kaba
     private buildModern: boolean = true;
     private nodeSettings: webpack.Node|false = false;
     private compiledNpmPackages: CompiledNpmPackagesMapping = {
-        preact: true,
-        mojave: true,
+        '@becklyn': true,
         '@mayd': true,
+        mojave: true,
+        preact: true,
     };
     private postCssLoaderOptions: PostCssLoaderOptions = {};
 
