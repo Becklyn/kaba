@@ -48,7 +48,6 @@ export class Kaba
     private publicPath: string = "/assets/app/js/";
     private externals: Externals = {};
     private moduleConcatenationEnabled: boolean = false;
-    private plugins: webpack.Plugin[] = [];
     private javaScriptDependenciesFileName: string = "_dependencies";
     private hashFileNames: boolean = true;
     private buildModern: boolean = true;
@@ -62,23 +61,6 @@ export class Kaba
     {
         this.cwd = process.cwd();
         this.libRoot = path.dirname(__dirname);
-        this.plugins = [
-            new ProgressBarPlugin({
-                complete: green("─"),
-                incomplete: gray("─"),
-                width: 50,
-                format: ` ${cyan("build")} :bar ${green(":percent")} ${gray(":msg")} `,
-            }),
-            new DuplicatePackageCheckerPlugin({
-                emitError: true,
-                strict: true,
-            }),
-            new ProvidePlugin({
-                h: ["preact", "h"],
-                Fragment: ["preact", "Fragment"],
-            }),
-            new CleanWebpackPlugin(),
-        ];
 
         // set defaults
         this.setOutputPath("build");
@@ -435,7 +417,29 @@ export class Kaba
             },
 
             // plugins
-            plugins: this.plugins,
+            plugins: [
+                new ProgressBarPlugin({
+                    complete: green("─"),
+                    incomplete: gray("─"),
+                    width: 50,
+                    format: ` ${cyan("build")} :bar ${green(":percent")} ${gray(":msg")} `,
+                }),
+                new DuplicatePackageCheckerPlugin({
+                    emitError: true,
+                    strict: true,
+                }),
+                new ProvidePlugin({
+                    h: ["preact", "h"],
+                    Fragment: ["preact", "Fragment"],
+                }),
+                new CleanWebpackPlugin(),
+                new DefinePlugin({
+                    'process.env.MODERN_BUILD': isModule,
+                    'MODERN_BUILD': isModule,
+                    'process.env.DEBUG': cliConfig.debug,
+                    'DEBUG': cliConfig.debug,
+                }),
+            ],
 
             // watch
             watch: cliConfig.watch,
@@ -445,15 +449,6 @@ export class Kaba
             // as we don't care about these implementations and they just add weight
             node: this.nodeSettings,
         } as Partial<webpack.Configuration>;
-
-        (configTemplate.plugins as webpack.Plugin[]).push(
-            new DefinePlugin({
-                'process.env.MODERN_BUILD': isModule,
-                'MODERN_BUILD': isModule,
-                'process.env.DEBUG': cliConfig.debug,
-                'DEBUG': cliConfig.debug,
-            })
-        );
 
         if (!cliConfig.debug)
         {
