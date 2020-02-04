@@ -34,7 +34,7 @@
 *   (improvement) The code is now always compiled per entry file
 *   (improvement) Build TypeScript for the `esnext` module system, that (amongst other things) allows to use `import()`.
 *   (bug) Compile every entry into a separate directory, to avoid issues with the clean plugin.
-*   (bc) Now you can defined which packages in `node_modules` should NOT be transformed. Use `.ignoreNpmPackages(...)`.
+*   (bc) Not all npm packages are automatically transpiled anymore. You need to define which packages from `node_modules` to transpile via Babel by using `.compileNpmPackages(...)`.
 *   (feature) Even if not recommended (use SCSS!), we now support compiling CSS via webpack (not as entry point though). The CSS will be injected into the head dynamically.
 
 

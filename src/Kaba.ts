@@ -12,7 +12,7 @@ const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const PACKAGE_MATCHER = /\/node_modules\/(?<package>(?:@[^@\/]+\/)?[^@\/]+)\//;
-type IgnoredNpmPackagesMapping = Array<RegExp|string>;
+type CompiledNpmPackagesMapping = Array<RegExp|string>;
 const ignoredPackagesCache: {[k: string]: boolean} = {};
 interface PostCssLoaderOptions {[key: string]: any}
 
@@ -36,7 +36,7 @@ interface Externals
 /**
  * Determines whether a file should processed by the asset pipeline.
  */
-function isAllowedPath (path: string, ignoredPackages: IgnoredNpmPackagesMapping) : boolean
+function isAllowedPath (path: string, compiledPackages: CompiledNpmPackagesMapping) : boolean
 {
     const match = PACKAGE_MATCHER.exec(path);
 
@@ -53,25 +53,25 @@ function isAllowedPath (path: string, ignoredPackages: IgnoredNpmPackagesMapping
         return ignoredPackagesCache[packageNameToCompile];
     }
 
-    const length = ignoredPackages.length;
+    const length = compiledPackages.length;
     for (let i = 0; i < length; ++i)
     {
-        const ignoredPackage = ignoredPackages[i];
+        const compiledPackage = compiledPackages[i];
 
-        if (typeof ignoredPackage == "string")
+        if (typeof compiledPackage == "string")
         {
-            if (ignoredPackage === packageNameToCompile)
+            if (compiledPackage === packageNameToCompile)
             {
-                return ignoredPackagesCache[packageNameToCompile] = false;
+                return ignoredPackagesCache[packageNameToCompile] = true;
             }
         }
-        else if (ignoredPackage.test(packageNameToCompile))
+        else if (compiledPackage.test(packageNameToCompile))
         {
-            return ignoredPackagesCache[packageNameToCompile] = false;
+            return ignoredPackagesCache[packageNameToCompile] = true;
         }
     }
 
-    return ignoredPackagesCache[packageNameToCompile] = true;
+    return ignoredPackagesCache[packageNameToCompile] = false;
 }
 
 /**
@@ -96,11 +96,10 @@ export class Kaba
     private hashFileNames: boolean = true;
     private buildModern: boolean = true;
     private nodeSettings: webpack.Node|false = false;
-    private ignoredNpmPackages: IgnoredNpmPackagesMapping = [
-        /^@babel/,
-        /^babel-/,
-        /^core-js(-|$)/,
-        /^regenerator-/,
+    private compiledNpmPackages: CompiledNpmPackagesMapping = [
+        /^@becklyn/,
+        /^@mayd/,
+        /^mojave/,
     ];
     private postCssLoaderOptions: PostCssLoaderOptions = {};
 
@@ -129,11 +128,11 @@ export class Kaba
 
 
     /**
-     * Defines which npm packages are NOT compiled with babel
+     * Defines which npm packages are compiled with babel.
      */
-    public ignoreNpmPackages (modules: Array<string|RegExp>): this
+    public compileNpmPackages (modules: Array<string|RegExp>): this
     {
-        this.ignoredNpmPackages = this.ignoredNpmPackages.concat(modules);
+        this.compiledNpmPackages = this.compiledNpmPackages.concat(modules);
         return this;
     }
 
@@ -401,7 +400,6 @@ export class Kaba
                     "node_modules",
                 ],
 
-                // TS is potentially added below
                 extensions: [
                     ".mjs",
                     ".mjsx",
@@ -439,14 +437,14 @@ export class Kaba
                                 },
                             },
                         ],
-                        include: (path: string) => isAllowedPath(path, this.ignoredNpmPackages),
+                        include: (path: string) => isAllowedPath(path, this.compiledNpmPackages),
                     },
 
                     // Babel
                     {
                         test: /\.m?jsx?$/,
                         use: [babelLoader],
-                        include: (path: string) => isAllowedPath(path, this.ignoredNpmPackages),
+                        include: (path: string) => isAllowedPath(path, this.compiledNpmPackages),
                     },
 
                     // content files
