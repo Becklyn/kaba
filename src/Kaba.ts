@@ -401,7 +401,6 @@ export class Kaba
                     "node_modules",
                 ],
 
-                // TS is potentially added below
                 extensions: [
                     ".mjs",
                     ".mjsx",
