@@ -429,7 +429,6 @@ export class Kaba
                     {
                         test: /\.tsx?$/,
                         use: [
-                            'cache-loader',
                             babelLoader,
                             {
                                 loader: "ts-loader",
@@ -446,7 +445,7 @@ export class Kaba
                     // Babel
                     {
                         test: /\.m?jsx?$/,
-                        use: ['cache-loader', babelLoader],
+                        use: [babelLoader],
                         include: (path: string) => isAllowedPath(path, this.ignoredNpmPackages),
                     },
 
