@@ -11,8 +11,8 @@ const DuplicatePackageCheckerPlugin = require("duplicate-package-checker-webpack
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
-const PACKAGE_MATCHER = /\/node_modules\/(?<package>[^\/]+)\//;
-interface CompiledNpmPackagesMapping {[name: string]: true}
+const PACKAGE_MATCHER = /\/node_modules\/(?<package>(?:@[^@\/]+\/)?[^@\/]+)\//;
+type IgnoredNpmPackagesMapping = Array<RegExp|string>;
 interface PostCssLoaderOptions {[key: string]: any}
 
 interface Entries
@@ -35,7 +35,7 @@ interface Externals
 /**
  * Determines whether a file should processed by the asset pipeline.
  */
-function isAllowedPath (path: string, allowedPaths: CompiledNpmPackagesMapping) : boolean
+function isAllowedPath (path: string, ignoredPackages: IgnoredNpmPackagesMapping) : boolean
 {
     const match = PACKAGE_MATCHER.exec(path);
 
@@ -45,8 +45,27 @@ function isAllowedPath (path: string, allowedPaths: CompiledNpmPackagesMapping) 
         return true;
     }
 
-    // only allow the allowed package names
-    return true === allowedPaths[(match.groups as any).package];
+    const packageNameToCompile = (match.groups as any).package;
+
+    const length = ignoredPackages.length;
+    for (let i = 0; i < length; ++i)
+    {
+        const ignoredPackage = ignoredPackages[i];
+
+        if (typeof ignoredPackage == "string")
+        {
+            if (ignoredPackage === packageNameToCompile)
+            {
+                return false;
+            }
+        }
+        else if (ignoredPackage.test(packageNameToCompile))
+        {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 /**
@@ -71,12 +90,10 @@ export class Kaba
     private hashFileNames: boolean = true;
     private buildModern: boolean = true;
     private nodeSettings: webpack.Node|false = false;
-    private compiledNpmPackages: CompiledNpmPackagesMapping = {
-        '@becklyn': true,
-        '@mayd': true,
-        mojave: true,
-        preact: true,
-    };
+    private ignoredNpmPackages: IgnoredNpmPackagesMapping = [
+        /^@babel/,
+        /^regenerator-/,
+    ];
     private postCssLoaderOptions: PostCssLoaderOptions = {};
 
 
@@ -104,11 +121,11 @@ export class Kaba
 
 
     /**
-     * Defines which npm packages are compiled
+     * Defines which npm packages are NOT compiled with babel
      */
-    public compileNpmPackages (modules: string[]): this
+    public ignoreNpmPackages (modules: Array<string|RegExp>): this
     {
-        modules.forEach(module => this.compiledNpmPackages[module] = true);
+        this.ignoredNpmPackages = this.ignoredNpmPackages.concat(modules);
         return this;
     }
 
@@ -415,14 +432,14 @@ export class Kaba
                                 },
                             },
                         ],
-                        include: (path: string) => isAllowedPath(path, this.compiledNpmPackages),
+                        include: (path: string) => isAllowedPath(path, this.ignoredNpmPackages),
                     },
 
                     // Babel
                     {
                         test: /\.m?jsx?$/,
                         use: ['cache-loader', babelLoader],
-                        include: (path: string) => isAllowedPath(path, this.compiledNpmPackages),
+                        include: (path: string) => isAllowedPath(path, this.ignoredNpmPackages),
                     },
 
                     // content files
