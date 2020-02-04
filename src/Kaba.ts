@@ -13,6 +13,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const PACKAGE_MATCHER = /\/node_modules\/(?<package>(?:@[^@\/]+\/)?[^@\/]+)\//;
 type IgnoredNpmPackagesMapping = Array<RegExp|string>;
+const ignoredPackagesCache: {[k: string]: boolean} = {};
 interface PostCssLoaderOptions {[key: string]: any}
 
 interface Entries
@@ -47,6 +48,11 @@ function isAllowedPath (path: string, ignoredPackages: IgnoredNpmPackagesMapping
 
     const packageNameToCompile = (match.groups as any).package;
 
+    if (undefined !== ignoredPackagesCache[packageNameToCompile])
+    {
+        return ignoredPackagesCache[packageNameToCompile];
+    }
+
     const length = ignoredPackages.length;
     for (let i = 0; i < length; ++i)
     {
@@ -56,16 +62,16 @@ function isAllowedPath (path: string, ignoredPackages: IgnoredNpmPackagesMapping
         {
             if (ignoredPackage === packageNameToCompile)
             {
-                return false;
+                return ignoredPackagesCache[packageNameToCompile] = false;
             }
         }
         else if (ignoredPackage.test(packageNameToCompile))
         {
-            return false;
+            return ignoredPackagesCache[packageNameToCompile] = false;
         }
     }
 
-    return true;
+    return ignoredPackagesCache[packageNameToCompile] = true;
 }
 
 /**
@@ -92,6 +98,8 @@ export class Kaba
     private nodeSettings: webpack.Node|false = false;
     private ignoredNpmPackages: IgnoredNpmPackagesMapping = [
         /^@babel/,
+        /^babel-/,
+        /^core-js(-|$)/,
         /^regenerator-/,
     ];
     private postCssLoaderOptions: PostCssLoaderOptions = {};
