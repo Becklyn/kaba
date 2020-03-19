@@ -35,7 +35,7 @@
         "eslint-plugin-jsdoc": "^21.0.0",
         "eslint-plugin-react": "^7.18.3",
         "eslint-plugin-react-hooks": "^2.3.0",
-        "fs-extra": "^8.1.0",
+        "fs-extra": "^9.0.0",
         "kaba-babel-preset": "^4.1.2",
         "kleur": "^3.0.3",
         "postcss-loader": "^3.0.0",
