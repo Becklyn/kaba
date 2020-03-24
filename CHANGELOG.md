@@ -36,7 +36,7 @@
 *   (bug) Compile every entry into a separate directory, to avoid issues with the clean plugin.
 *   (bc) Not all npm packages are automatically transpiled anymore. You need to define which packages from `node_modules` to transpile via Babel by using `.compileNpmPackages(...)`.
 *   (feature) Even if not recommended (use SCSS!), we now support compiling CSS via webpack (not as entry point though). The CSS will be injected into the head dynamically.
-*   (improvement) TYPO3 typoscript files will be ignored.
+*   (improvement) TypeScript will now ignore TYPO3 (`*typo3*`) directories, to prevent issues due to file extension conflicts of TYPO3's typoscript `.ts` and TypeScript's `.ts`.
 
 
 8.1.0
