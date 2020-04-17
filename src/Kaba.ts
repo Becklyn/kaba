@@ -100,6 +100,7 @@ export class Kaba
         /^@becklyn/,
         /^@mayd/,
         /^mojave/,
+        /^auslese/,
     ];
     private postCssLoaderOptions: PostCssLoaderOptions = {};
 
