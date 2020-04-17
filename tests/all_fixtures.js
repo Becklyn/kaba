@@ -14,7 +14,7 @@ import {runKaba} from "./lib/runner";
 
 /* eslint-disable camelcase */
 /** @var {Object<string,FixtureConfig>} fixtureTests */
-let fixtureTests = {
+const fixtureTests = {
     js: {
         status: 0,
     },
@@ -39,24 +39,21 @@ let fixtureTests = {
 
 Object.keys(fixtureTests).forEach(key =>
 {
-    test(`File: ${key}`, t =>
+    test(`File: ${key}`, async t =>
     {
-        let expected = fixtureTests[key];
-        let result = runKaba(expected.dir || key, expected.args || []);
-        let stdout = null !== result.stdout
-            ? result.stdout.toString()
-            : "";
+        const expected = fixtureTests[key];
+        const result = await runKaba(expected.dir || key, expected.args || []);
 
-        t.is(result.status, expected.status);
+        t.is(result.exitCode, expected.status);
 
         if (undefined !== expected.match)
         {
-            t.truthy(expected.match.test(stdout));
+            t.truthy(expected.match.test(result.stdout));
         }
 
         if (undefined !== expected.noMatch)
         {
-            t.falsy(expected.noMatch.test(stdout));
+            t.falsy(expected.noMatch.test(result.stdout));
         }
     });
 });

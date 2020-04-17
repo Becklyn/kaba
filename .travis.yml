@@ -2,10 +2,10 @@ dist: bionic
 language: node_js
 
 node_js:
-    - 12
+    - node
 
 script:
-    - npm run-script build
+    - npm run build
     - npm audit
     - npx prettier-package-json package.json --list-different --tab-width 4
     - npm test
