@@ -1,3 +1,9 @@
+9.1.0
+=====
+
+*   (improvement) Added `setWebpackConfigAliases` method to define aliases in the webpack build config.
+
+
 9.0.0
 =====
 

@@ -103,6 +103,7 @@ export class Kaba
         /^auslese/,
     ];
     private postCssLoaderOptions: PostCssLoaderOptions = {};
+    private webpackAliases: Record<string, string> = {};
 
 
     /**
@@ -291,6 +292,16 @@ export class Kaba
 
 
     /**
+     * Sets the module aliases for webpack
+     */
+    public setWebpackConfigAliases (aliases: Record<string, string>): this
+    {
+        this.webpackAliases = aliases;
+        return this;
+    }
+
+
+    /**
      * Returns the kaba config
      *
      * @internal
@@ -410,6 +421,8 @@ export class Kaba
                     ".tsx",
                     ".json",
                 ],
+
+                alias: this.webpackAliases,
             },
 
             // output
