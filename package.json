@@ -34,7 +34,7 @@
         "eslint-plugin-react-hooks": "^3.0.0",
         "fs-extra": "^9.0.0",
         "kaba-babel-preset": "^4.1.2",
-        "kleur": "^3.0.3",
+        "kleur": "^4.0.0",
         "postcss-loader": "^3.0.0",
         "pretty-hrtime": "^1.0.3",
         "progress-bar-webpack-plugin": "^2.1.0",
