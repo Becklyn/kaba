@@ -40,7 +40,7 @@
         "progress-bar-webpack-plugin": "^2.1.0",
         "raw-loader": "^4.0.1",
         "sade": "^1.7.3",
-        "style-loader": "^1.1.4",
+        "style-loader": "^2.0.0",
         "terser-webpack-plugin": "^2.3.5",
         "ts-loader": "^7.0.0",
         "typescript": "^3.8.3",
