@@ -17,7 +17,11 @@
         "removeComments": true,
         "sourceMap": true,
         "strict": false,
-        "target": "es5"
+        "target": "es5",
+        "baseUrl": "../",
+        "paths": {
+            "*": ["src/@types/*"]
+        }
     },
     "exclude": [
         "../node_modules",

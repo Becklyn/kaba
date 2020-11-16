@@ -18,7 +18,11 @@
         "removeComments": true,
         "sourceMap": true,
         "strict": false,
-        "target": "es2016"
+        "target": "es2016",
+        "baseUrl": "../",
+        "paths": {
+            "*": ["src/@types/*"]
+        }
     },
     "exclude": [
         "../node_modules",

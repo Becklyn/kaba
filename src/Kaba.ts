@@ -394,6 +394,11 @@ export class Kaba
 
             // resolve
             resolve: {
+                alias: {
+                    "react": "preact/compat",
+                    "react-dom/test-utils": "preact/test-utils",
+                    "react-dom": "preact/compat",
+                },
                 modules: [
                     // first try from the root project (as otherwise symlinked projects will fail)
                     path.resolve(this.cwd, "node_modules"),
