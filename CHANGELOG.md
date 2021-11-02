@@ -1,3 +1,9 @@
+vNext
+=====
+
+*   (internal) Replace TravisCI with CircleCI. 
+
+
 9.0.0
 =====
 
