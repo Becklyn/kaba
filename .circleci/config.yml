@@ -1,0 +1,32 @@
+version: 2
+
+jobs:
+    node:
+        docker:
+            - image: becklyn/circleci-php7.4:latest
+
+        steps:
+            - checkout
+
+            - run: npm ci
+
+            - run:
+                name: NPM Build
+                command: npm run build
+
+            # RUN
+            - run:
+                name: NPM audit
+                command: npm audit --production
+            - run:
+                name: NPM Prettifier
+                command: npx prettier-package-json package.json --list-different --tab-width 4
+            - run:
+                name: NPM Test
+                command: npm test
+
+workflows:
+    version: 2
+    all:
+        jobs:
+            - node
