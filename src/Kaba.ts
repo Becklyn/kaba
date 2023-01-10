@@ -365,7 +365,7 @@ export class Kaba
     /**
      * Add custom loader to webpack config
      */
-    public addCustomLoader (loader: object)
+    public addCustomLoader (loader: object): this
     {
         this.customLoader = loader;
         return this;
