@@ -104,6 +104,8 @@ export class Kaba
     ];
     private postCssLoaderOptions: PostCssLoaderOptions = {};
 
+    private customLoader: object|null = null;
+
 
     /**
      *
@@ -361,6 +363,16 @@ export class Kaba
 
 
     /**
+     * Add custom loader to webpack config
+     */
+    public addCustomLoader (loader: object): this
+    {
+        this.customLoader = loader;
+        return this;
+    }
+
+
+    /**
      * Builds the specialized webpack config for a legacy / module build
      */
     private buildWebpackConfig (entry: string, entryFile: string, cliConfig: kaba.CliConfig, isModule: boolean): Partial<webpack.Configuration>
@@ -595,6 +607,11 @@ export class Kaba
                     emitWarning: true,
                 },
             });
+        }
+
+        if (null !== this.customLoader)
+        {
+            configTemplate.module?.rules.push(this.customLoader);
         }
 
         return configTemplate;

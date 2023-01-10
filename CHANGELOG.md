@@ -1,3 +1,9 @@
+9.0.1
+=====
+
+*   (improvement) Add possibility to add custom webpack loader. Use `addCustomLoader` in your Kaba file.
+
+
 vNext
 =====
 
