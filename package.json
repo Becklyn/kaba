@@ -1,6 +1,6 @@
 {
   "name": "kaba",
-  "version": "9.0.1",
+  "version": "9.0.2",
   "description": "Build system which is used internally by Becklyn Studios.",
   "license": "BSD-3-Clause",
   "homepage": "https://github.com/Becklyn/kaba",
