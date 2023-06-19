@@ -52,7 +52,7 @@
     "esm": "^3.2.25",
     "execa": "^4.0.0",
     "kaba-scss": "^3.3.7",
-    "webpack-bundle-analyzer": "^3.7.0"
+    "webpack-bundle-analyzer": "^4.0.0"
   },
   "engines": {
     "node": ">= 12.0"
