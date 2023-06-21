@@ -44,7 +44,7 @@
     "terser-webpack-plugin": "^2.3.5",
     "ts-loader": "^7.0.0",
     "typescript": "^3.8.3",
-    "webpack": "^4.42.1"
+    "webpack": "^5.0.0"
   },
   "devDependencies": {
     "@types/terser-webpack-plugin": "^2.2.0",
