@@ -20,7 +20,7 @@
   },
   "optionalDependencies": {},
   "dependencies": {
-    "@babel/core": "^7.9.0",
+    "@babel/core": "^8.0.0",
     "@becklyn/typescript-error-formatter": "^1.0.4",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
